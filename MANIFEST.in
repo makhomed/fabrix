@@ -1,0 +1,2 @@
+include CHANGES LICENSE
+exclude MANIFEST.in
