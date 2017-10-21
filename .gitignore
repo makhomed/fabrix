@@ -6,6 +6,7 @@ dist/
 *.egg-info/
 
 .tox/
+.cache/
 htmlcov/
 
 # Sphinx documentation
