@@ -9,20 +9,6 @@ from fabric.api import env, abort
 from fabrix.ioutil import read_local_file, debug
 
 
-class _AttributeDict(dict):
-    def __getattr__(self, key):
-        try:
-            return self[key]
-        except KeyError:
-            raise AttributeError(key)
-
-    def __setattr__(self, key, value):
-        self[key] = value
-
-    def __nonzero__(self):
-        return True
-
-
 class _ConfAttributeDict(dict):
     super__setitem__ = dict.__setitem__
     super__getitem__ = dict.__getitem__
@@ -46,8 +32,22 @@ class _ConfAttributeDict(dict):
         return True
 
 
-local_conf = _AttributeDict()
+class _AttributeDict(dict):
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(key)
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
+    def __nonzero__(self):
+        return True
+
+
 conf = _ConfAttributeDict()
+local_conf = _AttributeDict()
 
 
 def parse_config(config_text):
@@ -179,7 +179,7 @@ def parse_config(config_text):
     if config:
         abort('read_config: unexpected config entry:\n\n%s' % dump(config, Dumper=Dumper))
     for key, value in local_vars.items():
-        local_conf[key] = copy.deepcopy(value)
+        local_conf[key] = value
     if hosts:
         env.hosts = hosts
         env.roledefs = dict()
@@ -212,7 +212,7 @@ def parse_config(config_text):
         'hosts:', hosts, 'roles:', roles, 'roles_hosts:', roles_hosts,
         'host_roles:', host_roles, 'host_vars:', host_vars, 'role_vars:',
         role_vars, 'local_vars:', local_vars, 'defaults:', defaults,
-        'local_conf:', local_conf, 'conf:', conf)
+        'conf:', conf, 'local_conf:', local_conf)
 
 
 def read_config(argument_config_filename=None):
