@@ -17,7 +17,7 @@ def test_render_template_failed_if_templates_dir_not_exists(tmpdir):
     templates_dir = str(fabfile_dir.join("templates"))
     env.real_fabfile = str(fabfile_dir.join("fabfile.py"))
     with pytest.raises(SystemExit, message='render_template: templates dir \'%s\' not exists' % templates_dir):
-        assert render_template("hello.txt.j2", name="World") == "Hello, World!"
+        render_template("hello.txt.j2", name="World")
 
 
 def test_render_template_failed_if_template_file_not_exists(tmpdir):
