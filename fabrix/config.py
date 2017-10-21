@@ -182,6 +182,7 @@ def parse_config(config_text):
         local_conf[key] = copy.deepcopy(value)
     if hosts:
         env.hosts = hosts
+        env.roledefs = dict()
         for host in hosts:
             host_variables = _AttributeDict()
             if defaults:
@@ -192,6 +193,7 @@ def parse_config(config_text):
                     host_variables[key] = copy.deepcopy(value)
             conf.super__setitem__(host, host_variables)
     else:
+        env.hosts = None
         env.roledefs = roles
         for host in roles_hosts:
             host_variables = _AttributeDict()
