@@ -150,6 +150,8 @@ def strip_line(chars=None):
 
 
 def _apply_editors(old_text, *editors):
+    if not editors:
+        abort('editors can\'t be empty')
     text = old_text
     for editor in editors:
         text = editor(text)
