@@ -1,6 +1,12 @@
 Fabrix Changelog
 ================
 
+
+Version 0.1.3
+-------------
+
+- ini_section_editor: fixed bug in detection of duplicated sections
+
 Version 0.1.2
 -------------
 

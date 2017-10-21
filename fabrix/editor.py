@@ -14,11 +14,11 @@ def _full_line(pattern):
 def insert_line(line_to_insert, **kwargs):
     insert_type = None
     anchor_pattern = None
-    for name, value in kwargs.items():
+    for name in sorted(kwargs):
         if insert_type is None:
             if name == 'before' or name == 'after':
                 insert_type = name
-                anchor_pattern = _full_line(value)
+                anchor_pattern = _full_line(kwargs[name])
             else:
                 abort('insert_line: unknown insert_type \'%s\'' % name)
         else:
@@ -49,12 +49,10 @@ def insert_line(line_to_insert, **kwargs):
                     out.append(line_to_insert)
                     out.append(line)
                     continue
-                elif insert_type == 'after':
+                else:  # insert_type == 'after':
                     out.append(line)
                     out.append(line_to_insert)
                     continue
-                else:
-                    abort('insert_line: unexpected internal error')
             else:
                 out.append(line)
         return '\n'.join(out)
@@ -118,13 +116,13 @@ def replace_line(pattern, repl, flags=0):
         for line in text.split('\n'):
             match = regex.match(line)
             if match:
-                line = regex.sub(repl, line, count=1)
+                line = regex.sub(repl, line)
             out.append(line)
         return '\n'.join(out)
     return replace_line_editor
 
 
-def substitute_line(pattern, repl, count=0, flags=0):
+def substitute_line(pattern, repl, flags=0):
 
     def substitute_editor(text):
         regex = re.compile(pattern, flags)
@@ -132,7 +130,7 @@ def substitute_line(pattern, repl, count=0, flags=0):
         for line in text.split('\n'):
             found = regex.search(line)
             if found:
-                line = regex.sub(repl, line, count)
+                line = regex.sub(repl, line)
             out.append(line)
         return '\n'.join(out)
     return substitute_editor
@@ -184,7 +182,7 @@ def edit_ini_section(section_name_to_edit, *editors):
             match = regex.match(line)
             if match:
                 new_section_name = match.group(1)
-                if new_section_name in section_content:
+                if new_section_name in section_content or new_section_name == current_section_name:
                     abort('edit_ini_section: bad ini file, section \'[%s]\' duplicated' % new_section_name)
                 section_content[current_section_name] = current_section_text
                 section_order.append(current_section_name)
