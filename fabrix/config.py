@@ -164,18 +164,18 @@ def parse_config(config_text):
             if entry:
                 abort('read_config: unexpected role_vars entry: %s' % dump(entry, Dumper=Dumper))
         del config['role_vars']
-    local_vars = dict()
-    if 'local_vars' in config:
-        if not isinstance(config['local_vars'], dict):
-            abort('read_config: local_vars must be dictionary type')
-        local_vars = config['local_vars']
-        del config['local_vars']
     defaults = dict()
     if 'defaults' in config:
         if not isinstance(config['defaults'], dict):
             abort('read_config: defaults must be dictionary type')
         defaults = config['defaults']
         del config['defaults']
+    local_vars = dict()
+    if 'local_vars' in config:
+        if not isinstance(config['local_vars'], dict):
+            abort('read_config: local_vars must be dictionary type')
+        local_vars = config['local_vars']
+        del config['local_vars']
     if config:
         abort('read_config: unexpected config entry:\n\n%s' % dump(config, Dumper=Dumper))
     for key, value in local_vars.items():
@@ -211,7 +211,7 @@ def parse_config(config_text):
     debug(
         'hosts:', hosts, 'roles:', roles, 'roles_hosts:', roles_hosts,
         'host_roles:', host_roles, 'host_vars:', host_vars, 'role_vars:',
-        role_vars, 'local_vars:', local_vars, 'defaults:', defaults,
+        role_vars, 'defaults:', defaults, 'local_vars:', local_vars,
         'conf:', conf, 'local_conf:', local_conf)
 
 
