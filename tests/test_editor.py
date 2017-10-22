@@ -1,6 +1,5 @@
 import pytest
-import re
-from fabrix.editor import edit_text, edit_ini_section, edit_local_file
+from fabrix.editor import edit_text, edit_ini_section, edit_local_file, edit_remote_file
 from fabrix.editor import _apply_editors, append_line, prepend_line, strip_line
 from fabrix.editor import substitute_line, replace_line, delete_line, insert_line
 
@@ -59,6 +58,7 @@ def test_strip_line():
 
 
 def test_substitute_line():
+    import re
     assert edit_text("php php php", substitute_line("php", "PHP")) == "PHP PHP PHP"
     assert edit_text("PHP PhP php", substitute_line("PHP", "Python", re.IGNORECASE)) == "Python Python Python"
     assert edit_text("PHP PhP php", substitute_line("PHP", "Python")) == "Python PhP php"
@@ -68,6 +68,7 @@ def test_substitute_line():
 
 
 def test_replace_line():
+    import re
     assert edit_text("php php php", replace_line("php", "PHP")) == "php php php"
     assert edit_text("SOME TEXT", replace_line("some text", "xxx", re.IGNORECASE)) == "xxx"
     assert edit_text("text some", replace_line("^text.*", "xxx")) == "xxx"
@@ -126,4 +127,25 @@ def test_edit_local_file(tmpdir):
     assert changed is True
     assert temp_file.read() == "some sample text"
     changed = edit_local_file(str(temp_file), substitute_line("example", "sample"))
+    assert changed is False
+
+
+def test_edit_remote_file(tmpdir, monkeypatch):
+    remote_file = dict(content="some example text")
+
+    def patch_read_remote_file(remote_filename):
+        assert remote_filename
+        return remote_file['content']
+
+    def patch__atomic_write_remote_file(remote_filename, new_content):
+        assert remote_filename
+        remote_file['content'] = new_content
+
+    import fabrix.ioutil
+    monkeypatch.setattr(fabrix.editor, 'read_remote_file', patch_read_remote_file)
+    monkeypatch.setattr(fabrix.editor, '_atomic_write_remote_file', patch__atomic_write_remote_file)
+    changed = edit_remote_file("/path/to/test.txt", substitute_line("example", "sample"))
+    assert changed is True
+    assert remote_file['content'] == "some sample text"
+    changed = edit_remote_file("/path/to/test.txt", substitute_line("example", "sample"))
     assert changed is False
