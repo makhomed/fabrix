@@ -98,7 +98,7 @@ def test_hosts_must_be_list_of_strings():
         """)
 
 
-def test_host_cant_be_empty_string():
+def test_hosts_host_cant_be_empty_string():
     with abort('read_config: hosts host can\'t be empty string'):
         parse_config("""
             hosts:
@@ -150,4 +150,122 @@ def test_roles_role_cant_be_empty_string():
               - role: ""
                 hosts:
                   - 11.11.11.11
+        """)
+
+
+def test_roles_role_required():
+    with abort('read_config: roles role required'):
+        parse_config("""
+            roles:
+              - hosts:
+                  - 11.11.11.11
+        """)
+
+
+def test_roles_role_must_be_string_type():
+    with abort('read_config: roles role must be string type'):
+        parse_config("""
+            roles:
+              - role: ['test']
+              - hosts:
+                  - 11.11.11.11
+        """)
+
+
+def test_roles_hosts_required():
+    with abort('read_config: role \'%s\' hosts required' % 'test'):
+        parse_config("""
+            roles:
+              - role: test
+        """)
+
+
+def test_roles_hosts_must_be_list_type():
+    with abort('read_config: role \'%s\' hosts must be list type' % 'test'):
+        parse_config("""
+            roles:
+              - role: test
+                hosts: 10.10.10.10
+        """)
+
+
+def test_roles_hosts_host_cant_be_empty_string():
+    with abort('read_config: role \'%s\' hosts host can\'t be empty string' % 'test'):
+        parse_config("""
+            roles:
+              - role: test
+                hosts:
+                  - ""
+        """)
+    with abort('read_config: role \'%s\' hosts host can\'t be empty string' % 'test'):
+        parse_config("""
+            roles:
+              - role: test
+                hosts:
+                  -
+        """)
+
+
+def test_role_hosts_must_be_list_of_strings():
+    with abort('read_config: role \'%s\' hosts must be list of strings' % 'test'):
+        parse_config("""
+            roles:
+              - role: test
+                hosts:
+                  - ['10.10.10.10', '11.11.11.11']
+        """)
+
+
+def test_roles_hosts_already_defined():
+    with abort('read_config: host \'%s\' already defined in role \'%s\' hosts list' % ('11.11.11.11', 'test')):
+        parse_config("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+                  - 10.10.10.10
+                  - 11.11.11.11
+        """)
+
+
+def test_role_already_defined():
+    with abort('read_config: role \'%s\' already defined' % 'test'):
+        parse_config("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+                  - 10.10.10.10
+              - role: other-role
+                hosts:
+                  - 172.22.22.99
+                  - 11.11.11.11
+              - role: test
+                hosts:
+                  - 22.22.22.22
+        """)
+
+
+def test_unexpected_roles_entry():
+    with abort('read_config: unexpected roles entry: %s' % 'vars: {foo: bar}'):
+        parse_config("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+                  - 10.10.10.10
+                vars:
+                  foo: bar
+        """)
+
+
+def test_roles_empty_hosts_list():
+    with abort('read_config: role \'%s\' hosts must not be empty' % 'test'):
+        parse_config("""
+            roles:
+              - role: test2
+                hosts:
+                  - 11.11.11.11
+              - role: test
+                hosts: []
         """)

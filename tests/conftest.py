@@ -29,9 +29,10 @@ class AbortContext(object):
         import sys
         if sys.version_info.major == 2 and suppress_exception:
             sys.exc_clear()
-        import re
-        if not re.match(self.regexp, str(value.message)):
-            pytest.fail("Pattern '{0!s}' not found in '{1!s}'".format(self.regexp, value.message))
+        if self.regexp:
+            import re
+            if not re.match(self.regexp, str(value.message)):
+                pytest.fail("Pattern '{0!s}' not found in '{1!s}'".format(self.regexp, value.message))
         return suppress_exception
 
 

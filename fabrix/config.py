@@ -93,15 +93,17 @@ def parse_config(config_text):
             if not isinstance(role, basestring):
                 abort('read_config: roles role must be string type')
             if 'hosts' not in entry:
-                abort('read_config: roles hosts required')
+                abort('read_config: role \'%s\' hosts required' % role)
             if not isinstance(entry['hosts'], list):
-                abort('read_config: roles hosts must be list type')
+                abort('read_config: role \'%s\' hosts must be list type' % role)
+            if not entry['hosts']:
+                abort('read_config: role \'%s\' hosts must not be empty' % role)
             hosts_set = set()
             for host in entry['hosts']:
                 if host is None or host == '':
-                    abort('read_config: role hosts host can\'t be empty string')
+                    abort('read_config: role \'%s\' hosts host can\'t be empty string' % role)
                 if not isinstance(host, basestring):
-                    abort('read_config: role hosts must be list of strings')
+                    abort('read_config: role \'%s\' hosts must be list of strings' % role)
                 if host in hosts_set:
                     abort('read_config: host \'%s\' already defined in role \'%s\' hosts list' % (host, role))
                 hosts_set.add(host)
@@ -115,8 +117,6 @@ def parse_config(config_text):
             del entry['hosts']
             if entry:
                 abort('read_config: unexpected roles entry: %s' % dump(entry, Dumper=Dumper))
-        if not roles_hosts:
-            abort('read_config: roles hosts must not be empty')
         del config['roles']
     host_vars = dict()
     if 'host_vars' in config:
