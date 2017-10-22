@@ -119,3 +119,35 @@ def test_host_already_defined():
               - 10.10.10.10
               - 11.11.11.11
         """)
+
+
+def test_roles_is_not_list():
+    with abort('read_config: roles must be list type'):
+        parse_config("""
+            roles:
+                role: test
+        """)
+
+
+def test_roles_must_not_be_empty():
+    with abort('read_config: roles must not be empty'):
+        parse_config("""
+            roles: []
+        """)
+
+
+def test_roles_role_cant_be_empty_string():
+    with abort('read_config: roles role can\'t be empty string'):
+        parse_config("""
+            roles:
+              - role:
+                hosts:
+                  - 11.11.11.11
+        """)
+    with abort('read_config: roles role can\'t be empty string'):
+        parse_config("""
+            roles:
+              - role: ""
+                hosts:
+                  - 11.11.11.11
+        """)

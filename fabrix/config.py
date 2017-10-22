@@ -86,10 +86,12 @@ def parse_config(config_text):
         for entry in config['roles']:
             if 'role' not in entry:
                 abort('read_config: roles role required')
-            if not isinstance(entry['role'], basestring):
-                abort('read_config: roles role must be string type')
             role = entry['role']
             del entry['role']
+            if role is None or role == '':
+                abort('read_config: roles role can\'t be empty string')
+            if not isinstance(role, basestring):
+                abort('read_config: roles role must be string type')
             if 'hosts' not in entry:
                 abort('read_config: roles hosts required')
             if not isinstance(entry['hosts'], list):
