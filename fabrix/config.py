@@ -1,6 +1,7 @@
 import os.path
 import copy
 from yaml import load, dump
+from yaml.parser import ParserError
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
@@ -50,8 +51,33 @@ conf = _ConfAttributeDict()
 local_conf = _AttributeDict()
 
 
-def parse_config(config_text):
-    config = load(config_text, Loader=Loader)
+def read_config(argument_config_filename=None):
+    if env.real_fabfile is None:
+        return
+    if argument_config_filename is None:
+        dirname = os.path.dirname(env.real_fabfile)
+        basename = os.path.basename(env.real_fabfile)
+        name, ext = os.path.splitext(basename)
+        config_filename = os.path.join(dirname, name + '.yaml')
+    elif not os.path.isabs(argument_config_filename):
+        dirname = os.path.dirname(env.real_fabfile)
+        config_filename = os.path.join(dirname, argument_config_filename)
+    else:
+        config_filename = argument_config_filename
+    if not os.path.isfile(config_filename):
+        if argument_config_filename is None:
+            return
+        else:
+            abort('read_config: config \'%s\' not exists' % config_filename)
+    else:
+        debug('fabrix: using config \'%s\'' % config_filename)
+
+    try:
+        with open(config_filename) as config_file:
+            config = load(config_file, Loader=Loader)
+    except ParserError, ex:
+        abort('read_config: error parsing config \'%s\':\n\n%s' % (config_filename, ex))
+    config_text = read_local_file(config_filename)
     config_yaml = dump(config, Dumper=Dumper)
     debug('config_text:', config_text, 'config_yaml:', config_yaml, 'config:', config)
     if 'hosts' in config and 'roles' in config:
@@ -219,29 +245,6 @@ def parse_config(config_text):
         'host_roles:', host_roles, 'host_vars:', host_vars, 'role_vars:',
         role_vars, 'defaults:', defaults, 'local_vars:', local_vars,
         'conf:', conf, 'local_conf:', local_conf)
-
-
-def read_config(argument_config_filename=None):
-    if env.real_fabfile is None:
-        return
-    if argument_config_filename is None:
-        dirname = os.path.dirname(env.real_fabfile)
-        basename = os.path.basename(env.real_fabfile)
-        name, ext = os.path.splitext(basename)
-        config_filename = os.path.join(dirname, name + '.yaml')
-    elif not os.path.isabs(argument_config_filename):
-        dirname = os.path.dirname(env.real_fabfile)
-        config_filename = os.path.join(dirname, argument_config_filename)
-    else:
-        config_filename = argument_config_filename
-    if not os.path.isfile(config_filename):
-        if argument_config_filename is None:
-            return
-        else:
-            abort('read_config: config \'%s\' not exists' % config_filename)
-    else:
-        debug('fabrix: using config \'%s\'' % config_filename)
-        parse_config(read_local_file(config_filename))
 
 
 read_config()

@@ -7,9 +7,10 @@ Version 0.1.3
 Released: not released yet
 
 - Fixed bug in detection of duplicated sections in ini_section_editor
-- Fixed bug in detection of empty string in hosts list in parse_config
-- Fixed bug in detection of empty string in roles role name in parse_config
-- Fixed bug in detection of empty role hosts list in parse_config
+- Fixed bug in detection of empty string in hosts list in read_config
+- Fixed bug in detection of empty string in roles role name in read_config
+- Fixed bug in detection of empty role hosts list in read_config
+- Fixed bug in detection of invalid yaml files in read_config
 
 Version 0.1.2
 -------------

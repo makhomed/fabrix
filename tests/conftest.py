@@ -26,13 +26,14 @@ class AbortContext(object):
         if extype is None:
             pytest.fail("DID NOT RAISE {0}".format(SystemExit))
         suppress_exception = issubclass(extype, SystemExit)
-        import sys
-        if sys.version_info.major == 2 and suppress_exception:
-            sys.exc_clear()
-        if self.regexp:
-            import re
-            if not re.match(self.regexp, str(value.message)):
-                pytest.fail("Pattern '{0!s}' not found in '{1!s}'".format(self.regexp, value.message))
+        if suppress_exception:
+            import sys
+            if sys.version_info.major == 2:
+                sys.exc_clear()
+            if self.regexp:
+                import re
+                if not re.match(self.regexp, str(value.message), re.DOTALL):
+                    pytest.fail("Pattern '{0!s}' not found in '{1!s}'".format(self.regexp, value.message))
         return suppress_exception
 
 
