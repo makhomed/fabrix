@@ -1,4 +1,18 @@
 import pytest
+from fabric.api import env
+
+
+@pytest.fixture(autouse=True)
+def clear_fabric_config():
+    env.hosts = list()
+    env.roledefs = dict()
+    env.host_string = None
+    env.real_fabfile = None
+    yield
+    env.hosts = list()
+    env.roledefs = dict()
+    env.host_string = None
+    env.real_fabfile = None
 
 
 class AbortContext(object):
@@ -17,7 +31,7 @@ class AbortContext(object):
             sys.exc_clear()
         import re
         if not re.match(self.regexp, str(value.message)):
-            assert 0, "Pattern '{0!s}' not found in '{1!s}'".format(self.regexp, value.message)
+            pytest.fail("Pattern '{0!s}' not found in '{1!s}'".format(self.regexp, value.message))
         return suppress_exception
 
 
