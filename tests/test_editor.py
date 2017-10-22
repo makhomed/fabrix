@@ -1,18 +1,18 @@
-import pytest
+from conftest import abort
 from fabrix.editor import edit_text, edit_ini_section, edit_local_file, edit_remote_file
 from fabrix.editor import _apply_editors, append_line, prepend_line, strip_line
 from fabrix.editor import substitute_line, replace_line, delete_line, insert_line
 
 
 def test_empty_list_of_editors():
-    with pytest.raises(SystemExit, message="editors can\'t be empty"):
+    with abort("editors can\'t be empty"):
         _apply_editors("text")
 
 
 def test_non_idempotend_editors():
     def editor(text):
         return text + "x"
-    with pytest.raises(SystemExit, message="editors is not idempotent"):
+    with abort("editors is not idempotent"):
         _apply_editors("text", editor)
 
 
@@ -84,36 +84,36 @@ def test_delete_line():
 
 
 def test_insert_line():
-    with pytest.raises(SystemExit, message='insert_line: must be defined \'before\' or \'after\' argument'):
+    with abort('insert_line: must be defined \'before\' or \'after\' argument'):
         edit_text("text", insert_line("line"))
-    with pytest.raises(SystemExit, message='insert_line: unknown insert_type \'%s\'' % 'xxx'):
+    with abort('insert_line: unknown insert_type \'%s\'' % 'xxx'):
         edit_text("text", insert_line("line", xxx="text"))
-    with pytest.raises(SystemExit, message='insert_line: already defined insert_type \'%s\', unexpected \'%s\'' % ('after', 'before')):
+    with abort('insert_line: already defined insert_type \'%s\', unexpected \'%s\'' % ('after', 'before')):
         edit_text("text", insert_line("line", after="text", before="text"))
     assert edit_text("text", insert_line("line", before="text")) == "line\ntext"
     assert edit_text("text\n", insert_line("line", before="text")) == "line\ntext\n"
     assert edit_text("text", insert_line("line", after="text")) == "text\nline"
     assert edit_text("text\n", insert_line("line", after="text")) == "text\nline\n"
-    with pytest.raises(SystemExit, message='insert_line: anchor pattern \'%s\' not found' % "text"):
+    with abort(r'insert_line: anchor pattern \'.*\' not found'):
         edit_text("test", insert_line("line", after="text"))
-    with pytest.raises(SystemExit, message='insert_line: anchor pattern \'%s\' found %d times, must be only one' % ("text", 2)):
+    with abort(r'insert_line: anchor pattern \'.*\' found 2 times, must be only one'):
         edit_text("test\ntest\n", insert_line("line", after="test"))
 
 
 def test_edit_ini_section():
-    with pytest.raises(SystemExit, message='edit_ini_section: section name must be in form [section_name]'):
+    with abort('edit_ini_section: section name must be in form \[section_name\]'):
         edit_text("text", edit_ini_section("section", append_line("append")))
-    with pytest.raises(SystemExit, message='edit_ini_section: section name must be in form [section_name]'):
+    with abort('edit_ini_section: section name must be in form \[section_name\]'):
         edit_text("text", edit_ini_section("[section", append_line("append")))
-    with pytest.raises(SystemExit, message='edit_ini_section: section name must be in form [section_name]'):
+    with abort('edit_ini_section: section name must be in form \[section_name\]'):
         edit_text("text", edit_ini_section("section]", append_line("append")))
-    with pytest.raises(SystemExit, message='edit_ini_section: section \'[%s]\' not found' % "section"):
+    with abort('edit_ini_section: section \'\[%s\]\' not found' % "section"):
         edit_text("text", edit_ini_section("[section]", append_line("append")))
-    with pytest.raises(SystemExit, message='edit_ini_section: bad ini file, section \'[%s]\' duplicated' % "section"):
+    with abort('edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
         edit_text("# php\n[section]\nt=1\n[section]\nx=2\n", edit_ini_section("[section]", append_line("z=3")))
-    with pytest.raises(SystemExit, message='edit_ini_section: bad ini file, section \'[%s]\' duplicated' % "section"):
+    with abort('edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
         edit_text("# php\n[section]\nt=1\n[x]\na=b\n[section]\nx=2\n", edit_ini_section("[section]", append_line("z=3")))
-    with pytest.raises(SystemExit, message='edit_ini_section: bad ini file, section \'[%s]\' duplicated' % "section"):
+    with abort('edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
         edit_text("[section]\n[section]\n", edit_ini_section("[section]", append_line("append")))
     assert edit_text("[remi-php70]\nenabled=0\n", edit_ini_section("[remi-php70]", replace_line("enabled=0", "enabled=1"))) == "[remi-php70]\nenabled=1\n"
     assert edit_text("[remi]\nenabled=0\n[x]\n", edit_ini_section("[remi]", replace_line("enabled=0", "enabled=1"))) == "[remi]\nenabled=1\n[x]\n"
