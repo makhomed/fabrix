@@ -7,6 +7,7 @@ Version 0.1.3
 Released: not released yet
 
 - Fixed bug in detection of duplicated sections in ini_section_editor
+- Fixed bug in detection of empty string in hosts list in parse_config
 
 Version 0.1.2
 -------------

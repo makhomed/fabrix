@@ -66,6 +66,8 @@ def parse_config(config_text):
             abort('read_config: hosts must not be empty')
         hosts_set = set()
         for host in config['hosts']:
+            if host is None or host == '':
+                abort('read_config: hosts host can\'t be empty string')
             if not isinstance(host, basestring):
                 abort('read_config: hosts must be list of strings')
             if host in hosts_set:
@@ -94,6 +96,8 @@ def parse_config(config_text):
                 abort('read_config: roles hosts must be list type')
             hosts_set = set()
             for host in entry['hosts']:
+                if host is None or host == '':
+                    abort('read_config: role hosts host can\'t be empty string')
                 if not isinstance(host, basestring):
                     abort('read_config: role hosts must be list of strings')
                 if host in hosts_set:
