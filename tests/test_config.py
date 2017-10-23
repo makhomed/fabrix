@@ -1,6 +1,7 @@
+import pytest
 from conftest import abort
 from fabric.api import env
-from fabrix.config import read_config
+from fabrix.config import read_config, conf, local_conf
 
 
 def test_read_config_default_config_name_nox_exists(tmpdir, monkeypatch):
@@ -512,7 +513,7 @@ def test_host_vars_vars_required(tmpdir, monkeypatch):
               - host: 11.11.11.11
                 vsar:
         """)
-    with abort('read_config: host_vars vars required'):
+    with abort('read_config: host_vars host \'%s\' vars required' % '11.11.11.11'):
         read_config()
 
 
@@ -529,7 +530,7 @@ def test_host_vars_vars_must_be_dict(tmpdir, monkeypatch):
               - host: 11.11.11.11
                 vars: ['a', 'b', 'c']
         """)
-    with abort('read_config: host_vars vars must be dictionary type'):
+    with abort('read_config: host_vars host \'%s\' vars must be dictionary type' % '11.11.11.11'):
         read_config()
 
 
@@ -676,3 +677,339 @@ def test_role_vars_role_is_empty_string(tmpdir, monkeypatch):
         """)
     with abort('read_config: role_vars role can\'t be empty string'):
         read_config()
+
+
+def test_role_vars_role_not_in_roles(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role: text
+                vars:
+                  foo: baz
+        """)
+    with abort('read_config: role_vars role \'%s\' not defined in roles' % 'text'):
+        read_config()
+
+
+def test_role_vars_role_vars_not_defined(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role: test
+        """)
+    with abort('read_config: role_vars role \'%s\' vars required' % 'test'):
+        read_config()
+
+
+def test_role_vars_role_vars_must_be_list(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role: test
+                vars: ['a', 'b', 'c']
+        """)
+    with abort('read_config: role_vars role \'%s\' vars must be dictionary type' % 'test'):
+        read_config()
+
+
+def test_role_vars_role_already_defined(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role: test
+                vars: {}
+              - role: test
+                vars: {}
+        """)
+    with abort('read_config: role_vars role \'%s\' already defined' % 'test'):
+        read_config()
+
+
+def test_role_vars_unknown_entry(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role: test
+                vars: {}
+                vras: {foo: bar}
+        """)
+    with abort('read_config: unexpected role_vars entry: %s' % 'vras: {foo: bar}'):
+        read_config()
+
+
+def test_defaults_must_be_list_type(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role: test
+                vars: {}
+            defaults: []
+        """)
+    with abort('read_config: defaults must be dictionary type'):
+        read_config()
+
+
+def test_local_vars_must_be_list_type(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            hosts:
+              - 11.11.11.11
+            host_vars:
+              - host: 11.11.11.11
+                vars: {}
+            local_vars: []
+        """)
+    with abort('read_config: local_vars must be dictionary type'):
+        read_config()
+
+
+def test_unexpected_entry(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            hosts:
+              - 11.11.11.11
+            host_vars:
+              - host: 11.11.11.11
+                vars: {}
+            lcal_vars: {foo: bar}
+        """)
+    with abort('read_config: unexpected config entry:\n\n%s' % 'lcal_vars: {foo: bar}'):
+        read_config()
+
+
+def test_defaults_and_local_vars(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    config_file.write("""
+            hosts:
+              - 11.11.11.11
+            host_vars:
+              - host: 11.11.11.11
+                vars: {}
+            defaults:
+              nginx: True
+            local_vars: {foo: bar}
+        """)
+    read_config()
+    assert conf.nginx is True
+    assert local_conf.foo == 'bar'
+    local_conf['foo'] = 'baz'
+    assert local_conf.foo == 'baz'
+    local_conf.foo = True
+    assert local_conf.foo is True
+
+
+def test_host_vars(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    config_file.write("""
+            hosts:
+              - 11.11.11.11
+              - 22.22.22.22
+            host_vars:
+              - host: 11.11.11.11
+                vars:
+                  override: new
+            defaults:
+              nginx: True
+              override: old
+            local_vars: {foo: bar}
+        """)
+    read_config()
+    assert conf.override == 'new'
+    monkeypatch.setitem(env, "host_string", '22.22.22.22')
+    assert conf.override == 'old'
+
+
+def test_conf(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    config_file.write("""
+            hosts:
+              - 11.11.11.11
+              - 22.22.22.22
+            host_vars:
+              - host: 11.11.11.11
+                vars:
+                  override: new
+            defaults:
+              nginx: True
+              override: old
+            local_vars: {foo: bar}
+        """)
+    read_config()
+    conf.test = 'beta'
+    assert conf['test'] == 'beta'
+    conf['override'] = 'disable'
+    assert conf.override == 'disable'
+
+
+def test_roles(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    config_file.write("""
+            roles:
+              - role: web
+                hosts:
+                  - 11.11.11.11
+                  - 22.22.22.22
+                  - 33.33.33.33
+              - role: db
+                hosts:
+                  - 7.7.7.7
+                  - 9.9.9.9
+              - role: rest
+                hosts:
+                  - 44.44.44.44
+
+            defaults:
+              var1: def1
+              var2: def2
+              var3: def3
+              var4: def4
+              var5: def5
+
+            host_vars:
+              - host: 11.11.11.11
+                vars:
+                  var1: special_value_for_host_11
+              - host: 9.9.9.9
+                vars:
+                  type: mysql
+
+            role_vars:
+              - role: web
+                vars:
+                  var1: from_web_role
+                  var2: from_web_role
+              - role: db
+                vars:
+                  var3: from_db_role
+            local_vars:
+              var1: loc1
+              var2: loc2
+              var3: loc3
+              var4: loc4
+              var5: loc5
+        """)
+    read_config()
+    assert local_conf.var1 == 'loc1'
+    assert local_conf.var2 == 'loc2'
+    assert local_conf.var3 == 'loc3'
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    assert conf.var1 == 'special_value_for_host_11'
+    assert conf.var2 == 'from_web_role'
+    assert conf.var3 == 'def3'
+    monkeypatch.setitem(env, "host_string", '22.22.22.22')
+    assert conf.var1 == 'from_web_role'
+    assert conf.var2 == 'from_web_role'
+    assert conf.var3 == 'def3'
+    monkeypatch.setitem(env, "host_string", '44.44.44.44')
+    assert conf.var1 == 'def1'
+    assert conf.var2 == 'def2'
+    assert conf.var3 == 'def3'
+
+
+def test_roles_without_defaults(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    config_file.write("""
+            roles:
+              - role: web
+                hosts:
+                  - 11.11.11.11
+                  - 22.22.22.22
+                  - 33.33.33.33
+              - role: db
+                hosts:
+                  - 7.7.7.7
+                  - 9.9.9.9
+              - role: rest
+                hosts:
+                  - 44.44.44.44
+
+            host_vars:
+              - host: 11.11.11.11
+                vars:
+                  var1: special_value_for_host_11
+              - host: 9.9.9.9
+                vars:
+                  type: mysql
+
+            role_vars:
+              - role: web
+                vars:
+                  var1: from_web_role
+                  var2: from_web_role
+              - role: db
+                vars:
+                  var3: from_db_role
+        """)
+    read_config()
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    assert conf.var1 == 'special_value_for_host_11'
+    assert conf.var2 == 'from_web_role'
+    with pytest.raises(AttributeError):
+        conf.var3
+    monkeypatch.setitem(env, "host_string", '22.22.22.22')
+    assert conf.var1 == 'from_web_role'
+    assert conf.var2 == 'from_web_role'
+    with pytest.raises(AttributeError):
+        conf.var3
+    monkeypatch.setitem(env, "host_string", '44.44.44.44')
+    with pytest.raises(AttributeError):
+        conf.var1
+    with pytest.raises(AttributeError):
+        conf.var2
+    with pytest.raises(AttributeError):
+        conf.var3

@@ -170,9 +170,9 @@ def read_config(argument_config_filename=None):
             elif roles and host not in roles_hosts:
                 abort('read_config: host_vars host \'%s\' not defined in roles hosts list' % host)
             if 'vars' not in entry:
-                abort('read_config: host_vars vars required')
+                abort('read_config: host_vars host \'%s\' vars required' % host)
             if not isinstance(entry['vars'], dict):
-                abort('read_config: host_vars vars must be dictionary type')
+                abort('read_config: host_vars host \'%s\' vars must be dictionary type' % host)
             if host in host_vars:
                 abort('read_config: host_vars host \'%s\' already defined' % host)
             host_vars[host] = entry['vars']
@@ -198,11 +198,11 @@ def read_config(argument_config_filename=None):
             if not role:
                 abort('read_config: role_vars role can\'t be empty string')
             if role not in roles:
-                abort('read_config: role_vars role \'%s\' not defined in roles' % roles)
+                abort('read_config: role_vars role \'%s\' not defined in roles' % role)
             if 'vars' not in entry:
-                abort('read_config: role_vars vars required')
+                abort('read_config: role_vars role \'%s\' vars required' % role)
             if not isinstance(entry['vars'], dict):
-                abort('read_config: role_vars vars must be dictionary type')
+                abort('read_config: role_vars role \'%s\' vars must be dictionary type' % role)
             if role in role_vars:
                 abort('read_config: role_vars role \'%s\' already defined' % role)
             role_vars[role] = entry['vars']
