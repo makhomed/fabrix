@@ -14,8 +14,8 @@ def test_read_config_default_config_name_exists(tmpdir, monkeypatch):
     fabfile = tmpdir.join("fabfile.py")
     config_filename = tmpdir.join("fabfile.yaml")
     config_filename.write("""
-    hosts:
-        - 172.22.22.99
+        hosts:
+            - 172.22.22.99
     """)
     monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     read_config()
@@ -26,8 +26,8 @@ def test_read_config_explicit_relative_config_name(tmpdir, monkeypatch):
     fabfile = tmpdir.join("fabfile.py")
     config_filename = tmpdir.join("stage.yaml")
     config_filename.write("""
-    hosts:
-        - 10.10.10.10
+        hosts:
+            - 10.10.10.10
     """)
     monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     read_config("stage.yaml")
@@ -38,8 +38,8 @@ def test_read_config_explicit_absolute_config_name(tmpdir, monkeypatch):
     fabfile = tmpdir.join("fabfile.py")
     config_filename = tmpdir.join("stage.yaml")
     config_filename.write("""
-    hosts:
-        - 10.20.30.40
+        hosts:
+            - 10.20.30.40
     """)
     monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     read_config(str(config_filename))
@@ -118,6 +118,18 @@ def test_hosts_must_be_list_of_strings(tmpdir, monkeypatch):
         read_config()
 
 
+def test_hosts_entry_none(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            hosts:
+              -
+        """)
+    with abort('read_config: hosts host can\'t be empty string'):
+        read_config()
+
+
 def test_hosts_host_cant_be_empty_string(tmpdir, monkeypatch):
     fabfile = tmpdir.join("fabfile.py")
     config_file = tmpdir.join("fabfile.yaml")
@@ -125,15 +137,6 @@ def test_hosts_host_cant_be_empty_string(tmpdir, monkeypatch):
     config_file.write("""
             hosts:
               - ""
-        """)
-    with abort('read_config: hosts host can\'t be empty string'):
-        read_config()
-    fabfile = tmpdir.join("fabfile.py")
-    config_file = tmpdir.join("fabfile.yaml")
-    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
-    config_file.write("""
-            hosts:
-              -
         """)
     with abort('read_config: hosts host can\'t be empty string'):
         read_config()
@@ -182,18 +185,21 @@ def test_roles_role_cant_be_empty_string(tmpdir, monkeypatch):
     monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     config_file.write("""
             roles:
-              - role:
+              - role: ""
                 hosts:
                   - 11.11.11.11
         """)
     with abort('read_config: roles role can\'t be empty string'):
         read_config()
+
+
+def test_roles_role_is_none(tmpdir, monkeypatch):
     fabfile = tmpdir.join("fabfile.py")
     config_file = tmpdir.join("fabfile.yaml")
     monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     config_file.write("""
             roles:
-              - role: ""
+              - role:
                 hosts:
                   - 11.11.11.11
         """)
@@ -265,6 +271,9 @@ def test_roles_hosts_host_cant_be_empty_string(tmpdir, monkeypatch):
         """)
     with abort('read_config: role \'%s\' hosts host can\'t be empty string' % 'test'):
         read_config()
+
+
+def test_roles_hosts_host_is_none(tmpdir, monkeypatch):
     fabfile = tmpdir.join("fabfile.py")
     config_file = tmpdir.join("fabfile.yaml")
     monkeypatch.setitem(env, "real_fabfile", str(fabfile))
@@ -391,4 +400,68 @@ def test_host_vars_must_be_list_type(tmpdir, monkeypatch):
                 foo: bar
         """)
     with abort('read_config: host_vars must be list type'):
+        read_config()
+
+
+def test_host_vars_host_required(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            host_vars:
+              - foo: bar
+        """)
+    with abort('read_config: host_vars host required'):
+        read_config()
+
+
+def test_host_vars_host_cant_be_empty_string(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            host_vars:
+              - host: ""
+        """)
+    with abort('read_config: host_vars host can\'t be empty string'):
+        read_config()
+
+
+def test_host_vars_host_is_none(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            host_vars:
+              - host:
+        """)
+    with abort('read_config: host_vars host can\'t be empty string'):
+        read_config()
+
+
+def test_host_vars_host_must_be_string_type(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            host_vars:
+              - host: []
+        """)
+    with abort('read_config: host_vars host must be string type'):
         read_config()

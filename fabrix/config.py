@@ -92,10 +92,12 @@ def read_config(argument_config_filename=None):
             abort('read_config: hosts must not be empty')
         hosts_set = set()
         for host in config['hosts']:
-            if host is None or host == '':
+            if host is None:
                 abort('read_config: hosts host can\'t be empty string')
             if not isinstance(host, basestring):
                 abort('read_config: hosts must be list of strings')
+            if not host:
+                abort('read_config: hosts host can\'t be empty string')
             if host in hosts_set:
                 abort('read_config: host \'%s\' already defined in hosts list' % host)
             hosts_set.add(host)
@@ -114,10 +116,12 @@ def read_config(argument_config_filename=None):
                 abort('read_config: roles role required')
             role = entry['role']
             del entry['role']
-            if role is None or role == '':
+            if role is None:
                 abort('read_config: roles role can\'t be empty string')
             if not isinstance(role, basestring):
                 abort('read_config: roles role must be string type')
+            if not role:
+                abort('read_config: roles role can\'t be empty string')
             if 'hosts' not in entry:
                 abort('read_config: role \'%s\' hosts required' % role)
             if not isinstance(entry['hosts'], list):
@@ -126,10 +130,12 @@ def read_config(argument_config_filename=None):
                 abort('read_config: role \'%s\' hosts must not be empty' % role)
             hosts_set = set()
             for host in entry['hosts']:
-                if host is None or host == '':
+                if host is None:
                     abort('read_config: role \'%s\' hosts host can\'t be empty string' % role)
                 if not isinstance(host, basestring):
                     abort('read_config: role \'%s\' hosts must be list of strings' % role)
+                if not host:
+                    abort('read_config: role \'%s\' hosts host can\'t be empty string' % role)
                 if host in hosts_set:
                     abort('read_config: host \'%s\' already defined in role \'%s\' hosts list' % (host, role))
                 hosts_set.add(host)
@@ -151,10 +157,14 @@ def read_config(argument_config_filename=None):
         for entry in config['host_vars']:
             if 'host' not in entry:
                 abort('read_config: host_vars host required')
-            if not isinstance(entry['host'], basestring):
-                abort('read_config: host_vars host must be string type')
             host = entry['host']
             del entry['host']
+            if host is None:
+                abort('read_config: host_vars host can\'t be empty string')
+            if not isinstance(host, basestring):
+                abort('read_config: host_vars host must be string type')
+            if not host:
+                abort('read_config: host_vars host can\'t be empty string')
             if hosts and host not in hosts:
                 abort('read_config: host_vars host \'%s\' not defined in hosts list' % host)
             elif roles and host not in roles_hosts:
