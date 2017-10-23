@@ -465,3 +465,214 @@ def test_host_vars_host_must_be_string_type(tmpdir, monkeypatch):
         """)
     with abort('read_config: host_vars host must be string type'):
         read_config()
+
+
+def test_host_vars_host_not_defined_in_hosts_list(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            hosts:
+              - 10.10.10.10
+            host_vars:
+              - host: 11.11.11.11
+                vars: {}
+        """)
+    with abort('read_config: host_vars host \'%s\' not defined in hosts list' % '11.11.11.11'):
+        read_config()
+
+
+def test_host_vars_host_not_defined_in_roles_hosts_list(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 10.10.10.10
+            host_vars:
+              - host: 11.11.11.11
+                vars: {}
+        """)
+    with abort('read_config: host_vars host \'%s\' not defined in roles hosts list' % '11.11.11.11'):
+        read_config()
+
+
+def test_host_vars_vars_required(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            host_vars:
+              - host: 11.11.11.11
+                vsar:
+        """)
+    with abort('read_config: host_vars vars required'):
+        read_config()
+
+
+def test_host_vars_vars_must_be_dict(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            host_vars:
+              - host: 11.11.11.11
+                vars: ['a', 'b', 'c']
+        """)
+    with abort('read_config: host_vars vars must be dictionary type'):
+        read_config()
+
+
+def test_host_vars_host_already_defined(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            host_vars:
+              - host: 11.11.11.11
+                vars:
+                  foo: bar
+              - host: 11.11.11.11
+                vars:
+                  foo: baz
+        """)
+    with abort('read_config: host_vars host \'%s\' already defined' % '11.11.11.11'):
+        read_config()
+
+
+def test_host_vars_unexpected_entry(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            host_vars:
+              - host: 11.11.11.11
+                vars:
+                  foo: baz
+                vras:
+                  foo: bar
+        """)
+    with abort('read_config: unexpected host_vars entry: %s' % 'vras: {foo: bar}'):
+        read_config()
+
+
+def test_roles_vars_with_roles_not_defined(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            hosts:
+              - 11.11.11.11
+            role_vars:
+              - role: test
+                vars:
+                  foo: baz
+        """)
+    with abort('read_config: unexpected role_vars, because roles is not defined'):
+        read_config()
+
+
+def test_role_vars_must_be_list_type(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              foo: baz
+        """)
+    with abort('read_config: role_vars must be list type'):
+        read_config()
+
+
+def test_role_vars_role_required(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - rloe: test
+                vars:
+                  foo: baz
+        """)
+    with abort('read_config: role_vars role required'):
+        read_config()
+
+
+def test_role_vars_role_is_none(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role:
+                vars:
+                  foo: baz
+        """)
+    with abort('read_config: role_vars role can\'t be empty string'):
+        read_config()
+
+
+def test_role_vars_role_is_not_list(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role: [ 'test']
+                vars:
+                  foo: baz
+        """)
+    with abort('read_config: role_vars role must be string type'):
+        read_config()
+
+
+def test_role_vars_role_is_empty_string(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            roles:
+              - role: test
+                hosts:
+                  - 11.11.11.11
+            role_vars:
+              - role: ""
+                vars:
+                  foo: baz
+        """)
+    with abort('read_config: role_vars role can\'t be empty string'):
+        read_config()

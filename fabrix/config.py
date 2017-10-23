@@ -189,10 +189,14 @@ def read_config(argument_config_filename=None):
         for entry in config['role_vars']:
             if 'role' not in entry:
                 abort('read_config: role_vars role required')
-            if not isinstance(entry['role'], basestring):
-                abort('read_config: role_vars role must be string type')
             role = entry['role']
             del entry['role']
+            if role is None:
+                abort('read_config: role_vars role can\'t be empty string')
+            if not isinstance(role, basestring):
+                abort('read_config: role_vars role must be string type')
+            if not role:
+                abort('read_config: role_vars role can\'t be empty string')
             if role not in roles:
                 abort('read_config: role_vars role \'%s\' not defined in roles' % roles)
             if 'vars' not in entry:
