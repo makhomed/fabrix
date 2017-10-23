@@ -1,3 +1,4 @@
+import re
 import pytest
 from fabric.api import env
 
@@ -39,3 +40,48 @@ class AbortContext(object):
 
 def abort(regexp):
     return AbortContext(regexp)
+
+
+class _AttributeString(str):
+    pass
+
+
+def mock_run_factory(run_state):  # run_state == { pattern: { stdout: text, failed: boolean }, pattern: ... }
+
+    def mock_run(command):
+        for pattern, config in run_state.items():
+            if re.match(pattern, command):
+                out = _AttributeString(config['stdout'])
+                out.failed = config['failed']
+                return out
+        assert 0, 'command \'%s\' does not match any pattern' % command
+    return mock_run
+
+
+def mock_put_factory(put_state):  # put_state == { pattern : boolean, pattern: ... }
+
+    def mock_put(**kwargs):
+        remote_path = kwargs['remote_path']
+        for pattern, failed in put_state.items():
+            if re.match(pattern, remote_path):
+                out = _AttributeString(list(('a', 'b', 'c')))
+                out.failed = failed
+                return out
+        assert 0, 'remote_path does not match any pattern'
+    return mock_put
+
+
+def mock_get_factory(get_state):  # get_state == { pattern : { content: text, failed: boolean}, pattern: ... }
+
+    def mock_get(**kwargs):
+        file_like_object = kwargs['local_path']
+        remote_path = kwargs['remote_path']
+        for pattern, config in get_state.items():
+            if re.match(pattern, remote_path):
+                file_like_object.seek(0)
+                file_like_object.write(config['content'])
+                out = _AttributeString(list(('a', 'b', 'c')))
+                out.failed = config['failed']
+                return out
+        assert 0, 'remote_path does not match any pattern'
+    return mock_get

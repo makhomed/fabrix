@@ -56,22 +56,24 @@ def write_remote_file(remote_filename, new_content):
 
 def _atomic_write_local_file(local_filename, content):
     old_filename = local_filename
-    new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
     with quiet():
         if not os.path.isabs(old_filename):
             abort('local filename must be absolute, "%s" given' % old_filename)
-        if os.path.exists(old_filename):
-            if os.path.islink(old_filename):
-                abort('local filename must be regular file, symlink "%s" given' % old_filename)
-            if os.path.isdir(old_filename) or not os.path.isfile(old_filename):
-                abort('local filename must be regular file, directory "%s" given' % old_filename)
+        exists = os.path.exists(old_filename)
+        if exists:
+            # !!!WARNING!!! os.path.isfile(path) - Return True if path is an existing regular file.
+            # This follows symbolic links, so both islink() and isfile() can be true for the same path.
+            if not os.path.isfile(old_filename) or os.path.islink(old_filename):
+                abort('local filename must be regular file, "%s" given' % old_filename)
             old_file_stat = os.stat(old_filename)
-            if old_file_stat.st_nlink > 1:
-                abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, old_file_stat.st_nlink))
+            nlink = old_file_stat.st_nlink
+            if nlink > 1:
+                abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
+        new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
         new_file = open(new_filename, 'w')
         new_file.write(content)
         new_file.close()
-        if os.path.exists(old_filename):
+        if exists:
             if os.path.exists('/usr/bin/getfacl') and os.path.exists('/usr/bin/setfacl'):
                 local('getfacl --absolute-names ' + old_filename + ' | setfacl --set-file=- ' + new_filename)
             os.chown(new_filename, old_file_stat.st_uid, old_file_stat.st_gid)
@@ -86,25 +88,23 @@ def _atomic_write_local_file(local_filename, content):
 
 def _atomic_write_remote_file(remote_filename, content):
     old_filename = remote_filename
-    new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
     with quiet():
         if not os.path.isabs(old_filename):
             abort('remote filename must be absolute, "%s" given' % old_filename)
-        if run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists':
-            if run('if [ -L ' + old_filename + ' ] ; then echo islink ; fi') == 'islink':
-                abort('remote filename must be regular file, symlink "%s" given' % old_filename)
-            if (run('if [ -d ' + old_filename + ' ] ; then echo isdir ; fi') == 'isdir' or
-                    run('if [ ! -e ' + old_filename + ' ] ; then echo notexists ; fi') == 'notexists'):
-                abort('remote filename must be regular file, directory "%s" given' % old_filename)
+        exists = run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists'
+        if exists:
+            if run('if [ ! -f ' + old_filename + ' ] ; then echo isnotfile ; fi') == 'isnotfile':
+                abort('remote filename must be regular file, "%s" given' % old_filename)
             nlink = int(run('stat --format "%h" ' + old_filename))
             if nlink > 1:
                 abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
+        new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
         file_like_object = StringIO.StringIO()
         file_like_object.write(content)
         if put(local_path=file_like_object, remote_path=new_filename).failed:
             abort('uploading file ' + new_filename + ' to remote host failed')
         file_like_object.close()
-        if run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists':
+        if exists:
             if (run('if [ -e /usr/bin/getfacl ] ; then echo exists ; fi') == 'exists' and
                     run('if [ -e /usr/bin/setfacl ] ; then echo exists ; fi') == 'exists'):
                 run('getfacl --absolute-names ' + old_filename + ' | setfacl --set-file=- ' + new_filename)
