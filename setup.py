@@ -24,7 +24,7 @@ setup(
     include_package_data=True,
     install_requires=['fabric>=1.12,<2.0', 'PyYAML>=3.10', 'jinja2>=2.7.2'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
