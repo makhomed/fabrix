@@ -46,6 +46,16 @@ class _AttributeString(str):
     pass
 
 
+def mock_os_path_exists_factory(os_path_exists_state):  # os_path_exists_state == { pattern: True, pattern: False, ... }
+
+    def mock_os_path_exists(command):
+        for pattern, exists in os_path_exists_state.items():
+            if re.match(pattern, command):
+                return exists
+        assert 0, 'command \'%s\' does not match any pattern' % command
+    return mock_os_path_exists
+
+
 def mock_run_factory(run_state):  # run_state == { pattern: { stdout: text, failed: boolean }, pattern: ... }
 
     def mock_run(command):
@@ -56,6 +66,19 @@ def mock_run_factory(run_state):  # run_state == { pattern: { stdout: text, fail
                 return out
         assert 0, 'command \'%s\' does not match any pattern' % command
     return mock_run
+
+
+def mock_local_factory(local_state):  # local_state == { pattern: { stdout: text, failed: boolean }, pattern: ... }
+
+    def mock_local(command, **kwargs):
+        assert kwargs is not None
+        for pattern, config in local_state.items():
+            if re.match(pattern, command):
+                out = _AttributeString(config['stdout'])
+                out.failed = config['failed']
+                return out
+        assert 0, 'command \'%s\' does not match any pattern' % command
+    return mock_local
 
 
 def mock_put_factory(put_state):  # put_state == { pattern : boolean, pattern: ... }

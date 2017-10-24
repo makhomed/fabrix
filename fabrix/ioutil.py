@@ -65,8 +65,7 @@ def _atomic_write_local_file(local_filename, content):
             # This follows symbolic links, so both islink() and isfile() can be true for the same path.
             if not os.path.isfile(old_filename) or os.path.islink(old_filename):
                 abort('local filename must be regular file, "%s" given' % old_filename)
-            old_file_stat = os.stat(old_filename)
-            nlink = old_file_stat.st_nlink
+            nlink = os.stat(old_filename).st_nlink
             if nlink > 1:
                 abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
         new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
@@ -74,16 +73,32 @@ def _atomic_write_local_file(local_filename, content):
         new_file.write(content)
         new_file.close()
         if exists:
+            _copy_local_file_attributes(old_filename, new_filename)
+            _copy_local_file_extended_attributes(old_filename, new_filename)
+            _copy_local_file_selinux_context(old_filename, new_filename)
+        os.rename(new_filename, old_filename)
+
+
+def _copy_local_file_attributes(old_filename, new_filename):
+    old_file_stat = os.stat(old_filename)
+    os.chown(new_filename, old_file_stat.st_uid, old_file_stat.st_gid)
+    os.chmod(new_filename, old_file_stat.st_mode)
+
+
+def _copy_local_file_extended_attributes(old_filename, new_filename):
+    with quiet():
+        with settings(warn_only=True):
             if os.path.exists('/usr/bin/getfacl') and os.path.exists('/usr/bin/setfacl'):
                 local('getfacl --absolute-names ' + old_filename + ' | setfacl --set-file=- ' + new_filename)
-            os.chown(new_filename, old_file_stat.st_uid, old_file_stat.st_gid)
-            os.chmod(new_filename, old_file_stat.st_mode)
-            with settings(warn_only=True):
-                if os.path.exists('/usr/sbin/getenforce'):
-                    if local('getenforce', capture=True) != 'Disabled':
-                        if os.path.exists('/usr/bin/chcon'):
-                            local('chcon  --reference=' + old_filename + ' ' + new_filename)
-        os.rename(new_filename, old_filename)
+
+
+def _copy_local_file_selinux_context(old_filename, new_filename):
+    with quiet():
+        with settings(warn_only=True):
+            if os.path.exists('/usr/sbin/getenforce'):
+                if local('getenforce', capture=True) != 'Disabled':
+                    if os.path.exists('/usr/bin/chcon'):
+                        local('chcon  --reference=' + old_filename + ' ' + new_filename)
 
 
 def _atomic_write_remote_file(remote_filename, content):
@@ -105,17 +120,34 @@ def _atomic_write_remote_file(remote_filename, content):
             abort('uploading file ' + new_filename + ' to remote host failed')
         file_like_object.close()
         if exists:
+            _copy_remote_file_attributes(old_filename, new_filename)
+            _copy_remote_file_extended_attributes(old_filename, new_filename)
+            _copy_remote_file_selinux_context(old_filename, new_filename)
+        run('mv -f ' + new_filename + ' ' + old_filename)
+
+
+def _copy_remote_file_attributes(old_filename, new_filename):
+    with quiet():
+        with settings(warn_only=True):
+            run('chown --reference=' + old_filename + ' ' + new_filename)
+            run('chmod --reference=' + old_filename + ' ' + new_filename)
+
+
+def _copy_remote_file_extended_attributes(old_filename, new_filename):
+    with quiet():
+        with settings(warn_only=True):
             if (run('if [ -e /usr/bin/getfacl ] ; then echo exists ; fi') == 'exists' and
                     run('if [ -e /usr/bin/setfacl ] ; then echo exists ; fi') == 'exists'):
                 run('getfacl --absolute-names ' + old_filename + ' | setfacl --set-file=- ' + new_filename)
-            run('chown --reference=' + old_filename + ' ' + new_filename)
-            run('chmod --reference=' + old_filename + ' ' + new_filename)
-            with settings(warn_only=True):
-                if run('if [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
-                    if run('getenforce') != 'Disabled':
-                        if run('if [ -e /usr/bin/chcon ] ; then echo exists ; fi') == 'exists':
-                            run('chcon  --reference=' + old_filename + ' ' + new_filename)
-        run('mv -f ' + new_filename + ' ' + old_filename)
+
+
+def _copy_remote_file_selinux_context(old_filename, new_filename):
+    with quiet():
+        with settings(warn_only=True):
+            if run('if [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
+                if run('getenforce') != 'Disabled':
+                    if run('if [ -e /usr/bin/chcon ] ; then echo exists ; fi') == 'exists':
+                        run('chcon  --reference=' + old_filename + ' ' + new_filename)
 
 
 def debug(*args):

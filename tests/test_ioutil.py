@@ -1,8 +1,11 @@
+import os.path
 import fabrix.ioutil
-from conftest import abort, mock_get_factory, mock_put_factory, mock_run_factory
+from conftest import abort, mock_get_factory, mock_put_factory, mock_run_factory, mock_local_factory, mock_os_path_exists_factory
 from fabric.api import env
 from fabrix.ioutil import debug, read_local_file, write_local_file, _atomic_write_local_file
 from fabrix.ioutil import read_remote_file, write_remote_file, _atomic_write_remote_file
+from fabrix.ioutil import _copy_local_file_extended_attributes, _copy_local_file_selinux_context
+from fabrix.ioutil import _copy_remote_file_attributes, _copy_remote_file_extended_attributes, _copy_remote_file_selinux_context
 
 
 def test_debug(monkeypatch, capsys):
@@ -67,6 +70,85 @@ def test__atomic_write_local_file(tmpdir):
         _atomic_write_local_file(str(regular_file), "text")
 
 
+def test__copy_local_file_extended_attributes(tmpdir, monkeypatch):
+    old_file = tmpdir.join("old-file")
+    old_file.write("old")
+    old_filename = str(old_file)
+    new_file = tmpdir.join("new-file")
+    new_file.write("new")
+    new_filename = str(new_file)
+    os_path_exists_state = {
+        r'/usr/bin/getfacl': True,
+        r'/usr/bin/setfacl': False,
+    }
+    mock_os_path_exists = mock_os_path_exists_factory(os_path_exists_state)
+    monkeypatch.setattr(os.path, 'exists', mock_os_path_exists)
+    assert _copy_local_file_extended_attributes(old_filename, new_filename) is None
+    os_path_exists_state = {
+        r'/usr/bin/getfacl': True,
+        r'/usr/bin/setfacl': True,
+    }
+    mock_os_path_exists = mock_os_path_exists_factory(os_path_exists_state)
+    monkeypatch.setattr(os.path, 'exists', mock_os_path_exists)
+    local_state = {
+        r'getfacl --absolute-names .* | setfacl --set-file=- .*': {'stdout': '', 'failed': False},
+    }
+    mock_local = mock_local_factory(local_state)
+    monkeypatch.setattr(fabrix.ioutil, 'local', mock_local)
+    assert _copy_local_file_extended_attributes(old_filename, new_filename) is None
+
+
+def test__copy_local_file_selinux_context(tmpdir, monkeypatch):
+    old_file = tmpdir.join("old-file")
+    old_file.write("old")
+    old_filename = str(old_file)
+    new_file = tmpdir.join("new-file")
+    new_file.write("new")
+    new_filename = str(new_file)
+    os_path_exists_state = {
+        r'/usr/sbin/getenforce': False,
+    }
+    mock_os_path_exists = mock_os_path_exists_factory(os_path_exists_state)
+    monkeypatch.setattr(os.path, 'exists', mock_os_path_exists)
+    assert _copy_local_file_selinux_context(old_filename, new_filename) is None
+    os_path_exists_state = {
+        r'/usr/sbin/getenforce': True,
+    }
+    mock_os_path_exists = mock_os_path_exists_factory(os_path_exists_state)
+    monkeypatch.setattr(os.path, 'exists', mock_os_path_exists)
+    local_state = {
+        r'getenforce': {'stdout': 'Disabled', 'failed': False},
+    }
+    mock_local = mock_local_factory(local_state)
+    monkeypatch.setattr(fabrix.ioutil, 'local', mock_local)
+    assert _copy_local_file_selinux_context(old_filename, new_filename) is None
+    os_path_exists_state = {
+        r'/usr/sbin/getenforce': True,
+        r'/usr/bin/chcon': True
+    }
+    mock_os_path_exists = mock_os_path_exists_factory(os_path_exists_state)
+    monkeypatch.setattr(os.path, 'exists', mock_os_path_exists)
+    local_state = {
+        r'getenforce': {'stdout': 'Enabled', 'failed': False},
+        r'chcon  --reference=.*': {'stdout': '', 'failed': False},
+    }
+    mock_local = mock_local_factory(local_state)
+    monkeypatch.setattr(fabrix.ioutil, 'local', mock_local)
+    assert _copy_local_file_selinux_context(old_filename, new_filename) is None
+    os_path_exists_state = {
+        r'/usr/sbin/getenforce': True,
+        r'/usr/bin/chcon': False
+    }
+    mock_os_path_exists = mock_os_path_exists_factory(os_path_exists_state)
+    monkeypatch.setattr(os.path, 'exists', mock_os_path_exists)
+    local_state = {
+        r'getenforce': {'stdout': 'Enabled', 'failed': False},
+    }
+    mock_local = mock_local_factory(local_state)
+    monkeypatch.setattr(fabrix.ioutil, 'local', mock_local)
+    assert _copy_local_file_selinux_context(old_filename, new_filename) is None
+
+
 def test_read_remote_file(monkeypatch):
     get_state = {
         r'/ok': {'content': "ok-text", 'failed': False},
@@ -98,10 +180,10 @@ def test_write_remote_file(monkeypatch):
 
 
 def test__atomic_write_remote_file(monkeypatch):
-    monkeypatch.setitem(env, "host_string", '11.11.11.11')
     put_state = {
         r'/newfile-put-ok\.tmp\.\w+\.tmp$': False,
-        r'/newfile-put-failed\.tmp\.\w+\.tmp$': True
+        r'/newfile-put-failed\.tmp\.\w+\.tmp$': True,
+        r'/1hardlink\.tmp\.\w+\.tmp$': False,
     }
     mock_put = mock_put_factory(put_state)
     monkeypatch.setattr(fabrix.ioutil, 'put', mock_put)
@@ -116,6 +198,11 @@ def test__atomic_write_remote_file(monkeypatch):
             r'if \[ -e /newfile-put-ok \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
             r'mv -f /newfile-put-ok\.tmp\.\w+\.tmp /newfile-put-ok': {'stdout': '', 'failed': False},
             r'if \[ -e /newfile-put-failed \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
+
+            r'if \[ -e /1hardlink \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'if \[ ! -f /1hardlink \] ; then echo isnotfile ; fi': {'stdout': '', 'failed': False},
+            r'stat --format "%h" /1hardlink': {'stdout': '1', 'failed': False},
+            r'mv -f /1hardlink\.tmp\.\w+\.tmp /1hardlink': {'stdout': '', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
@@ -128,3 +215,77 @@ def test__atomic_write_remote_file(monkeypatch):
     assert _atomic_write_remote_file('/newfile-put-ok', 'text') is None
     with abort(r'uploading file /newfile-put-failed\.tmp\.\w+\.tmp to remote host failed'):
         _atomic_write_remote_file('/newfile-put-failed', 'text')
+
+    def mock__copy_remote_file_attributes(old_filename, new_filename):
+        pass
+    monkeypatch.setattr(fabrix.ioutil, '_copy_remote_file_attributes', mock__copy_remote_file_attributes)
+
+    def mock__copy_remote_file_extended_attributes(old_filename, new_filename):
+        pass
+    monkeypatch.setattr(fabrix.ioutil, '_copy_remote_file_extended_attributes', mock__copy_remote_file_extended_attributes)
+
+    def mock__copy_remote_file_selinux_context(old_filename, new_filename):
+        pass
+    monkeypatch.setattr(fabrix.ioutil, '_copy_remote_file_selinux_context', mock__copy_remote_file_selinux_context)
+    assert _atomic_write_remote_file('/1hardlink', 'text') is None
+
+
+def test__copy_remote_file_attributes(monkeypatch):
+    run_state = {
+            r'chown --reference=.*': {'stdout': '', 'failed': False},
+            r'chmod --reference=.*': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert _copy_remote_file_attributes('/old', '/new') is None
+
+
+def test__copy_remote_file_extended_attributes(monkeypatch):
+    run_state = {
+            r'if \[ -e /usr/bin/getfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'if \[ -e /usr/bin/setfacl \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert _copy_remote_file_extended_attributes('/old', '/new') is None
+    run_state = {
+            r'if \[ -e /usr/bin/getfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'if \[ -e /usr/bin/setfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'getfacl --absolute-names .* | setfacl --set-file=- .*': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert _copy_remote_file_extended_attributes('/old', '/new') is None
+
+
+def test__copy_remote_file_selinux_context(monkeypatch):
+    run_state = {
+            r'if \[ -e /usr/sbin/getenforce \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert _copy_remote_file_selinux_context('/old', '/new') is None
+    run_state = {
+            r'if \[ -e /usr/sbin/getenforce \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'getenforce': {'stdout': 'Disabled', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert _copy_remote_file_selinux_context('/old', '/new') is None
+    run_state = {
+            r'if \[ -e /usr/sbin/getenforce \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'getenforce': {'stdout': 'Enabled', 'failed': False},
+            r'if \[ -e /usr/bin/chcon \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert _copy_remote_file_selinux_context('/old', '/new') is None
+    run_state = {
+            r'if \[ -e /usr/sbin/getenforce \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'getenforce': {'stdout': 'Enabled', 'failed': False},
+            r'if \[ -e /usr/bin/chcon \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'chcon  --reference=.*': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert _copy_remote_file_selinux_context('/old', '/new') is None
