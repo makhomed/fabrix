@@ -7,40 +7,116 @@ from fabrix.ioutil import read_local_file, debug
 
 
 class _ConfAttributeDict(dict):
-    super__setitem__ = dict.__setitem__
     super__getitem__ = dict.__getitem__
+    super__setitem__ = dict.__setitem__
+
+    # ---------------------------------------------------------------
+
+    def __getitem__(self, key):
+        return self.super__getitem__(env.host_string).__getitem__(key)
+
+    def __setitem__(self, key, value):
+        return self.super__getitem__(env.host_string).__setitem__(key, value)
+
+    def __delitem__(self, key):
+        return self.super__getitem__(env.host_string).__delitem__(key)
+
+    # ---------------------------------------------------------------
 
     def __getattr__(self, key):
         try:
-            return self.super__getitem__(env.host_string)[key]
+            return self.super__getitem__(env.host_string).__getitem__(key)
         except KeyError:
             raise AttributeError(key)
 
     def __setattr__(self, key, value):
-        self.super__getitem__(env.host_string)[key] = value
+        return self.super__getitem__(env.host_string).__setitem__(key, value)
 
-    def __getitem__(self, key):
-        return self.super__getitem__(env.host_string)[key]
+    def __delattr__(self, key):
+        return self.super__getitem__(env.host_string).__delitem__(key)
 
-    def __setitem__(self, key, value):
-        self.super__getitem__(env.host_string)[key] = value
+    # ---------------------------------------------------------------
 
-    def __nonzero__(self):
-        return True
+    def __repr__(self):
+        return self.super__getitem__(env.host_string).__repr__()
+
+    def __cmp__(self, other):
+        return self.super__getitem__(env.host_string).__cmp__(other)
+
+    def __len__(self):
+        return self.super__getitem__(env.host_string).__len__()
+
+    def __iter__(self):
+        return self.super__getitem__(env.host_string).__iter__()
+
+    def __contains__(self, item):
+        return self.super__getitem__(env.host_string).__contains__(item)
+
+    def __eq__(self, other):
+        return self.super__getitem__(env.host_string).__eq__(other)
+
+    def __ne__(self, other):
+        return self.super__getitem__(env.host_string).__ne__(other)
+
+    # ---------------------------------------------------------------
+
+    def clear(self):
+        return self.super__getitem__(env.host_string).clear()
+
+    def copy(self):
+        return self.super__getitem__(env.host_string).copy()
+
+    def keys(self):
+        return self.super__getitem__(env.host_string).keys()
+
+    def items(self):
+        return self.super__getitem__(env.host_string).items()
+
+    def iteritems(self):
+        return self.super__getitem__(env.host_string).iteritems()
+
+    def iterkeys(self):
+        return self.super__getitem__(env.host_string).iterkeys()
+
+    def itervalues(self):
+        return self.super__getitem__(env.host_string).itervalues()
+
+    def values(self):
+        return self.super__getitem__(env.host_string).values()
+
+    def has_key(self, key):
+        return self.super__getitem__(env.host_string).has_key(key)  # noqa
+
+    def update(self, *args, **kwargs):
+        return self.super__getitem__(env.host_string).update(*args, **kwargs)
+
+    def get(self, key, default=None):
+        return self.super__getitem__(env.host_string).get(key, default)
+
+    def setdefault(self, key, default=None):
+        return self.super__getitem__(env.host_string).setdefault(key, default)
+
+    def pop(self, key, *args):
+        return self.super__getitem__(env.host_string).pop(key, *args)
+
+    def popitem(self):
+        return self.super__getitem__(env.host_string).popitem()
+
+    # ---------------------------------------------------------------
 
 
 class _AttributeDict(dict):
     def __getattr__(self, key):
         try:
-            return self[key]
+            return self.__getitem__(key)
         except KeyError:
             raise AttributeError(key)
 
     def __setattr__(self, key, value):
-        self[key] = value
+        return self.__setitem__(key, value)
 
-    def __nonzero__(self):
-        return True
+    def __delattr__(self, key):
+        return self.__delitem__(key)
 
 
 conf = _ConfAttributeDict()

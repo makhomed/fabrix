@@ -1013,3 +1013,122 @@ def test_roles_without_defaults(tmpdir, monkeypatch):
         conf.var2
     with pytest.raises(AttributeError):
         conf.var3
+
+
+def test_dict_methods(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    config_file.write("""
+            roles:
+              - role: web
+                hosts:
+                  - 11.11.11.11
+                  - 22.22.22.22
+                  - 33.33.33.33
+              - role: db
+                hosts:
+                  - 7.7.7.7
+                  - 9.9.9.9
+              - role: rest
+                hosts:
+                  - 44.44.44.44
+
+            host_vars:
+              - host: 11.11.11.11
+                vars:
+                  var1: special_value_for_host_11
+              - host: 9.9.9.9
+                vars:
+                  type: mysql
+
+            role_vars:
+              - role: web
+                vars:
+                  var1: from_web_role
+                  var2: from_web_role
+                  var3: value3
+                  var4: value4
+                  var5: value5
+              - role: db
+                vars:
+                  var3: from_db_role
+            local_vars:
+              var1: value1
+
+        """)
+    read_config()
+    assert local_conf.var1 == 'value1'
+    del local_conf.var1
+    with pytest.raises(AttributeError):
+        local_conf.var1
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    del conf.var1
+    with pytest.raises(AttributeError):
+        conf.var1
+    del conf['var2']
+    with pytest.raises(AttributeError):
+        conf.var2
+    conf.var1 = 'value1'
+    conf.var2 = 'value2'
+    assert len(repr(conf)) == len("{'var1': 'value1', 'var2': 'value2', 'var3': 'value3', 'var4': 'value4', 'var5': 'value5'}")
+    conf_copy = conf.copy()
+    assert conf == conf_copy
+    assert conf == {'var1': 'value1', 'var2': 'value2', 'var3': 'value3', 'var4': 'value4', 'var5': 'value5'}
+    assert conf != {'VAR1': 'value1', 'var2': 'value2', 'var3': 'value3', 'var4': 'value4', 'var5': 'value5'}
+    assert conf.__hash__ is None
+    assert len(conf) == 5
+    for key in conf:
+        assert key[0:3] == 'var'
+    assert 'var3' in conf
+    assert 'bar3' not in conf
+    assert len(conf.keys()) == 5
+    assert sorted(conf.keys()) == ['var1', 'var2', 'var3', 'var4', 'var5']
+    for key, value in conf.items():
+        assert key[0:3] == 'var'
+        assert value[0:5] == 'value'
+    for key, value in conf.iteritems():
+        assert key[0:3] == 'var'
+        assert value[0:5] == 'value'
+    for key in conf.iterkeys():
+        assert key[0:3] == 'var'
+    for value in conf.itervalues():
+        assert value[0:5] == 'value'
+    assert sorted(conf.values()) == ['value1', 'value2', 'value3', 'value4', 'value5']
+    assert conf.has_key('var5') # noqa
+    assert not conf.has_key('var7') # noqa
+    conf.update(dict(var6='oldvalue6', var7='oldvalue7'))
+    assert conf.var6 == 'oldvalue6'
+    assert conf.var7 == 'oldvalue7'
+    conf.update(var6='value6', var7='value7')
+    assert conf.var6 == 'value6'
+    assert conf.var7 == 'value7'
+    assert conf.get('var8') is None
+    assert conf.get('var8', 'provided-default') is 'provided-default'
+    assert conf.get('var5') == 'value5'
+    assert conf.setdefault('var7') == 'value7'
+    assert conf.var7 == 'value7'
+    assert 'var8' not in conf
+    assert conf.setdefault('var8', 'value8') == 'value8'
+    assert conf.var8 == 'value8'
+    with pytest.raises(KeyError):
+        conf.pop('var9')
+    before = conf.copy()
+    assert conf.pop('var9', 'value9') == 'value9'
+    after = conf.copy()
+    assert before == after
+    assert conf.__cmp__(before) == 0
+    assert conf.__cmp__(after) == 0
+    assert conf.pop('var8') == 'value8'
+    assert len(conf) == 7
+    for i in range(0, 7):
+        key, value = conf.popitem()
+        assert key[0:3] == 'var'
+        assert value[0:5] == 'value'
+    assert len(conf) == 0
+    with pytest.raises(KeyError):
+        conf.popitem()
+    conf.clear()
+    assert len(conf) == 0
+    assert conf == dict()
