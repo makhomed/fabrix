@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='Fabrix',
-    version='0.1.2',
+    version='0.2',
     description='Fabrix is Fabric extension for configuration management',
     long_description=long_description,
     long_description_content_type='text/x-rst',
