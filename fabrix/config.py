@@ -1,11 +1,7 @@
 import os.path
 import copy
-from yaml import load, dump
-from yaml.parser import ParserError
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
+import yaml
+import yaml.parser
 from fabric.api import env, abort
 from fabrix.ioutil import read_local_file, debug
 
@@ -71,14 +67,13 @@ def read_config(argument_config_filename=None):
             abort('read_config: config \'%s\' not exists' % config_filename)
     else:
         debug('fabrix: using config \'%s\'' % config_filename)
-
     try:
         with open(config_filename) as config_file:
-            config = load(config_file, Loader=Loader)
-    except ParserError, ex:
+            config = yaml.load(config_file)
+    except yaml.parser.ParserError, ex:
         abort('read_config: error parsing config \'%s\':\n\n%s' % (config_filename, ex))
     config_text = read_local_file(config_filename)
-    config_yaml = dump(config, Dumper=Dumper)
+    config_yaml = yaml.dump(config)
     debug('config_text:', config_text, 'config_yaml:', config_yaml, 'config:', config)
     if 'hosts' in config and 'roles' in config:
         abort('read_config: hosts and roles can\'t be simultaneously defined in config')
@@ -148,7 +143,7 @@ def read_config(argument_config_filename=None):
             roles[role] = entry['hosts']
             del entry['hosts']
             if entry:
-                abort('read_config: unexpected roles entry: %s' % dump(entry, Dumper=Dumper))
+                abort('read_config: unexpected roles entry: %s' % yaml.dump(entry))
         del config['roles']
     host_vars = dict()
     if 'host_vars' in config:
@@ -178,7 +173,7 @@ def read_config(argument_config_filename=None):
             host_vars[host] = entry['vars']
             del entry['vars']
             if entry:
-                abort('read_config: unexpected host_vars entry: %s' % dump(entry, Dumper=Dumper))
+                abort('read_config: unexpected host_vars entry: %s' % yaml.dump(entry))
         del config['host_vars']
     role_vars = dict()
     if 'role_vars' in config:
@@ -208,7 +203,7 @@ def read_config(argument_config_filename=None):
             role_vars[role] = entry['vars']
             del entry['vars']
             if entry:
-                abort('read_config: unexpected role_vars entry: %s' % dump(entry, Dumper=Dumper))
+                abort('read_config: unexpected role_vars entry: %s' % yaml.dump(entry))
         del config['role_vars']
     defaults = dict()
     if 'defaults' in config:
@@ -223,7 +218,7 @@ def read_config(argument_config_filename=None):
         local_vars = config['local_vars']
         del config['local_vars']
     if config:
-        abort('read_config: unexpected config entry:\n\n%s' % dump(config, Dumper=Dumper))
+        abort('read_config: unexpected config entry:\n\n%s' % yaml.dump(config))
     for key, value in local_vars.items():
         local_conf[key] = value
     if hosts:
