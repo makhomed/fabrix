@@ -13,6 +13,7 @@ Released: not released yet
 - fixed bug in detection of empty string in roles hosts list in read_config
 - fixed bug in detection of empty string in host_vars host name in read_config
 - fixed bug in detection of empty string in role_vars role name in read_config
+- fixed bug in append_line if last line of text does not end with newline char
 - conf now provides all correct methods to work like Python built-in dict type
 - render_template now use conf/local_conf variables as context default values
 
