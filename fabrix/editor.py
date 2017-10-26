@@ -1,4 +1,5 @@
 import re
+import inspect
 from fabric.api import abort
 from fabrix.ioutil import read_local_file, read_remote_file, _atomic_write_local_file, _atomic_write_remote_file, debug
 
@@ -20,11 +21,17 @@ def insert_line(line_to_insert, **kwargs):
                 insert_type = name
                 anchor_pattern = _full_line(kwargs[name])
             else:
-                abort('insert_line: unknown insert_type \'%s\'' % name)
+                fname = str(inspect.stack()[1][1])
+                nline = str(inspect.stack()[1][2])
+                abort('insert_line: unknown insert_type \'%s\' in file %s line %s' % (name, fname, nline))
         else:
-            abort('insert_line: already defined insert_type \'%s\', unexpected \'%s\'' % (insert_type, name))
+            fname = str(inspect.stack()[1][1])
+            nline = str(inspect.stack()[1][2])
+            abort('insert_line: already defined insert_type \'%s\', unexpected \'%s\' in file %s line %s' % (insert_type, name, fname, nline))
     if insert_type is None:
-        abort('insert_line: must be defined \'before\' or \'after\' argument')
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('insert_line: must be defined \'before\' or \'after\' argument in file %s line %s' % (fname, nline))
 
     def insert_line_editor(text):
         regex = re.compile(anchor_pattern)
@@ -38,9 +45,13 @@ def insert_line(line_to_insert, **kwargs):
             if line == line_to_insert:
                 line_already_inserted = True
         if anchor_lines == 0:
-            abort('insert_line: anchor pattern \'%s\' not found' % anchor_pattern)
+            fname = str(inspect.stack()[3][1])
+            nline = str(inspect.stack()[3][2])
+            abort('insert_line: anchor pattern \'%s\' not found in file %s line %s' % (anchor_pattern, fname, nline))
         elif anchor_lines > 1:
-            abort('insert_line: anchor pattern \'%s\' found %d times, must be only one' % (anchor_pattern, anchor_lines))
+            fname = str(inspect.stack()[3][1])
+            nline = str(inspect.stack()[3][2])
+            abort('insert_line: anchor pattern \'%s\' found %d times, must be only one in file %s line %s' % (anchor_pattern, anchor_lines, fname, nline))
         out = list()
         for line in text_lines:
             match = regex.match(line)
@@ -149,7 +160,9 @@ def strip_line(chars=None):
 
 def _apply_editors(old_text, *editors):
     if not editors:
-        abort('editors can\'t be empty')
+        fname = str(inspect.stack()[2][1])
+        nline = str(inspect.stack()[2][2])
+        abort('editors can\'t be empty in file %s line %s' % (fname, nline))
     text = old_text
     for editor in editors:
         text = editor(text)
@@ -158,7 +171,9 @@ def _apply_editors(old_text, *editors):
         text = editor(text)
     text_after_second_pass = text
     if text_after_first_pass != text_after_second_pass:
-        abort('editors is not idempotent')
+        fname = str(inspect.stack()[2][1])
+        nline = str(inspect.stack()[2][2])
+        abort('editors is not idempotent in file %s line %s' % (fname, nline))
     new_text = text_after_second_pass
     changed = new_text != old_text
     debug('_apply_editors():', 'old_text:', old_text, 'new_next:', new_text, 'changed:', changed)
@@ -168,7 +183,9 @@ def _apply_editors(old_text, *editors):
 def edit_ini_section(section_name_to_edit, *editors):
     if section_name_to_edit is not None:
         if section_name_to_edit[0] != '[' or section_name_to_edit[-1] != ']':
-            abort('edit_ini_section: section name must be in form [section_name]')
+            fname = str(inspect.stack()[1][1])
+            nline = str(inspect.stack()[1][2])
+            abort('edit_ini_section: section name must be in form [section_name] in file %s line %s' % (fname, nline))
         section_name_to_edit = section_name_to_edit[1:-1]
 
     def ini_section_editor(text):
@@ -183,7 +200,9 @@ def edit_ini_section(section_name_to_edit, *editors):
             if match:
                 new_section_name = match.group(1)
                 if new_section_name in section_content or new_section_name == current_section_name:
-                    abort('edit_ini_section: bad ini file, section \'[%s]\' duplicated' % new_section_name)
+                    fname = str(inspect.stack()[3][1])
+                    nline = str(inspect.stack()[3][2])
+                    abort('edit_ini_section: bad ini file, section \'[%s]\' duplicated in file %s line %s' % (new_section_name, fname, nline))
                 section_content[current_section_name] = current_section_text
                 section_order.append(current_section_name)
                 current_section_name = new_section_name
@@ -198,7 +217,9 @@ def edit_ini_section(section_name_to_edit, *editors):
             if changed:
                 section_content[section_name_to_edit] = new_text.split('\n')
         else:
-            abort('edit_ini_section: section \'[%s]\' not found' % section_name_to_edit)
+            fname = str(inspect.stack()[3][1])
+            nline = str(inspect.stack()[3][2])
+            abort('edit_ini_section: section \'[%s]\' not found in file %s line %s' % (section_name_to_edit, fname, nline))
         out = list()
         for section_name in section_order:
             if section_name is not None:
