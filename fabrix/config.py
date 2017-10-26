@@ -7,100 +7,100 @@ from fabrix.ioutil import read_local_file, debug
 
 
 class _ConfAttributeDict(dict):
-    super__getitem__ = dict.__getitem__
-    super__setitem__ = dict.__setitem__
+    __super__getitem__ = dict.__getitem__
+    __super__setitem__ = dict.__setitem__
 
     # ---------------------------------------------------------------
 
     def __getitem__(self, key):
-        return self.super__getitem__(env.host_string).__getitem__(key)
+        return self.__super__getitem__(env.host_string).__getitem__(key)
 
     def __setitem__(self, key, value):
-        return self.super__getitem__(env.host_string).__setitem__(key, value)
+        return self.__super__getitem__(env.host_string).__setitem__(key, value)
 
     def __delitem__(self, key):
-        return self.super__getitem__(env.host_string).__delitem__(key)
+        return self.__super__getitem__(env.host_string).__delitem__(key)
 
     # ---------------------------------------------------------------
 
     def __getattr__(self, key):
         try:
-            return self.super__getitem__(env.host_string).__getitem__(key)
+            return self.__super__getitem__(env.host_string).__getitem__(key)
         except KeyError:
             raise AttributeError(key)
 
     def __setattr__(self, key, value):
-        return self.super__getitem__(env.host_string).__setitem__(key, value)
+        return self.__super__getitem__(env.host_string).__setitem__(key, value)
 
     def __delattr__(self, key):
-        return self.super__getitem__(env.host_string).__delitem__(key)
+        return self.__super__getitem__(env.host_string).__delitem__(key)
 
     # ---------------------------------------------------------------
 
     def __repr__(self):
-        return self.super__getitem__(env.host_string).__repr__()
+        return self.__super__getitem__(env.host_string).__repr__()
 
     def __cmp__(self, other):
-        return self.super__getitem__(env.host_string).__cmp__(other)
+        return self.__super__getitem__(env.host_string).__cmp__(other)
 
     def __len__(self):
-        return self.super__getitem__(env.host_string).__len__()
+        return self.__super__getitem__(env.host_string).__len__()
 
     def __iter__(self):
-        return self.super__getitem__(env.host_string).__iter__()
+        return self.__super__getitem__(env.host_string).__iter__()
 
     def __contains__(self, item):
-        return self.super__getitem__(env.host_string).__contains__(item)
+        return self.__super__getitem__(env.host_string).__contains__(item)
 
     def __eq__(self, other):
-        return self.super__getitem__(env.host_string).__eq__(other)
+        return self.__super__getitem__(env.host_string).__eq__(other)
 
     def __ne__(self, other):
-        return self.super__getitem__(env.host_string).__ne__(other)
+        return self.__super__getitem__(env.host_string).__ne__(other)
 
     # ---------------------------------------------------------------
 
     def clear(self):
-        return self.super__getitem__(env.host_string).clear()
+        return self.__super__getitem__(env.host_string).clear()
 
     def copy(self):
-        return self.super__getitem__(env.host_string).copy()
+        return self.__super__getitem__(env.host_string).copy()
 
     def keys(self):
-        return self.super__getitem__(env.host_string).keys()
+        return self.__super__getitem__(env.host_string).keys()
 
     def items(self):
-        return self.super__getitem__(env.host_string).items()
+        return self.__super__getitem__(env.host_string).items()
 
     def iteritems(self):
-        return self.super__getitem__(env.host_string).iteritems()
+        return self.__super__getitem__(env.host_string).iteritems()
 
     def iterkeys(self):
-        return self.super__getitem__(env.host_string).iterkeys()
+        return self.__super__getitem__(env.host_string).iterkeys()
 
     def itervalues(self):
-        return self.super__getitem__(env.host_string).itervalues()
+        return self.__super__getitem__(env.host_string).itervalues()
 
     def values(self):
-        return self.super__getitem__(env.host_string).values()
+        return self.__super__getitem__(env.host_string).values()
 
     def has_key(self, key):
-        return self.super__getitem__(env.host_string).has_key(key)  # noqa
+        return self.__super__getitem__(env.host_string).has_key(key)  # noqa
 
     def update(self, *args, **kwargs):
-        return self.super__getitem__(env.host_string).update(*args, **kwargs)
+        return self.__super__getitem__(env.host_string).update(*args, **kwargs)
 
     def get(self, key, default=None):
-        return self.super__getitem__(env.host_string).get(key, default)
+        return self.__super__getitem__(env.host_string).get(key, default)
 
     def setdefault(self, key, default=None):
-        return self.super__getitem__(env.host_string).setdefault(key, default)
+        return self.__super__getitem__(env.host_string).setdefault(key, default)
 
     def pop(self, key, *args):
-        return self.super__getitem__(env.host_string).pop(key, *args)
+        return self.__super__getitem__(env.host_string).pop(key, *args)
 
     def popitem(self):
-        return self.super__getitem__(env.host_string).popitem()
+        return self.__super__getitem__(env.host_string).popitem()
 
     # ---------------------------------------------------------------
 
@@ -308,7 +308,7 @@ def read_config(argument_config_filename=None):
             if host in host_vars:
                 for key, value in host_vars[host].items():
                     host_variables[key] = copy.deepcopy(value)
-            conf.super__setitem__(host, host_variables)
+            conf.__super__setitem__(host, host_variables)
     else:
         env.hosts = list()
         env.roledefs = roles
@@ -324,7 +324,7 @@ def read_config(argument_config_filename=None):
             if host in host_vars:
                 for key, value in host_vars[host].items():
                     host_variables[key] = copy.deepcopy(value)
-            conf.super__setitem__(host, host_variables)
+            conf.__super__setitem__(host, host_variables)
     debug(
         'hosts:', hosts, 'roles:', roles, 'roles_hosts:', roles_hosts,
         'host_roles:', host_roles, 'host_vars:', host_vars, 'role_vars:',
