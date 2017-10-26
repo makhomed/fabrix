@@ -71,3 +71,24 @@ def test_render_template_with_variables_from_local_conf(tmpdir, monkeypatch):
     assert env.host_string is None
     assert render_template("hello.txt.j2") == "Hello, localhost!"
     assert render_template("hello.txt.j2", name="localdomain") == "Hello, localdomain!"
+
+
+def test_render_template_with_undefined_variables(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    config_file = tmpdir.join("fabfile.yaml")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    config_file.write("""
+            hosts:
+              - 11.11.11.11
+            host_vars:
+              - host: 11.11.11.11
+                vars:
+                  name: Test Server
+        """)
+    read_config()
+    templates_dir = tmpdir.mkdir("templates")
+    template_file = templates_dir.join("hello.txt.j2")
+    template_file.write("Hello, {{ zzz.name}}!")
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    with abort("rendef_template: 'zzz' is undefined in file"):
+        render_template("hello.txt.j2")
