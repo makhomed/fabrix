@@ -40,6 +40,9 @@ class _ConfAttributeDict(dict):
     def __repr__(self):
         return self.__super__getitem__(env.host_string).__repr__()
 
+    def __str__(self):
+        return self.__super__getitem__(env.host_string).__str__()
+
     def __cmp__(self, other):
         return self.__super__getitem__(env.host_string).__cmp__(other)
 

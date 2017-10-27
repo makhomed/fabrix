@@ -1073,6 +1073,7 @@ def test_dict_methods(tmpdir, monkeypatch):
     conf.var1 = 'value1'
     conf.var2 = 'value2'
     assert len(repr(conf)) == len("{'var1': 'value1', 'var2': 'value2', 'var3': 'value3', 'var4': 'value4', 'var5': 'value5'}")
+    assert repr(conf) == str(conf)
     conf_copy = conf.copy()
     assert conf == conf_copy
     assert conf == {'var1': 'value1', 'var2': 'value2', 'var3': 'value3', 'var4': 'value4', 'var5': 'value5'}
@@ -1129,6 +1130,12 @@ def test_dict_methods(tmpdir, monkeypatch):
     assert len(conf) == 0
     with pytest.raises(KeyError):
         conf.popitem()
+    conf.var1 = 'value1'
+    conf.var2 = 'value2'
+    conf.var3 = 'value3'
+    conf.var4 = 'value4'
+    conf.var5 = 'value5'
+    assert len(conf) == 5
     conf.clear()
     assert len(conf) == 0
     assert conf == dict()
