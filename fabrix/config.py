@@ -105,6 +105,15 @@ class _ConfAttributeDict(dict):
     def popitem(self):
         return self.__super__getitem__(env.host_string).popitem()
 
+    def viewitems(self):
+        return self.__super__getitem__(env.host_string).viewitems()
+
+    def viewkeys(self):
+        return self.__super__getitem__(env.host_string).viewkeys()
+
+    def viewvalues(self):
+        return self.__super__getitem__(env.host_string).viewvalues()
+
     # ---------------------------------------------------------------
 
 

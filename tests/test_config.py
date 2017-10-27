@@ -1136,6 +1136,9 @@ def test_dict_methods(tmpdir, monkeypatch):
     conf.var4 = 'value4'
     conf.var5 = 'value5'
     assert len(conf) == 5
+    assert len(conf.viewitems()) == 5
+    assert len(conf.viewkeys()) == 5
+    assert len(conf.viewvalues()) == 5
     conf.clear()
     assert len(conf) == 0
     assert conf == dict()
