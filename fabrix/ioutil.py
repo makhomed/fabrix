@@ -8,7 +8,7 @@ import pprint
 import inspect
 import numbers
 import fabric.state
-from fabric.api import env, abort, local, run, get, put, quiet, settings
+from fabric.api import env, abort, local, run, get, put, quiet, settings, hide
 from fabric.network import needs_host, key_filenames, normalize
 
 
@@ -73,7 +73,7 @@ def write_file(remote_filename, new_content):
 
 def _atomic_write_local_file(local_filename, content):
     old_filename = local_filename
-    with quiet():
+    with settings(hide('everything')):
         if not os.path.isabs(old_filename):
             abort('local filename must be absolute, "%s" given' % old_filename)
         exists = os.path.exists(old_filename)
@@ -104,20 +104,20 @@ def _copy_local_file_owner_and_mode(old_filename, new_filename):
 
 
 def _copy_local_file_acl(old_filename, new_filename):
-    with quiet():
+    with settings(hide('everything')):
         with settings(warn_only=True):
             if os.path.exists('/usr/bin/getfacl') and os.path.exists('/usr/bin/setfacl'):
                 local('getfacl --absolute-names -- ' + old_filename + ' | setfacl --set-file=- -- ' + new_filename)
 
 
 def _copy_local_file_xattr(old_filename, new_filename):
-    with quiet():
+    with settings(hide('everything')):
         with settings(warn_only=True):
             local('cp --attributes-only --preserve=xattr -- ' + old_filename + ' ' + new_filename)
 
 
 def _copy_local_file_selinux_context(old_filename, new_filename):
-    with quiet():
+    with settings(hide('everything')):
         with settings(warn_only=True):
             if os.path.exists('/usr/sbin/getenforce'):
                 if local('getenforce', capture=True) != 'Disabled':
@@ -152,27 +152,27 @@ def _atomic_write_file(remote_filename, content):
 
 
 def _copy_file_owner_and_mode(old_filename, new_filename):
-    with quiet():
+    with settings(hide('everything')):
         with settings(warn_only=True):
             run('chown --reference=' + old_filename + ' -- ' + new_filename)
             run('chmod --reference=' + old_filename + ' -- ' + new_filename)
 
 
 def _copy_file_acl(old_filename, new_filename):
-    with quiet():
+    with settings(hide('everything')):
         with settings(warn_only=True):
             if run('if [ -e /usr/bin/getfacl ] && [ -e /usr/bin/setfacl ] ; then echo exists ; fi') == 'exists':
                 run('getfacl --absolute-names -- ' + old_filename + ' | setfacl --set-file=- -- ' + new_filename)
 
 
 def _copy_file_xattr(old_filename, new_filename):
-    with quiet():
+    with settings(hide('everything')):
         with settings(warn_only=True):
             run('cp --attributes-only --preserve=xattr -- ' + old_filename + ' ' + new_filename)
 
 
 def _copy_file_selinux_context(old_filename, new_filename):
-    with quiet():
+    with settings(hide('everything')):
         with settings(warn_only=True):
             if run('if [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
                 if run('getenforce') != 'Disabled':
@@ -233,7 +233,7 @@ def rsync(local_path, remote_path, extra_rsync_options=""):
         remote_prefix = "%s@%s" % (user, host)
     # execute command
     command = "rsync %s %s %s:%s" % (rsync_options, local_abs_path, remote_prefix, remote_path)
-    with quiet():
+    with settings(hide('everything')):
         stdout = local(command, capture=True)
     zero_transfer_regexp = re.compile(r'^Total transferred file size: 0 bytes$')
     changed = True
@@ -250,7 +250,7 @@ def chown(remote_filename, owner, group):
         fname = str(inspect.stack()[1][1])
         nline = str(inspect.stack()[1][2])
         abort('chown: remote path \'%s\' must be absolute in file %s line %s' % (remote_filename, fname, nline))
-    with quiet():
+    with settings(hide('everything')):
         stdout = run('chown --changes ' + owner.strip() + ':' + group.strip() + ' -- ' + remote_filename)
         changed = stdout != ""
         return changed
@@ -263,7 +263,7 @@ def chmod(remote_filename, mode):
         abort('chmod: remote path \'%s\' must be absolute in file %s line %s' % (remote_filename, fname, nline))
     if isinstance(mode, numbers.Number):
         mode = oct(mode)
-    with quiet():
+    with settings(hide('everything')):
         stdout = run('chmod --changes ' + mode + ' -- ' + remote_filename)
         changed = stdout != ""
         return changed

@@ -24,6 +24,7 @@ Released: not released yet
 - added new function rsync(local_path, remote_path)
 - added new function chown(remote_filename, owner, group)
 - added new function chmod(remote_filename, mode)
+- added yum_install(), yum_remove() and yum_update() functions
 
 
 Version 0.1
