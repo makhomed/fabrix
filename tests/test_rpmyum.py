@@ -1,6 +1,6 @@
-import fabrix.yum
+import fabrix.rpmyum
 from conftest import mock_run_factory, abort
-from fabrix.yum import yum_install, yum_remove, yum_update, _parse_packages
+from fabrix.rpmyum import yum_install, yum_remove, yum_update, _parse_packages
 
 
 def test_yum_install(tmpdir, monkeypatch):
@@ -9,7 +9,7 @@ def test_yum_install(tmpdir, monkeypatch):
         r'yum -y install A B C': {'stdout': 'Nothing to do', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
-    monkeypatch.setattr(fabrix.yum, 'run', mock_run)
+    monkeypatch.setattr(fabrix.rpmyum, 'run', mock_run)
     assert yum_install(["c", "b"], "a") is True
     assert yum_install(""" C B A """) is False
 
@@ -20,7 +20,7 @@ def test_yum_remove(tmpdir, monkeypatch):
         r'yum -y remove A B C': {'stdout': 'No Packages marked for removal', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
-    monkeypatch.setattr(fabrix.yum, 'run', mock_run)
+    monkeypatch.setattr(fabrix.rpmyum, 'run', mock_run)
     assert yum_remove(["c", "b"], "a") is True
     assert yum_remove(""" C B A """) is False
 
@@ -32,7 +32,7 @@ def test_yum_update(tmpdir, monkeypatch):
         r'yum -y update $': {'stdout': '', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
-    monkeypatch.setattr(fabrix.yum, 'run', mock_run)
+    monkeypatch.setattr(fabrix.rpmyum, 'run', mock_run)
     assert yum_update(["c", "b"], "a") is True
     assert yum_update(""" C B A """) is False
     assert yum_update() is True
