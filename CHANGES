@@ -21,6 +21,9 @@ Released: not released yet
 - add fabfile file name and fabfile line number to error messages if possible
 - rename functions {edit,read,write}_remote_file to {edit,read,write}_file
 - added new function copy_file(local_filename, remote_filename)
+- added new function rsync(local_path, remote_path)
+- added new function chown(remote_filename, owner, group)
+- added new function chmod(remote_filename, mode)
 
 
 Version 0.1

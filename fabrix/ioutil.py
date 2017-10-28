@@ -1,12 +1,15 @@
 import sys
 import os
 import os.path
+import re
 import uuid
 import StringIO
 import pprint
 import inspect
+import numbers
 import fabric.state
 from fabric.api import env, abort, local, run, get, put, quiet, settings
+from fabric.network import needs_host, key_filenames, normalize
 
 
 def debug(*args):
@@ -192,3 +195,76 @@ def copy_file(local_filename, remote_filename):
     content = read_local_file(local_abs_filename)
     changed = write_file(remote_filename, content)
     return changed
+
+
+@needs_host
+def rsync(local_path, remote_path, extra_rsync_options=""):
+    files_dir = os.path.join(os.path.dirname(env.real_fabfile), 'files')
+    if not os.path.isdir(files_dir):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('rsync: files dir \'%s\' not exists in file %s line %s' % (files_dir, fname, nline))
+    local_abs_path = os.path.join(files_dir, local_path)
+    if not os.path.exists(local_abs_path):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('rsync: local path \'%s\' not exists in file %s line %s' % (local_abs_path, fname, nline))
+    if not os.path.isabs(remote_path):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('rsync: remote path \'%s\' must be absolute in file %s line %s' % (remote_path, fname, nline))
+    # ssh keys
+    ssh_keys = ""
+    keys = key_filenames()
+    if keys:
+        ssh_keys = " -i " + " -i ".join(keys)
+    # ssh port
+    user, host, port = normalize(env.host_string)
+    ssh_port = "-p %s" % port
+    # ssh options
+    ssh_options = "-e 'ssh %s%s'" % (ssh_port, ssh_keys)
+    # rsync options
+    rsync_options = '-aH --stats --force --timeout=600 %s %s --' % (ssh_options, extra_rsync_options)
+    # remote_prefix
+    if host.count(':') > 1:
+        # Square brackets are mandatory for IPv6 rsync address,
+        # even if port number is not specified
+        remote_prefix = "%s@[%s]" % (user, host)
+    else:
+        remote_prefix = "%s@%s" % (user, host)
+    # execute command
+    command = "rsync %s %s %s:%s" % (rsync_options, local_abs_path, remote_prefix, remote_path)
+    with quiet():
+        stdout = local(command, capture=True)
+    zero_transfer_regexp = re.compile(r'^Total transferred file size: 0 bytes$')
+    changed = True
+    for line in stdout.split('\n'):
+        line = line.strip()
+        if zero_transfer_regexp.match(line):
+            changed = False
+            break
+    return changed
+
+
+def chown(remote_filename, owner, group):
+    if not os.path.isabs(remote_filename):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('chown: remote path \'%s\' must be absolute in file %s line %s' % (remote_filename, fname, nline))
+    with quiet():
+        stdout = run('chown --changes ' + owner.strip() + ':' + group.strip() + ' -- ' + remote_filename)
+        changed = stdout != ""
+        return changed
+
+
+def chmod(remote_filename, mode):
+    if not os.path.isabs(remote_filename):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('chmod: remote path \'%s\' must be absolute in file %s line %s' % (remote_filename, fname, nline))
+    if isinstance(mode, numbers.Number):
+        mode = oct(mode)
+    with quiet():
+        stdout = run('chmod --changes ' + mode + ' -- ' + remote_filename)
+        changed = stdout != ""
+        return changed

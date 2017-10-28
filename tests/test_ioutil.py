@@ -1,10 +1,10 @@
 import os.path
 import fabrix.ioutil
 from conftest import abort, mock_get_factory, mock_put_factory, mock_run_factory, mock_local_factory, mock_os_path_exists_factory
-from fabric.api import env
+from fabric.api import env, settings
 from fabrix.ioutil import debug, read_local_file, write_local_file, _atomic_write_local_file
-from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file
-from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context
+from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file, rsync
+from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context, chown, chmod
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
 
 
@@ -309,3 +309,69 @@ def test_copy_file(tmpdir, monkeypatch):
     assert copy_file("file", "/path/to/remote/file") is True
     monkeypatch.setattr(fabrix.ioutil, 'write_file', lambda remote_filename, new_content: False)
     assert copy_file("file", "/path/to/remote/file") is False
+
+
+def test_rsync(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    with abort('rsync: files dir \'.*\' not exists in file .* line .*'):
+        rsync("file", "/path/to/remote/file")
+    tmpdir.mkdir("files")
+    with abort('rsync: local path \'.*\' not exists in file .* line .*'):
+        rsync("file", "/path/to/remote/file")
+    local_file = tmpdir.join("files").join("file")
+    local_file.write("content")
+    with abort('rsync: remote path \'.*\' must be absolute in file .* line .*'):
+        rsync("file", "remote-file-name")
+    local_state = {
+        r'rsync -aH --stats --force --timeout=600 -e \'ssh -p 2222\' .* -- .* \w+@11.11.11.11:/path/to/changed':
+            {'stdout': 'Total transferred file size: 12345 bytes', 'failed': False},
+        r'rsync -aH --stats --force --timeout=600 -e \'ssh -p 22\' .* -- .* \w+@11.11.11.11:/path/to/not-changed':
+            {'stdout': 'Total transferred file size: 0 bytes', 'failed': False},
+        r'rsync -aH --stats --force --timeout=600 -e \'ssh -p 7723\' .* -- .* \w+@\[fdff::ffff:ffff:ffff\]:/path/to/not-changed-ipv6':
+            {'stdout': 'Total transferred file size: 0 bytes', 'failed': False},
+        r'rsync -aH --stats --force --timeout=600 -e \'ssh -p 22 -i /path/to/id_rsa\' .* -- .* \w+@11.11.11.11:/path/to/not-changed-with-ssh-key':
+            {'stdout': 'Total transferred file size: 0 bytes', 'failed': False},
+    }
+    mock_local = mock_local_factory(local_state)
+    monkeypatch.setattr(fabrix.ioutil, 'local', mock_local)
+    monkeypatch.setitem(env, "host_string", '11.11.11.11:2222')
+    assert rsync("file", "/path/to/changed") is True
+    monkeypatch.setitem(env, "host_string", '11.11.11.11')
+    assert rsync("file", "/path/to/not-changed") is False
+    monkeypatch.setitem(env, "host_string", 'root@[fdff::ffff:ffff:ffff]:7723')
+    assert rsync("file", "/path/to/not-changed-ipv6") is False
+    with settings(key_filename="/path/to/id_rsa"):
+        monkeypatch.setitem(env, "host_string", '11.11.11.11')
+        assert rsync("file", "/path/to/not-changed-with-ssh-key") is False
+
+
+def test_chown(tmpdir, monkeypatch):
+    run_state = {
+        r'chown --changes root:root -- /path/to/changed':
+            {'stdout': 'changed ownership of /srv/default/grub from ftp:ftp to root:root\n', 'failed': False},
+        r'chown --changes root:root -- /path/to/not-changed': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    with abort('chown: remote path \'.*\' must be absolute in file .* line .*'):
+        chown("remote-file-name", "root", "root")
+    assert chown("/path/to/changed", "root", "root") is True
+    assert chown("/path/to/not-changed", "root", "root") is False
+
+
+def test_chmod(tmpdir, monkeypatch):
+    run_state = {
+        r'chmod --changes 0644 -- /path/to/changed':
+            {'stdout': 'mode of /srv/default/grub changed from 0644 (rw-r--r--) to 0600 (rw-------)\n', 'failed': False},
+        r'chmod --changes 0644 -- /path/to/not-changed': {'stdout': '', 'failed': False},
+        r'chmod --changes -x\+X -- /path/to/not-changed': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    with abort('chmod: remote path \'.*\' must be absolute in file .* line .*'):
+        chmod("remote-file-name", 0644)
+    assert chmod("/path/to/changed", 0644) is True
+    assert chmod("/path/to/not-changed", 0644) is False
+    assert chmod("/path/to/not-changed", "-x+X") is False
