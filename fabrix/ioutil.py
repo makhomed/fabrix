@@ -4,6 +4,7 @@ import os.path
 import uuid
 import StringIO
 import pprint
+import inspect
 import fabric.state
 from fabric.api import env, abort, local, run, get, put, quiet, settings
 
@@ -33,14 +34,14 @@ def read_local_file(local_filename, abort_on_error=True):
     return content
 
 
-def read_file(filename, abort_on_error=True):
+def read_file(remote_filename, abort_on_error=True):
     file_like_object = StringIO.StringIO()
     with quiet():
         with settings(warn_only=True):
-            if get(local_path=file_like_object, remote_path=filename).failed:
+            if get(local_path=file_like_object, remote_path=remote_filename).failed:
                 file_like_object.close()
                 if abort_on_error:
-                    abort('downloading file ' + filename + ' from host %s failed' % env.host_string)
+                    abort('downloading file ' + remote_filename + ' from host %s failed' % env.host_string)
                 else:
                     return None
             file_like_object.seek(0)
@@ -58,12 +59,12 @@ def write_local_file(local_filename, new_content):
         return True
 
 
-def write_file(filename, new_content):
-    old_content = read_file(filename, abort_on_error=False)
+def write_file(remote_filename, new_content):
+    old_content = read_file(remote_filename, abort_on_error=False)
     if new_content == old_content:
         return False
     else:
-        _atomic_write_file(filename, new_content)
+        _atomic_write_file(remote_filename, new_content)
         return True
 
 
@@ -121,15 +122,15 @@ def _copy_local_file_selinux_context(old_filename, new_filename):
                         local('chcon --reference=' + old_filename + ' -- ' + new_filename)
 
 
-def _atomic_write_file(filename, content):
-    old_filename = filename
+def _atomic_write_file(remote_filename, content):
+    old_filename = remote_filename
     with quiet():
         if not os.path.isabs(old_filename):
-            abort('filename must be absolute, "%s" given' % old_filename)
+            abort('remote filename must be absolute, "%s" given' % old_filename)
         exists = run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists'
         if exists:
             if run('if [ ! -f ' + old_filename + ' ] ; then echo isnotfile ; fi') == 'isnotfile':
-                abort('filename must be regular file, "%s" given' % old_filename)
+                abort('remote filename must be regular file, "%s" given' % old_filename)
             nlink = int(run('stat --format "%h" -- ' + old_filename))
             if nlink > 1:
                 abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
@@ -175,3 +176,19 @@ def _copy_file_selinux_context(old_filename, new_filename):
                 if run('getenforce') != 'Disabled':
                     if run('if [ -e /usr/bin/chcon ] ; then echo exists ; fi') == 'exists':
                         run('chcon --reference=' + old_filename + ' -- ' + new_filename)
+
+
+def copy_file(local_filename, remote_filename):
+    files_dir = os.path.join(os.path.dirname(env.real_fabfile), 'files')
+    if not os.path.isdir(files_dir):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('copy_file: files dir \'%s\' not exists in file %s line %s' % (files_dir, fname, nline))
+    local_abs_filename = os.path.join(files_dir, local_filename)
+    if not os.path.isfile(local_abs_filename):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('copy_file: file \'%s\' not exists in file %s line %s' % (local_abs_filename, fname, nline))
+    content = read_local_file(local_abs_filename)
+    changed = write_file(remote_filename, content)
+    return changed

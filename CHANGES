@@ -20,6 +20,8 @@ Released: not released yet
 - render_template now use conf/local_conf variables as context default values
 - add fabfile file name and fabfile line number to error messages if possible
 - rename functions {edit,read,write}_remote_file to {edit,read,write}_file
+- added new function copy_file(local_filename, remote_filename)
+
 
 Version 0.1
 -----------

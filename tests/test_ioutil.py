@@ -3,7 +3,7 @@ import fabrix.ioutil
 from conftest import abort, mock_get_factory, mock_put_factory, mock_run_factory, mock_local_factory, mock_os_path_exists_factory
 from fabric.api import env
 from fabrix.ioutil import debug, read_local_file, write_local_file, _atomic_write_local_file
-from fabrix.ioutil import read_file, write_file, _atomic_write_file
+from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
 
@@ -207,9 +207,9 @@ def test__atomic_write_file(monkeypatch):
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    with abort('filename must be absolute, "%s" given' % 'not-absolute-path'):
+    with abort('remote filename must be absolute, "%s" given' % 'not-absolute-path'):
         _atomic_write_file('not-absolute-path', 'text')
-    with abort('filename must be regular file, "%s" given' % '/isnotfile'):
+    with abort('remote filename must be regular file, "%s" given' % '/isnotfile'):
         _atomic_write_file('/isnotfile', 'text')
     with abort('file "%s" has %d hardlinks, it can\'t be atomically written' % ('/7hardlinks', 7)):
         _atomic_write_file('/7hardlinks', 'text')
@@ -290,3 +290,22 @@ def test__copy_file_selinux_context(monkeypatch):
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
     assert _copy_file_selinux_context('/old', '/new') is None
+
+
+def test_copy_file(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
+    with abort('copy_file: files dir \'.*\' not exists in file .* line .*'):
+        copy_file("file", "/path/to/remote/file")
+    tmpdir.mkdir("files")
+    with abort('copy_file: file \'.*\' not exists in file .* line .*'):
+        copy_file("file", "/path/to/remote/file")
+    local_file = tmpdir.join("files").join("file")
+    local_file.write("content")
+    monkeypatch.setattr(fabrix.ioutil, 'read_file', lambda remote_filename, abort_on_error: "old content")
+    with abort('remote filename must be absolute, ".*" given'):
+        copy_file("file", "remote-file-name")
+    monkeypatch.setattr(fabrix.ioutil, 'write_file', lambda remote_filename, new_content: True)
+    assert copy_file("file", "/path/to/remote/file") is True
+    monkeypatch.setattr(fabrix.ioutil, 'write_file', lambda remote_filename, new_content: False)
+    assert copy_file("file", "/path/to/remote/file") is False
