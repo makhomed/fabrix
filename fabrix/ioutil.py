@@ -8,6 +8,19 @@ import fabric.state
 from fabric.api import env, abort, local, run, get, put, quiet, settings
 
 
+def debug(*args):
+    if fabric.state.output.debug:
+        for arg in args:
+            if isinstance(arg, basestring):
+                if arg[-1] == '\n':
+                    sys.stdout.write(arg)
+                else:
+                    print arg
+            else:
+                pprint.PrettyPrinter(indent=4).pprint(arg)
+            print '-' * 78
+
+
 def read_local_file(local_filename, abort_on_error=True):
     try:
         with open(local_filename) as local_file:
@@ -20,14 +33,14 @@ def read_local_file(local_filename, abort_on_error=True):
     return content
 
 
-def read_remote_file(remote_filename, abort_on_error=True):
+def read_file(filename, abort_on_error=True):
     file_like_object = StringIO.StringIO()
     with quiet():
         with settings(warn_only=True):
-            if get(local_path=file_like_object, remote_path=remote_filename).failed:
+            if get(local_path=file_like_object, remote_path=filename).failed:
                 file_like_object.close()
                 if abort_on_error:
-                    abort('downloading file ' + remote_filename + ' from remote host %s failed' % env.host_string)
+                    abort('downloading file ' + filename + ' from host %s failed' % env.host_string)
                 else:
                     return None
             file_like_object.seek(0)
@@ -45,12 +58,12 @@ def write_local_file(local_filename, new_content):
         return True
 
 
-def write_remote_file(remote_filename, new_content):
-    old_content = read_remote_file(remote_filename, abort_on_error=False)
+def write_file(filename, new_content):
+    old_content = read_file(filename, abort_on_error=False)
     if new_content == old_content:
         return False
     else:
-        _atomic_write_remote_file(remote_filename, new_content)
+        _atomic_write_file(filename, new_content)
         return True
 
 
@@ -108,15 +121,15 @@ def _copy_local_file_selinux_context(old_filename, new_filename):
                         local('chcon --reference=' + old_filename + ' -- ' + new_filename)
 
 
-def _atomic_write_remote_file(remote_filename, content):
-    old_filename = remote_filename
+def _atomic_write_file(filename, content):
+    old_filename = filename
     with quiet():
         if not os.path.isabs(old_filename):
-            abort('remote filename must be absolute, "%s" given' % old_filename)
+            abort('filename must be absolute, "%s" given' % old_filename)
         exists = run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists'
         if exists:
             if run('if [ ! -f ' + old_filename + ' ] ; then echo isnotfile ; fi') == 'isnotfile':
-                abort('remote filename must be regular file, "%s" given' % old_filename)
+                abort('filename must be regular file, "%s" given' % old_filename)
             nlink = int(run('stat --format "%h" -- ' + old_filename))
             if nlink > 1:
                 abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
@@ -124,24 +137,24 @@ def _atomic_write_remote_file(remote_filename, content):
         file_like_object = StringIO.StringIO()
         file_like_object.write(content)
         if put(local_path=file_like_object, remote_path=new_filename).failed:
-            abort('uploading file ' + new_filename + ' to remote host failed')
+            abort('uploading file ' + new_filename + ' to host %s failed' % env.host_string)
         file_like_object.close()
         if exists:
-            _copy_remote_file_owner_and_mode(old_filename, new_filename)
-            _copy_remote_file_acl(old_filename, new_filename)
-            _copy_remote_file_xattr(old_filename, new_filename)
-            _copy_remote_file_selinux_context(old_filename, new_filename)
+            _copy_file_owner_and_mode(old_filename, new_filename)
+            _copy_file_acl(old_filename, new_filename)
+            _copy_file_xattr(old_filename, new_filename)
+            _copy_file_selinux_context(old_filename, new_filename)
         run('mv -f -- ' + new_filename + ' ' + old_filename)
 
 
-def _copy_remote_file_owner_and_mode(old_filename, new_filename):
+def _copy_file_owner_and_mode(old_filename, new_filename):
     with quiet():
         with settings(warn_only=True):
             run('chown --reference=' + old_filename + ' -- ' + new_filename)
             run('chmod --reference=' + old_filename + ' -- ' + new_filename)
 
 
-def _copy_remote_file_acl(old_filename, new_filename):
+def _copy_file_acl(old_filename, new_filename):
     with quiet():
         with settings(warn_only=True):
             if (run('if [ -e /usr/bin/getfacl ] ; then echo exists ; fi') == 'exists' and
@@ -149,29 +162,16 @@ def _copy_remote_file_acl(old_filename, new_filename):
                 run('getfacl --absolute-names -- ' + old_filename + ' | setfacl --set-file=- -- ' + new_filename)
 
 
-def _copy_remote_file_xattr(old_filename, new_filename):
+def _copy_file_xattr(old_filename, new_filename):
     with quiet():
         with settings(warn_only=True):
             run('cp --attributes-only --preserve=xattr -- ' + old_filename + ' ' + new_filename)
 
 
-def _copy_remote_file_selinux_context(old_filename, new_filename):
+def _copy_file_selinux_context(old_filename, new_filename):
     with quiet():
         with settings(warn_only=True):
             if run('if [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
                 if run('getenforce') != 'Disabled':
                     if run('if [ -e /usr/bin/chcon ] ; then echo exists ; fi') == 'exists':
                         run('chcon --reference=' + old_filename + ' -- ' + new_filename)
-
-
-def debug(*args):
-    if fabric.state.output.debug:
-        for arg in args:
-            if isinstance(arg, basestring):
-                if arg[-1] == '\n':
-                    sys.stdout.write(arg)
-                else:
-                    print arg
-            else:
-                pprint.PrettyPrinter(indent=4).pprint(arg)
-            print '-' * 78

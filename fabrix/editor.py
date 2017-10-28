@@ -1,7 +1,7 @@
 import re
 import inspect
 from fabric.api import abort
-from fabrix.ioutil import read_local_file, read_remote_file, _atomic_write_local_file, _atomic_write_remote_file, debug
+from fabrix.ioutil import read_local_file, read_file, _atomic_write_local_file, _atomic_write_file, debug
 
 
 def _full_line(pattern):
@@ -238,11 +238,11 @@ def edit_local_file(local_filename, *editors):
     return changed
 
 
-def edit_remote_file(remote_filename, *editors):
-    old_text = read_remote_file(remote_filename)
+def edit_file(filename, *editors):
+    old_text = read_file(filename)
     changed, new_text = _apply_editors(old_text, *editors)
     if changed:
-        _atomic_write_remote_file(remote_filename, new_text)
+        _atomic_write_file(filename, new_text)
     return changed
 
 

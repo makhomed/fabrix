@@ -19,6 +19,7 @@ Released: not released yet
 - conf now provides all correct methods to work like Python built-in dict type
 - render_template now use conf/local_conf variables as context default values
 - add fabfile file name and fabfile line number to error messages if possible
+- rename functions {edit,read,write}_remote_file to {edit,read,write}_file
 
 Version 0.1
 -----------

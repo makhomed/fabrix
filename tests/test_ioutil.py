@@ -3,9 +3,9 @@ import fabrix.ioutil
 from conftest import abort, mock_get_factory, mock_put_factory, mock_run_factory, mock_local_factory, mock_os_path_exists_factory
 from fabric.api import env
 from fabrix.ioutil import debug, read_local_file, write_local_file, _atomic_write_local_file
-from fabrix.ioutil import read_remote_file, write_remote_file, _atomic_write_remote_file
+from fabrix.ioutil import read_file, write_file, _atomic_write_file
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context
-from fabrix.ioutil import _copy_remote_file_owner_and_mode, _copy_remote_file_acl, _copy_remote_file_selinux_context
+from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
 
 
 def test_debug(monkeypatch, capsys):
@@ -149,7 +149,7 @@ def test__copy_local_file_selinux_context(tmpdir, monkeypatch):
     assert _copy_local_file_selinux_context(old_filename, new_filename) is None
 
 
-def test_read_remote_file(monkeypatch):
+def test_read_file(monkeypatch):
     get_state = {
         r'/ok': {'content': "ok-text", 'failed': False},
         r'/failed': {'content': "failed-text", 'failed': True}
@@ -157,14 +157,14 @@ def test_read_remote_file(monkeypatch):
     mock_get = mock_get_factory(get_state)
     monkeypatch.setitem(env, "host_string", '11.11.11.11')
     monkeypatch.setattr(fabrix.ioutil, 'get', mock_get)
-    with abort('downloading file ' + '/failed' + ' from remote host %s failed' % '11.11.11.11'):
-        read_remote_file('/failed', abort_on_error=True)
-    assert read_remote_file('/failed', abort_on_error=False) is None
-    assert read_remote_file('/ok', abort_on_error=True) == 'ok-text'
-    assert read_remote_file('/ok', abort_on_error=False) == 'ok-text'
+    with abort('downloading file ' + '/failed' + ' from host %s failed' % '11.11.11.11'):
+        read_file('/failed', abort_on_error=True)
+    assert read_file('/failed', abort_on_error=False) is None
+    assert read_file('/ok', abort_on_error=True) == 'ok-text'
+    assert read_file('/ok', abort_on_error=False) == 'ok-text'
 
 
-def test_write_remote_file(monkeypatch):
+def test_write_file(monkeypatch):
     get_state = {
         r'/ok': {'content': "ok-text", 'failed': False},
         r'/failed': {'content': "failed-text", 'failed': True}
@@ -172,14 +172,14 @@ def test_write_remote_file(monkeypatch):
     mock_get = mock_get_factory(get_state)
     monkeypatch.setitem(env, "host_string", '11.11.11.11')
     monkeypatch.setattr(fabrix.ioutil, 'get', mock_get)
-    monkeypatch.setattr(fabrix.ioutil, '_atomic_write_remote_file', lambda x, y: None)
-    assert write_remote_file('/ok', 'ok-text') is False
-    assert write_remote_file('/ok', 'other-text') is True
-    assert write_remote_file('/failed', "text") is True
-    assert write_remote_file('/failed', None) is False
+    monkeypatch.setattr(fabrix.ioutil, '_atomic_write_file', lambda x, y: None)
+    assert write_file('/ok', 'ok-text') is False
+    assert write_file('/ok', 'other-text') is True
+    assert write_file('/failed', "text") is True
+    assert write_file('/failed', None) is False
 
 
-def test__atomic_write_remote_file(monkeypatch):
+def test__atomic_write_file(monkeypatch):
     put_state = {
         r'/newfile-put-ok\.tmp\.\w+\.tmp$': False,
         r'/newfile-put-failed\.tmp\.\w+\.tmp$': True,
@@ -207,48 +207,48 @@ def test__atomic_write_remote_file(monkeypatch):
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    with abort('remote filename must be absolute, "%s" given' % 'not-absolute-path'):
-        _atomic_write_remote_file('not-absolute-path', 'text')
-    with abort('remote filename must be regular file, "%s" given' % '/isnotfile'):
-        _atomic_write_remote_file('/isnotfile', 'text')
+    with abort('filename must be absolute, "%s" given' % 'not-absolute-path'):
+        _atomic_write_file('not-absolute-path', 'text')
+    with abort('filename must be regular file, "%s" given' % '/isnotfile'):
+        _atomic_write_file('/isnotfile', 'text')
     with abort('file "%s" has %d hardlinks, it can\'t be atomically written' % ('/7hardlinks', 7)):
-        _atomic_write_remote_file('/7hardlinks', 'text')
-    assert _atomic_write_remote_file('/newfile-put-ok', 'text') is None
-    with abort(r'uploading file /newfile-put-failed\.tmp\.\w+\.tmp to remote host failed'):
-        _atomic_write_remote_file('/newfile-put-failed', 'text')
+        _atomic_write_file('/7hardlinks', 'text')
+    assert _atomic_write_file('/newfile-put-ok', 'text') is None
+    with abort(r'uploading file /newfile-put-failed\.tmp\.\w+\.tmp to host .* failed'):
+        _atomic_write_file('/newfile-put-failed', 'text')
 
-    def mock__copy_remote_file_owner_and_mode(old_filename, new_filename):
+    def mock__copy_file_owner_and_mode(old_filename, new_filename):
         pass
-    monkeypatch.setattr(fabrix.ioutil, '_copy_remote_file_owner_and_mode', mock__copy_remote_file_owner_and_mode)
+    monkeypatch.setattr(fabrix.ioutil, '_copy_file_owner_and_mode', mock__copy_file_owner_and_mode)
 
-    def mock__copy_remote_file_acl(old_filename, new_filename):
+    def mock__copy_file_acl(old_filename, new_filename):
         pass
-    monkeypatch.setattr(fabrix.ioutil, '_copy_remote_file_acl', mock__copy_remote_file_acl)
+    monkeypatch.setattr(fabrix.ioutil, '_copy_file_acl', mock__copy_file_acl)
 
-    def mock__copy_remote_file_selinux_context(old_filename, new_filename):
+    def mock__copy_file_selinux_context(old_filename, new_filename):
         pass
-    monkeypatch.setattr(fabrix.ioutil, '_copy_remote_file_selinux_context', mock__copy_remote_file_selinux_context)
-    assert _atomic_write_remote_file('/1hardlink', 'text') is None
+    monkeypatch.setattr(fabrix.ioutil, '_copy_file_selinux_context', mock__copy_file_selinux_context)
+    assert _atomic_write_file('/1hardlink', 'text') is None
 
 
-def test__copy_remote_file_owner_and_mode(monkeypatch):
+def test__copy_file_owner_and_mode(monkeypatch):
     run_state = {
             r'chown --reference=.* -- .*': {'stdout': '', 'failed': False},
             r'chmod --reference=.* -- .*': {'stdout': '', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    assert _copy_remote_file_owner_and_mode('/old', '/new') is None
+    assert _copy_file_owner_and_mode('/old', '/new') is None
 
 
-def test__copy_remote_file_acl(monkeypatch):
+def test__copy_file_acl(monkeypatch):
     run_state = {
             r'if \[ -e /usr/bin/getfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
             r'if \[ -e /usr/bin/setfacl \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    assert _copy_remote_file_acl('/old', '/new') is None
+    assert _copy_file_acl('/old', '/new') is None
     run_state = {
             r'if \[ -e /usr/bin/getfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
             r'if \[ -e /usr/bin/setfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
@@ -256,23 +256,23 @@ def test__copy_remote_file_acl(monkeypatch):
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    assert _copy_remote_file_acl('/old', '/new') is None
+    assert _copy_file_acl('/old', '/new') is None
 
 
-def test__copy_remote_file_selinux_context(monkeypatch):
+def test__copy_file_selinux_context(monkeypatch):
     run_state = {
             r'if \[ -e /usr/sbin/getenforce \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    assert _copy_remote_file_selinux_context('/old', '/new') is None
+    assert _copy_file_selinux_context('/old', '/new') is None
     run_state = {
             r'if \[ -e /usr/sbin/getenforce \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
             r'getenforce': {'stdout': 'Disabled', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    assert _copy_remote_file_selinux_context('/old', '/new') is None
+    assert _copy_file_selinux_context('/old', '/new') is None
     run_state = {
             r'if \[ -e /usr/sbin/getenforce \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
             r'getenforce': {'stdout': 'Enabled', 'failed': False},
@@ -280,7 +280,7 @@ def test__copy_remote_file_selinux_context(monkeypatch):
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    assert _copy_remote_file_selinux_context('/old', '/new') is None
+    assert _copy_file_selinux_context('/old', '/new') is None
     run_state = {
             r'if \[ -e /usr/sbin/getenforce \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
             r'getenforce': {'stdout': 'Enabled', 'failed': False},
@@ -289,4 +289,4 @@ def test__copy_remote_file_selinux_context(monkeypatch):
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    assert _copy_remote_file_selinux_context('/old', '/new') is None
+    assert _copy_file_selinux_context('/old', '/new') is None

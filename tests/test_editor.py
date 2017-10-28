@@ -1,5 +1,5 @@
 from conftest import abort
-from fabrix.editor import edit_text, edit_ini_section, edit_local_file, edit_remote_file
+from fabrix.editor import edit_text, edit_ini_section, edit_local_file, edit_file
 from fabrix.editor import _apply_editors, append_line, prepend_line, strip_line
 from fabrix.editor import substitute_line, replace_line, delete_line, insert_line
 
@@ -130,22 +130,22 @@ def test_edit_local_file(tmpdir):
     assert changed is False
 
 
-def test_edit_remote_file(tmpdir, monkeypatch):
-    remote_file = dict(content="some example text")
+def test_edit_file(tmpdir, monkeypatch):
+    file = dict(content="some example text")
 
-    def patch_read_remote_file(remote_filename):
-        assert remote_filename
-        return remote_file['content']
+    def patch_read_file(filename):
+        assert filename
+        return file['content']
 
-    def patch__atomic_write_remote_file(remote_filename, new_content):
-        assert remote_filename
-        remote_file['content'] = new_content
+    def patch__atomic_write_file(filename, new_content):
+        assert filename
+        file['content'] = new_content
 
     import fabrix.ioutil
-    monkeypatch.setattr(fabrix.editor, 'read_remote_file', patch_read_remote_file)
-    monkeypatch.setattr(fabrix.editor, '_atomic_write_remote_file', patch__atomic_write_remote_file)
-    changed = edit_remote_file("/path/to/test.txt", substitute_line("example", "sample"))
+    monkeypatch.setattr(fabrix.editor, 'read_file', patch_read_file)
+    monkeypatch.setattr(fabrix.editor, '_atomic_write_file', patch__atomic_write_file)
+    changed = edit_file("/path/to/test.txt", substitute_line("example", "sample"))
     assert changed is True
-    assert remote_file['content'] == "some sample text"
-    changed = edit_remote_file("/path/to/test.txt", substitute_line("example", "sample"))
+    assert file['content'] == "some sample text"
+    changed = edit_file("/path/to/test.txt", substitute_line("example", "sample"))
     assert changed is False
