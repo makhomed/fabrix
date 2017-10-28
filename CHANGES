@@ -25,6 +25,7 @@ Released: not released yet
 - added new function chown(remote_filename, owner, group)
 - added new function chmod(remote_filename, mode)
 - added yum_install(), yum_remove() and yum_update() functions
+- added new functions is_reboot_required(), reboot_and_wait()
 
 
 Version 0.1
