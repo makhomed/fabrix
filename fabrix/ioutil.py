@@ -161,8 +161,7 @@ def _copy_file_owner_and_mode(old_filename, new_filename):
 def _copy_file_acl(old_filename, new_filename):
     with quiet():
         with settings(warn_only=True):
-            if (run('if [ -e /usr/bin/getfacl ] ; then echo exists ; fi') == 'exists' and
-                    run('if [ -e /usr/bin/setfacl ] ; then echo exists ; fi') == 'exists'):
+            if run('if [ -e /usr/bin/getfacl ] && [ -e /usr/bin/setfacl ] ; then echo exists ; fi') == 'exists':
                 run('getfacl --absolute-names -- ' + old_filename + ' | setfacl --set-file=- -- ' + new_filename)
 
 

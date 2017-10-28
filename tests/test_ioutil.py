@@ -243,15 +243,13 @@ def test__copy_file_owner_and_mode(monkeypatch):
 
 def test__copy_file_acl(monkeypatch):
     run_state = {
-            r'if \[ -e /usr/bin/getfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
-            r'if \[ -e /usr/bin/setfacl \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
+            r'if \[ -e /usr/bin/getfacl \] && \[ -e /usr/bin/setfacl \] ; then echo exists ; fi': {'stdout': '', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
     assert _copy_file_acl('/old', '/new') is None
     run_state = {
-            r'if \[ -e /usr/bin/getfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
-            r'if \[ -e /usr/bin/setfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
+            r'if \[ -e /usr/bin/getfacl \] && \[ -e /usr/bin/setfacl \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
             r'getfacl --absolute-names -- .* | setfacl --set-file=- -- .*': {'stdout': '', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
