@@ -135,6 +135,16 @@ def systemctl_get_default():
         return run('systemctl daemon-reload ; systemctl get-default ; systemctl daemon-reload')
 
 
-def systemctl_set_default(name='multi-user.target'):
+def systemctl_set_default(name):
     with settings(hide('everything')):
         return run('systemctl daemon-reload ; systemctl set-default ' + name + ' ; systemctl daemon-reload')
+
+
+def localectl_set_locale(locale):
+    with settings(hide('everything')):
+        return run('localectl set-locale ' + locale)
+
+
+def timedatectl_set_timezone(timezone):
+    with settings(hide('everything')):
+        return run('timedatectl set-timezone ' + timezone)

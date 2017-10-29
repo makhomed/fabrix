@@ -6,6 +6,7 @@ from fabrix.system import is_reboot_required, reboot_and_wait, disable_selinux
 from fabrix.system import systemctl_start, systemctl_stop, systemctl_reload, systemctl_restart
 from fabrix.system import systemctl_enable, systemctl_disable, systemctl_mask, systemctl_unmask
 from fabrix.system import systemctl_edit, systemctl_get_default, systemctl_set_default
+from fabrix.system import localectl_set_locale, timedatectl_set_timezone
 
 
 def test_is_reboot_required(monkeypatch):
@@ -170,4 +171,22 @@ def test_systemctl_set_default(monkeypatch):
     }
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.system, 'run', mock_run)
-    assert systemctl_set_default() == ''
+    assert systemctl_set_default('multi-user.target') == ''
+
+
+def test_localectl_set_locale(monkeypatch):
+    run_state = {
+        r'localectl set-locale LANG=en_US.UTF-8': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert localectl_set_locale('LANG=en_US.UTF-8') == ''
+
+
+def test_timedatectl_set_timezone(monkeypatch):
+    run_state = {
+        r'timedatectl set-timezone Europe/Kiev': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert timedatectl_set_timezone('Europe/Kiev') == ''
