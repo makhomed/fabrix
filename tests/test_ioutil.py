@@ -6,7 +6,7 @@ from fabrix.ioutil import debug, read_local_file, write_local_file, _atomic_writ
 from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file, rsync
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context, chown, chmod
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
-from fabrix.ioutil import remove_file, remove_directory, create_directory
+from fabrix.ioutil import remove_file, remove_directory, create_directory, hide_run
 
 
 def test_debug(monkeypatch, capsys):
@@ -32,6 +32,15 @@ def test_debug(monkeypatch, capsys):
     out, err = capsys.readouterr()
     assert out == "['foo', 'bar']\n" + delimiter
     assert err == ""
+
+
+def test_hide_run(monkeypatch):
+    run_state = {
+        r'command': {'stdout': 'stdout', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert hide_run('command') == 'stdout'
 
 
 def test_read_local_file(tmpdir):

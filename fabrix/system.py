@@ -1,9 +1,11 @@
 import re
 import time
+import inspect
+import os.path
 from fabric.state import connections
 from fabric.network import needs_host
-from fabric.api import run, settings, hide, quiet, env
-from fabrix.api import edit_file, replace_line
+from fabric.api import run, settings, hide, quiet, env, abort
+from fabrix.api import edit_file, replace_line, remove_file, remove_directory, create_directory, write_file
 
 
 def is_reboot_required():
@@ -48,11 +50,6 @@ def reboot_and_wait(wait=120, command='reboot'):
         # control and has the above timeout settings enabled.
         connections.connect(env.host_string)
     # At this point we should be reconnected to the newly rebooted server.
-
-
-def hide_run(command):
-    with settings(hide('everything')):
-        return run(command)
 
 
 def disable_selinux():
@@ -104,3 +101,30 @@ def systemctl_mask(name):
 def systemctl_unmask(name):
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl unmask ' + name + ' ; systemctl daemon-reload')
+
+
+def systemctl_edit(name, override):
+    if override is None:
+        override = ''
+    if '/' in name:
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('systemctl_edit: invalid unit name \'%s\' in file %s line %s' % (name, fname, nline))
+    if not name.endswith('.service'):
+        name = name + '.service'
+    override_dir = '/etc/systemd/system/' + name + '.d'
+    override_conf = os.path.join(override_dir, 'override.conf')
+    lines = list()
+    for line in override.split('\n'):
+        line = line.strip()
+        if line:
+            lines.append(line)
+    override = '\n'.join(lines)
+    if override:
+        changed1 = create_directory(override_dir)
+        changed2 = write_file(override_conf, override)
+        return changed1 or changed2
+    else:
+        changed1 = remove_file(override_conf)
+        changed2 = remove_directory(override_dir)
+        return changed1 or changed2

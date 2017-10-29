@@ -25,6 +25,11 @@ def debug(*args):
             print '-' * 78
 
 
+def hide_run(command):
+    with settings(hide('everything')):
+        return run(command)
+
+
 def read_local_file(local_filename, abort_on_error=True):
     try:
         with open(local_filename) as local_file:

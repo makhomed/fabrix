@@ -23,7 +23,7 @@ Released: not released yet
 - added new functions copy_file(), rsync(), chown(), chmod()
 - added new functions yum_install(), yum_remove(), yum_update()
 - added new functions is_reboot_required(), reboot_and_wait()
-- added new functions disable_selinux(), hide_run()
+- added new functions disable_selinux(), hide_run(), systemctl_edit()
 - added new functions systemctl_enable(), systemctl_disable()
 - added new functions systemctl_mask(), systemctl_unmask()
 - added new functions systemctl_start(), systemctl_stop()
