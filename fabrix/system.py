@@ -148,3 +148,16 @@ def localectl_set_locale(locale):
 def timedatectl_set_timezone(timezone):
     with settings(hide('everything')):
         return run('timedatectl set-timezone ' + timezone)
+
+
+def get_virtualization_type():
+    with settings(hide('everything')):
+        stdout = run('hostnamectl status')
+    virtualization_type = None
+    virtualization_line_regexp = re.compile(r'^\s*Virtualization:\s(?P<virtualization_type>\w+)\s*$')
+    for line in stdout.split('\n'):
+        match = virtualization_line_regexp.match(line)
+        if match:
+            virtualization_type = match.group('virtualization_type')
+            break
+    return virtualization_type

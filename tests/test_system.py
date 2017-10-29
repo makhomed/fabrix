@@ -7,6 +7,7 @@ from fabrix.system import systemctl_start, systemctl_stop, systemctl_reload, sys
 from fabrix.system import systemctl_enable, systemctl_disable, systemctl_mask, systemctl_unmask
 from fabrix.system import systemctl_edit, systemctl_get_default, systemctl_set_default
 from fabrix.system import localectl_set_locale, timedatectl_set_timezone
+from fabrix.system import get_virtualization_type
 
 
 def test_is_reboot_required(monkeypatch):
@@ -190,3 +191,39 @@ def test_timedatectl_set_timezone(monkeypatch):
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.system, 'run', mock_run)
     assert timedatectl_set_timezone('Europe/Kiev') == ''
+
+
+def test_get_virtualization_type(monkeypatch):
+    run_state = {
+        r'hostnamectl status': {'stdout': """
+           Static hostname: test-centos
+                 Icon name: computer-container
+                   Chassis: container
+                Machine ID: f8889d6132eb43658e8f6ea6f30c394e
+                   Boot ID: 20e212fab38942e4b499f100f75f575c
+            Virtualization: openvz
+          Operating System: CentOS Linux 7 (Core)
+               CPE OS Name: cpe:/o:centos:centos:7
+                    Kernel: Linux 2.6.32-042stab124.2
+              Architecture: x86-64
+            """, 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert get_virtualization_type() == 'openvz'
+    run_state = {
+        r'hostnamectl status': {'stdout': """
+           Static hostname: example.com
+                 Icon name: computer-server
+                   Chassis: server
+                Machine ID: 4c500bbc51bb45539b5206bcbc523a42
+                   Boot ID: 9c6aa7f2c066445e92f74f14d38bdc13
+          Operating System: CentOS Linux 7 (Core)
+               CPE OS Name: cpe:/o:centos:centos:7
+                    Kernel: Linux 3.10.0-693.2.2.el7.x86_64
+              Architecture: x86-64
+            """, 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert get_virtualization_type() is None

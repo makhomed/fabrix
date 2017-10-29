@@ -8,6 +8,7 @@ from fabrix.system import systemctl_start, systemctl_stop, systemctl_reload, sys
 from fabrix.system import systemctl_edit, is_reboot_required, reboot_and_wait, disable_selinux
 from fabrix.system import systemctl_get_default, systemctl_set_default
 from fabrix.system import localectl_set_locale, timedatectl_set_timezone
+from fabrix.system import get_virtualization_type
 from fabrix.rpmyum import yum_install, yum_remove, yum_update
 from fabrix.render import render_template
 
