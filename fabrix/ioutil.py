@@ -71,6 +71,30 @@ def write_file(remote_filename, new_content):
         return True
 
 
+def remove_file(remote_filename):
+    with settings(hide('everything')):
+        if not os.path.isabs(remote_filename):
+            abort('remote filename must be absolute, "%s" given' % remote_filename)
+        changed = run('if [ -f ' + remote_filename + ' ] ; then rm -f -- ' + remote_filename + ' ; echo removed ; fi') == 'removed'
+        return changed
+
+
+def remove_directory(remote_dirname):
+    with settings(hide('everything')):
+        if not os.path.isabs(remote_dirname):
+            abort('remote directory name must be absolute, "%s" given' % remote_dirname)
+        changed = run('if [ -d ' + remote_dirname + ' ] ; then rmdir -- ' + remote_dirname + ' ; echo removed ; fi') == 'removed'
+        return changed
+
+
+def create_directory(remote_dirname):
+    with settings(hide('everything')):
+        if not os.path.isabs(remote_dirname):
+            abort('remote directory name must be absolute, "%s" given' % remote_dirname)
+        changed = run('if [ ! -d ' + remote_dirname + ' ] ; then mkdir -- ' + remote_dirname + ' ; echo created ; fi') == 'created'
+        return changed
+
+
 def _atomic_write_local_file(local_filename, content):
     old_filename = local_filename
     with settings(hide('everything')):

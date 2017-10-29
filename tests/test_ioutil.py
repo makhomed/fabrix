@@ -6,6 +6,7 @@ from fabrix.ioutil import debug, read_local_file, write_local_file, _atomic_writ
 from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file, rsync
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context, chown, chmod
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
+from fabrix.ioutil import remove_file, remove_directory, create_directory
 
 
 def test_debug(monkeypatch, capsys):
@@ -373,3 +374,42 @@ def test_chmod(tmpdir, monkeypatch):
     assert chmod("/path/to/changed", 0644) is True
     assert chmod("/path/to/not-changed", 0644) is False
     assert chmod("/path/to/not-changed", "-x+X") is False
+
+
+def test_remove_file(monkeypatch):
+    with abort('remote filename must be absolute, ".*" given'):
+        remove_file('file')
+    run_state = {
+        r'if \[ -f /path/to/file \] ; then rm -f -- /path/to/file ; echo removed ; fi': {'stdout': 'removed', 'failed': False},
+        r'if \[ -f /path/to/none \] ; then rm -f -- /path/to/none ; echo removed ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert remove_file('/path/to/file') is True
+    assert remove_file('/path/to/none') is False
+
+
+def test_remove_directory(monkeypatch):
+    with abort('remote directory name must be absolute, ".*" given'):
+        remove_directory('dir')
+    run_state = {
+        r'if \[ -d /path/to/dire \] ; then rmdir -- /path/to/dire ; echo removed ; fi': {'stdout': 'removed', 'failed': False},
+        r'if \[ -d /path/to/none \] ; then rmdir -- /path/to/none ; echo removed ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert remove_directory('/path/to/dire') is True
+    assert remove_directory('/path/to/none') is False
+
+
+def test_create_directory(monkeypatch):
+    with abort('remote directory name must be absolute, ".*" given'):
+        create_directory('dir')
+    run_state = {
+        r'if \[ ! -d /path/to/dire \] ; then mkdir -- /path/to/dire ; echo created ; fi': {'stdout': 'created', 'failed': False},
+        r'if \[ ! -d /path/to/none \] ; then mkdir -- /path/to/none ; echo created ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert create_directory('/path/to/dire') is True
+    assert create_directory('/path/to/none') is False

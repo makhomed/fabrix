@@ -20,17 +20,15 @@ Released: not released yet
 - render_template now use conf/local_conf variables as context default values
 - add fabfile file name and fabfile line number to error messages if possible
 - rename functions {edit,read,write}_remote_file to {edit,read,write}_file
-- added new function copy_file(local_filename, remote_filename)
-- added new function rsync(local_path, remote_path)
-- added new function chown(remote_filename, owner, group)
-- added new function chmod(remote_filename, mode)
-- added yum_install(), yum_remove() and yum_update() functions
+- added new functions copy_file(), rsync(), chown(), chmod()
+- added new functions yum_install(), yum_remove(), yum_update()
 - added new functions is_reboot_required(), reboot_and_wait()
-- added new functions disable_selinux() and hide_run()
+- added new functions disable_selinux(), hide_run()
 - added new functions systemctl_enable(), systemctl_disable()
 - added new functions systemctl_mask(), systemctl_unmask()
 - added new functions systemctl_start(), systemctl_stop()
 - added new functions systemctl_reload(), systemctl_restart()
+- added new functions remove_file(), remove_directory(), create_directory()
 
 
 Version 0.1
