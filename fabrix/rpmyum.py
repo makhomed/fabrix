@@ -1,7 +1,8 @@
 import re
 import inspect
 import collections
-from fabric.api import run, abort, settings, hide
+from fabric.api import abort
+from fabrix.api import hide_run
 
 
 def _parse_packages(recursion_level, allow_empty_list_of_packages, *args):
@@ -29,12 +30,8 @@ def _parse_packages(recursion_level, allow_empty_list_of_packages, *args):
     return result
 
 
-def yum_install(*args):
-    packages = _parse_packages(0, False, *args)
-    command = "yum -y install " + " ".join(packages)
-    with settings(hide('everything')):
-        stdout = run(command)
-    not_changed_regexp = re.compile(r'^Nothing to do$')
+def _is_changed(stdout, not_changed_re):
+    not_changed_regexp = re.compile(not_changed_re)
     changed = True
     for line in stdout.split('\n'):
         line = line.strip()
@@ -42,21 +39,20 @@ def yum_install(*args):
             changed = False
             break
     return changed
+
+
+def yum_install(*args):
+    packages = _parse_packages(0, False, *args)
+    command = "yum -y install " + " ".join(packages)
+    stdout = hide_run(command)
+    return _is_changed(stdout, r'^Nothing to do$')
 
 
 def yum_remove(*args):
     packages = _parse_packages(0, False, *args)
     command = "yum -y remove " + " ".join(packages)
-    with settings(hide('everything')):
-        stdout = run(command)
-    not_changed_regexp = re.compile(r'^No Packages marked for removal$')
-    changed = True
-    for line in stdout.split('\n'):
-        line = line.strip()
-        if not_changed_regexp.match(line):
-            changed = False
-            break
-    return changed
+    stdout = hide_run(command)
+    return _is_changed(stdout, r'^No Packages marked for removal$')
 
 
 def yum_update(*args):
@@ -65,13 +61,5 @@ def yum_update(*args):
     else:
         packages = _parse_packages(0, True, *args)
     command = "yum -y update " + " ".join(packages)
-    with settings(hide('everything')):
-        stdout = run(command)
-    not_changed_regexp = re.compile(r'^No packages marked for update$')
-    changed = True
-    for line in stdout.split('\n'):
-        line = line.strip()
-        if not_changed_regexp.match(line):
-            changed = False
-            break
-    return changed
+    stdout = hide_run(command)
+    return _is_changed(stdout, r'^No packages marked for update$')
