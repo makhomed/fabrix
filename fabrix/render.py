@@ -17,7 +17,7 @@ def render_template(template_filename, *args, **kwargs):
         fname = str(inspect.stack()[1][1])
         nline = str(inspect.stack()[1][2])
         abort('render_template: template \'%s\' not exists in file %s line %s' % (template_abs_filename, fname, nline))
-    environment = Environment(loader=FileSystemLoader(templates_dir))
+    environment = Environment(loader=FileSystemLoader(templates_dir), keep_trailing_newline=True)
     template = environment.get_template(template_filename)
     if env.host_string:
         context = conf.copy()
