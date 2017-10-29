@@ -5,7 +5,7 @@ from fabric.api import env
 from fabrix.system import is_reboot_required, reboot_and_wait, disable_selinux
 from fabrix.system import systemctl_start, systemctl_stop, systemctl_reload, systemctl_restart
 from fabrix.system import systemctl_enable, systemctl_disable, systemctl_mask, systemctl_unmask
-from fabrix.system import systemctl_edit
+from fabrix.system import systemctl_edit, systemctl_get_default, systemctl_set_default
 
 
 def test_is_reboot_required(monkeypatch):
@@ -153,3 +153,21 @@ def test_systemctl_edit(monkeypatch):
     monkeypatch.setattr(fabrix.system, 'remove_file', lambda x: False)
     monkeypatch.setattr(fabrix.system, 'remove_directory', lambda x: False)
     assert systemctl_edit('mysqld', None) is False
+
+
+def test_systemctl_get_default(monkeypatch):
+    run_state = {
+        r'systemctl daemon-reload ; systemctl get-default ; systemctl daemon-reload': {'stdout': 'multi-user.target', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_get_default() == 'multi-user.target'
+
+
+def test_systemctl_set_default(monkeypatch):
+    run_state = {
+        r'systemctl daemon-reload ; systemctl set-default multi-user.target ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_set_default() == ''

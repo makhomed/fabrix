@@ -29,6 +29,7 @@ Released: not released yet
 - added new functions systemctl_start(), systemctl_stop()
 - added new functions systemctl_reload(), systemctl_restart()
 - added new functions remove_file(), remove_directory(), create_directory()
+- added new functions systemctl_get_default(), systemctl_set_default()
 
 
 Version 0.1

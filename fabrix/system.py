@@ -128,3 +128,13 @@ def systemctl_edit(name, override):
         changed1 = remove_file(override_conf)
         changed2 = remove_directory(override_dir)
         return changed1 or changed2
+
+
+def systemctl_get_default():
+    with settings(hide('everything')):
+        return run('systemctl daemon-reload ; systemctl get-default ; systemctl daemon-reload')
+
+
+def systemctl_set_default(name='multi-user.target'):
+    with settings(hide('everything')):
+        return run('systemctl daemon-reload ; systemctl set-default ' + name + ' ; systemctl daemon-reload')
