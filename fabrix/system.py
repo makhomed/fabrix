@@ -115,10 +115,10 @@ def systemctl_edit(name, override):
     override_dir = '/etc/systemd/system/' + name + '.d'
     override_conf = os.path.join(override_dir, 'override.conf')
     lines = list()
+    override = override.strip()
     for line in override.split('\n'):
         line = line.strip()
-        if line:
-            lines.append(line)
+        lines.append(line)
     override = '\n'.join(lines)
     if override:
         changed1 = create_directory(override_dir)
