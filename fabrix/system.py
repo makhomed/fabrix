@@ -50,6 +50,11 @@ def reboot_and_wait(wait=120, command='reboot'):
     # At this point we should be reconnected to the newly rebooted server.
 
 
+def hide_run(command):
+    with settings(hide('everything')):
+        return run(command)
+
+
 def disable_selinux():
     changed1 = False
     changed2 = False
@@ -59,3 +64,43 @@ def disable_selinux():
         if run('if [ -e /usr/sbin/setenforce ] && [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
             changed2 = run('STATUS=$(getenforce) ; if [ "$STATUS" == "Enforcing" ] ; then setenforce 0 ; echo perm ; fi') == 'perm'
     return changed1 or changed2
+
+
+def systemctl_start(name):
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl start ' + name + ' ; systemctl daemon-reload')
+
+
+def systemctl_stop(name):
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl stop ' + name + ' ; systemctl daemon-reload')
+
+
+def systemctl_reload(name):
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl reload ' + name + ' ; systemctl daemon-reload')
+
+
+def systemctl_restart(name):
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl restart ' + name + ' ; systemctl daemon-reload')
+
+
+def systemctl_enable(name):
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl enable ' + name + ' ; systemctl daemon-reload')
+
+
+def systemctl_disable(name):
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl disable ' + name + ' ; systemctl daemon-reload')
+
+
+def systemctl_mask(name):
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl mask ' + name + ' ; systemctl daemon-reload')
+
+
+def systemctl_unmask(name):
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl unmask ' + name + ' ; systemctl daemon-reload')

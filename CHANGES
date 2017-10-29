@@ -26,7 +26,12 @@ Released: not released yet
 - added new function chmod(remote_filename, mode)
 - added yum_install(), yum_remove() and yum_update() functions
 - added new functions is_reboot_required(), reboot_and_wait()
-- added new function disable_selinux()
+- added new functions disable_selinux() and hide_run()
+- added new functions systemctl_enable(), systemctl_disable()
+- added new functions systemctl_mask(), systemctl_unmask()
+- added new functions systemctl_start(), systemctl_stop()
+- added new functions systemctl_reload(), systemctl_restart()
+
 
 Version 0.1
 -----------

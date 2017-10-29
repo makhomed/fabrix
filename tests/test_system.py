@@ -2,7 +2,9 @@ import time
 import fabrix.system
 from conftest import mock_run_factory
 from fabric.api import env
-from fabrix.system import is_reboot_required, reboot_and_wait, disable_selinux
+from fabrix.system import is_reboot_required, reboot_and_wait, disable_selinux, hide_run
+from fabrix.system import systemctl_start, systemctl_stop, systemctl_reload, systemctl_restart
+from fabrix.system import systemctl_enable, systemctl_disable, systemctl_mask, systemctl_unmask
 
 
 def test_is_reboot_required(monkeypatch):
@@ -35,6 +37,15 @@ def test_reboot_and_wait(monkeypatch):
     assert reboot_and_wait() is None
 
 
+def test_hide_run(monkeypatch):
+    run_state = {
+        r'command': {'stdout': 'stdout', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert hide_run('command') == 'stdout'
+
+
 def test_disable_selinux(monkeypatch):
     run_state = {
         r'if \[ -e /etc/selinux/config \] ; then echo exists ; fi': {'stdout': 'exists', 'failed': False},
@@ -52,3 +63,83 @@ def test_disable_selinux(monkeypatch):
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.system, 'run', mock_run)
     assert disable_selinux() is False
+
+
+def test_systemctl_start(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl start ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_start(name) is None
+
+
+def test_systemctl_stop(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl stop ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_stop(name) is None
+
+
+def test_systemctl_reload(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl reload ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_reload(name) is None
+
+
+def test_systemctl_restart(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl restart ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_restart(name) is None
+
+
+def test_systemctl_enable(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl enable ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_enable(name) is None
+
+
+def test_systemctl_disable(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl disable ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_disable(name) is None
+
+
+def test_systemctl_mask(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl mask ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_mask(name) is None
+
+
+def test_systemctl_unmask(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl unmask ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_unmask(name) is None
