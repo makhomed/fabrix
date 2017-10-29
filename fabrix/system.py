@@ -3,6 +3,7 @@ import time
 from fabric.state import connections
 from fabric.network import needs_host
 from fabric.api import run, settings, hide, quiet, env
+from fabrix.api import edit_file, replace_line
 
 
 def is_reboot_required():
@@ -47,3 +48,14 @@ def reboot_and_wait(wait=120, command='reboot'):
         # control and has the above timeout settings enabled.
         connections.connect(env.host_string)
     # At this point we should be reconnected to the newly rebooted server.
+
+
+def disable_selinux():
+    changed1 = False
+    changed2 = False
+    with settings(hide('everything')):
+        if run('if [ -e /etc/selinux/config ] ; then echo exists ; fi') == 'exists':
+            changed1 = edit_file('/etc/selinux/config', replace_line('\s*SELINUX\s*=\s*.*', 'SELINUX=disabled'))
+        if run('if [ -e /usr/sbin/setenforce ] && [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
+            changed2 = run('STATUS=$(getenforce) ; if [ "$STATUS" == "Enforcing" ] ; then setenforce 0 ; echo perm ; fi') == 'perm'
+    return changed1 or changed2
