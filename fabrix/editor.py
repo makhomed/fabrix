@@ -249,3 +249,21 @@ def edit_file(filename, *editors):
 def edit_text(old_text, *editors):
     changed, new_text = _apply_editors(old_text, *editors)
     return new_text
+
+
+def strip_text(text):
+    if text is None:
+        text = ''
+    if not isinstance(text, basestring):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('strip_text: string expected in file %s line %s' % (fname, nline))
+    if not text:
+        return text
+    lines = list()
+    text = text.strip() + '\n'
+    for line in text.split('\n'):
+        line = line.strip()
+        lines.append(line)
+    text = '\n'.join(lines)
+    return text

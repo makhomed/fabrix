@@ -2,6 +2,7 @@ from conftest import abort
 from fabrix.editor import edit_text, edit_ini_section, edit_local_file, edit_file
 from fabrix.editor import _apply_editors, append_line, prepend_line, strip_line
 from fabrix.editor import substitute_line, replace_line, delete_line, insert_line
+from fabrix.editor import strip_text
 
 
 def test_empty_list_of_editors():
@@ -149,3 +150,18 @@ def test_edit_file(tmpdir, monkeypatch):
     assert file['content'] == "some sample text"
     changed = edit_file("/path/to/test.txt", substitute_line("example", "sample"))
     assert changed is False
+
+
+def test_strip_test():
+    with abort('strip_text: string expected in file .* line .*'):
+        strip_text(list('a'))
+    assert strip_text('') == ''
+    assert strip_text(None) == ''
+    assert strip_text('text') == 'text\n'
+    assert strip_text("""
+
+        some text
+
+        other text
+
+    """) == "some text\n\nother text\n"

@@ -5,7 +5,7 @@ import os.path
 from fabric.state import connections
 from fabric.network import needs_host
 from fabric.api import run, settings, hide, quiet, env, abort
-from fabrix.api import edit_file, replace_line, remove_file, remove_directory, create_directory, write_file
+from fabrix.api import edit_file, replace_line, remove_file, remove_directory, create_directory, write_file, strip_text
 
 
 def is_reboot_required():
@@ -106,6 +106,10 @@ def systemctl_unmask(name):
 def systemctl_edit(name, override):
     if override is None:
         override = ''
+    if not isinstance(override, basestring):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('systemctl_edit: override must be string in file %s line %s' % (fname, nline))
     if '/' in name:
         fname = str(inspect.stack()[1][1])
         nline = str(inspect.stack()[1][2])
@@ -114,13 +118,8 @@ def systemctl_edit(name, override):
         name = name + '.service'
     override_dir = '/etc/systemd/system/' + name + '.d'
     override_conf = os.path.join(override_dir, 'override.conf')
-    lines = list()
-    override = override.strip() + '\n'
-    for line in override.split('\n'):
-        line = line.strip()
-        lines.append(line)
-    override = '\n'.join(lines)
-    if override.strip():
+    override = strip_text(override)
+    if override:
         changed1 = create_directory(override_dir)
         changed2 = write_file(override_conf, override)
         return changed1 or changed2

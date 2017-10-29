@@ -1,6 +1,6 @@
 from conftest import abort
 from fabric.api import env
-from fabrix.api import render_template, read_config
+from fabrix.api import render_template, render, read_config
 
 
 def test_render_template(tmpdir, monkeypatch):
@@ -88,7 +88,18 @@ def test_render_template_with_undefined_variables(tmpdir, monkeypatch):
     read_config()
     templates_dir = tmpdir.mkdir("templates")
     template_file = templates_dir.join("hello.txt.j2")
-    template_file.write("Hello, {{ zzz.name}}!\n")
+    template_file.write("Hello, {{ zzz.name }}!\n")
     monkeypatch.setitem(env, "host_string", '11.11.11.11')
-    with abort("rendef_template: 'zzz' is undefined in file"):
+    with abort("render_template: 'zzz' is undefined in file"):
         render_template("hello.txt.j2")
+
+
+def test_render():
+    assert render("Hello, {{ name }}!", name="World") == "Hello, World!\n"
+    assert render("""
+
+            Hello, {{ name }}!
+
+            """, name="World") == "Hello, World!\n"
+    with abort("render: 'zzz' is undefined in file .* line .*"):
+            render("Hello, {{ zzz.name }}!\n")

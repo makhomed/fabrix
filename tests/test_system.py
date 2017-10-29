@@ -140,6 +140,8 @@ def test_systemctl_unmask(monkeypatch):
 
 
 def test_systemctl_edit(monkeypatch):
+    with abort('systemctl_edit: override must be string in file .* line .*'):
+        systemctl_edit("mysqld", ['some', 'text'])
     with abort('systemctl_edit: invalid unit name \'.*\' in file .* line .*'):
         systemctl_edit('mysql/d', "")
     monkeypatch.setattr(fabrix.system, 'create_directory', lambda x: True)
