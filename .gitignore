@@ -8,10 +8,11 @@ dist/
 .tox/
 .cache/
 htmlcov/
+.coverage
 
-# Sphinx documentation
+# sphinx documentation
 docs/_build/
 
-# Vim editor swap files
+# vim editor swap files
 *.swp
 
