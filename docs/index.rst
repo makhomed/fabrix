@@ -11,7 +11,7 @@ Fabrix is Fabric extension for configuration management
     :target: https://codecov.io/gh/makhomed/fabrix
 
 .. image:: https://readthedocs.org/projects/fabrix/badge/
-    :target: http://fabrix.readthedocs.io/en/latest/
+    :target: https://fabrix.readthedocs.io/en/latest/
 
 .. image:: https://badge.fury.io/py/Fabrix.svg
     :target: https://badge.fury.io/py/Fabrix
