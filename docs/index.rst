@@ -1,3 +1,7 @@
+.. meta::
+   :description: Fabrix is Fabric extension for configuration management
+      :keywords: configuration management
+
 ======
 Fabrix
 ======
