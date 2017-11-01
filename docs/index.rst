@@ -1,6 +1,6 @@
 .. meta::
-   :description: Fabrix is Fabric extension for configuration management
-      :keywords: configuration management
+    :description: Fabrix is Fabric extension for configuration management
+    :keywords: configuration management
 
 ======
 Fabrix
@@ -21,8 +21,8 @@ Fabrix is Fabric extension for configuration management
     :target: https://badge.fury.io/py/Fabrix
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
+    :caption: Contents:
 
 
 Installation
