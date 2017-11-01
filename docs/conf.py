@@ -81,18 +81,20 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-# import sphinx_rtd_theme
-# html_theme = 'sphinx_rtd_theme'
-# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
 html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#
-# html_theme_options = {}
+html_theme_options = {
+    'logo_name': True,
+    'description': 'configuration management',
+    'analytics_id': 'UA-8460579-2',
+    'canonical_url': 'https://fabrix.readthedocs.io/en/latest/',
+    'show_powered_by':  True,
+    'show_related': False,
+}
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -106,11 +108,12 @@ html_static_path = ['_static']
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
     '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
+        'about.html',
+        'navigation.html',
+        'relations.html',
         'searchbox.html',
     ]
 }
-
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -164,7 +167,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'Fabrix', u'Fabrix Documentation',
-     author, 'Fabrix', 'One line description of project.',
+     author, 'Fabrix', 'Fabrix is Fabric extension for configuration management',
      'Miscellaneous'),
 ]
 
