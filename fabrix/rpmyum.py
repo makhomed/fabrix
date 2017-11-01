@@ -2,7 +2,7 @@ import re
 import inspect
 import collections
 from fabric.api import abort
-from fabrix.api import hide_run
+from fabrix.ioutil import hide_run
 
 
 def _parse_packages(recursion_level, allow_empty_list_of_packages, *args):

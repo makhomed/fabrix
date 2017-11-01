@@ -2,7 +2,6 @@
     :description: Fabrix is Fabric extension for configuration management
     :keywords: configuration management
 
-======
 Fabrix
 ======
 
@@ -22,20 +21,8 @@ Fabrix is Fabric extension for configuration management
 
 .. toctree::
     :maxdepth: 2
-    :caption: Contents:
 
-
-Installation
-============
-
-.. code:: bash
-
-    pip install fabrix
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    installation
+    documentation
+    api
+    changes

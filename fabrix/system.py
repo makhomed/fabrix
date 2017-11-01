@@ -5,7 +5,8 @@ import os.path
 from fabric.state import connections
 from fabric.network import needs_host
 from fabric.api import run, settings, hide, quiet, env, abort
-from fabrix.api import edit_file, replace_line, remove_file, remove_directory, create_directory, write_file, strip_text
+from fabrix.editor import edit_file, replace_line, strip_text
+from fabrix.ioutil import remove_file, remove_directory, create_directory, write_file
 
 
 def is_reboot_required():
