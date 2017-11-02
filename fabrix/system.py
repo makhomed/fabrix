@@ -185,6 +185,7 @@ def systemctl_edit(name, override):
 
 def systemctl_get_default():
     """systemctl get-default.
+
     Returns:
         Output of command ``systemctl get-default``.
     """
