@@ -1,3 +1,5 @@
+"""Fabrix configuration helper function and global objects."""
+
 import os.path
 import copy
 import yaml
@@ -13,7 +15,10 @@ class _ConfAttributeDict(dict):
     # ---------------------------------------------------------------
 
     def __getitem__(self, key):
-        return self.__super__getitem__(env.host_string).__getitem__(key)
+        if env.host_string is None:
+            return None
+        else:
+            return self.__super__getitem__(env.host_string).__getitem__(key)
 
     def __setitem__(self, key, value):
         return self.__super__getitem__(env.host_string).__setitem__(key, value)
@@ -47,7 +52,10 @@ class _ConfAttributeDict(dict):
         return self.__super__getitem__(env.host_string).__cmp__(other)
 
     def __len__(self):
-        return self.__super__getitem__(env.host_string).__len__()
+        if env.host_string is None:
+            return 0
+        else:
+            return self.__super__getitem__(env.host_string).__len__()
 
     def __iter__(self):
         return self.__super__getitem__(env.host_string).__iter__()
@@ -132,10 +140,100 @@ class _AttributeDict(dict):
 
 
 conf = _ConfAttributeDict()
+"""conf is dict-like object with host configuration variables.
+
+Access to host configuration possible via dict syntax,
+like ``conf['foo']`` and also via attribute-like syntax: ``conf.foo``.
+
+If host variable name is not correct Python identifier - only dict syntax is allowed.
+
+.. warning::
+    ``conf`` is dict-like object, which support almost all dict operations and functions.
+    But with one exception: ``**conf`` not work as expected, because Dictionary Unpacking operator ``**`` can't be overriden in Python.
+"""
+
 local_conf = _AttributeDict()
+"""local_conf is dict object with local configuration variables.
+
+Access to local configuration possible via dict syntax,
+like ``local_conf['foo']`` and also via attribute-like syntax: ``local_conf.foo``.
+
+If local variable name is not correct Python identifier - only dict syntax is allowed.
+"""
 
 
-def read_config(argument_config_filename=None):
+def read_config(config_filename=None):
+    """Read configuration from .yaml file.
+
+    If ``config_filename`` is None - :func:`read_config` will try to use
+    ``config_filename`` constructed from ``env.real_fabfile`` by replacing ``.py`` file extension with ``.yaml`` one.
+    If such config file exists it will be loaded and parsed by :func:`read_config`.
+
+    .. note::
+        :func:`read_config` with argument ``None`` is automatically executed during loading module ``fabrix.api``.
+
+    Nevertheless, :func:`read_config` can be called again from fabfile function to load specific configuration, for example,
+    ``read_config('stage.yaml')`` or ``read_config('prod.yaml')`` - in this case files 'stage.yaml' and 'prod.yaml'
+    will be looked for in the directory where ``env.real_fabfile`` is located.
+
+    Configuration file has yaml format and can contains:
+
+        - ``hosts:`` is list of hosts. Each host can be ip address or hostname.
+          Also username and port can be mentioned. For example:
+
+            * 10.10.10.10
+            * example.com
+            * root@example.com
+            * example.com:22
+            * root@example.com:22
+
+        - ``roles:`` is dictionary with two possible keys, ``role`` and ``hosts``.
+
+            * ``role`` is string, role name. It will be used as role name in Fabric ``env.roledefs`` dictionary.
+            * ``hosts`` is list of hosts of this role, with syntax as it described above.
+
+        - ``host_vars`` is dictionary with two possible keys, ``host`` and ``vars``.
+
+            * ``host`` is existing host string from global ``hosts`` or ``roles`` ``hosts`` lists.
+            * ``vars`` is dictionary, where keys is variable names and values can be any type.
+
+        - ``role_vars`` is dictionary with two possible keys, ``role`` and ``vars``.
+
+            * ``role`` is existing role name from global ``roles`` dictionary.
+            * ``vars`` is dictionary, where keys is variable names and values can be any type.
+
+        - ``defaults`` is dictionary where keys is variable names and values can be any type.
+
+        - ``local_vars`` is dictionary where keys is variable names and values can be any type.
+
+    Configuration file has additional restrictions:
+        - ``hosts`` and ``roles`` can't be simultaneously defined in config, these two options are mutually exclusive.
+        - one of ``hosts`` and ``roles`` must be defined in config, else config vill be considered invalid and rejected.
+        - ``host_vars`` can be defined even in case when ``roles`` defined and global ``hosts`` is not defined.
+        - ``role_vars`` can be defined in config only if ``roles`` defined.
+
+    Variables from ``defaults`` dictionary has lowest priority and can be overriden via ``role_vars`` or ``host_vars``.
+
+    If some variable defined in ``defaults`` and in ``role_vars`` - ``role_vars`` definition has higher priority for hosts with this specific role.
+
+    Variable definition in ``host_vars`` has highest priority and override any variables defined in ``defaults`` and ``role_vars`` for this specific host.
+
+    ``local_vars`` is variables intended to use as local configuration for host where fabfile functions is executed,
+    these local variables are acessible via global ``local_conf`` dictionary after importing ``local_conf`` from ``fabrix.api``.
+
+    ``defaults``/``role_vars``/``host_vars`` can be acessible via global ``conf`` dictionary after importing ``conf`` from ``fabrix.api``.
+
+    Args:
+        config_filename: full/relative configuration file name or None.
+
+    Returns:
+        After successful execution, :func:`read_config` changes ``env.hosts`` list, ``env.roledefs`` dictionary and set global variables ``conf`` and ``local_conf``.
+
+    Raises:
+        :class:`exceptions.SystemExit`: When error occurred during parsing of configuration file.
+    """
+
+    argument_config_filename = config_filename
     if env.real_fabfile is None:
         return
     if argument_config_filename is None:

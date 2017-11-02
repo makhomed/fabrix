@@ -4,6 +4,11 @@ from fabric.api import env
 from fabrix.config import read_config, conf, local_conf
 
 
+def test_conf_is_env_host_string_is_none(tmpdir, monkeypatch):
+    assert len(conf) == 0
+    assert conf['test'] is None
+
+
 def test_read_config_default_config_name_nox_exists(tmpdir, monkeypatch):
     fabfile = tmpdir.join("fabfile.py")
     monkeypatch.setitem(env, "real_fabfile", str(fabfile))

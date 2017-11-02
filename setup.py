@@ -22,7 +22,7 @@ setup(
     platforms=['Linux'],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['fabric>=1.12,<2.0', 'PyYAML>=3.10', 'jinja2>=2.7.2'],
+    install_requires=['Fabric>=1.12,<2.0', 'PyYAML>=3.10', 'Jinja2>=2.7.2'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',

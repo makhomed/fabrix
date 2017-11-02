@@ -49,6 +49,11 @@ source_suffix = '.rst'
 # The master toctree document.
 master_doc = 'index'
 
+rst_epilog = """
+.. |nbsp| unicode:: 0xA0
+   :trim:
+"""
+
 # General information about the project.
 project = u'Fabrix'
 copyright = u'2017, Gena Makhomed'

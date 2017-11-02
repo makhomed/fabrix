@@ -33,9 +33,9 @@ Dependencies
 
 These Fabrix dependencies will be installed automatically:
 
-* `Fabric <http://www.fabfile.org/>`_
-* `Jinja2 <http://jinja.pocoo.org/>`_
-* `PyYAML <http://pyyaml.org/>`_
+* `Fabric <https://pypi.python.org/pypi/Fabric>`_
+* `Jinja2 <https://pypi.python.org/pypi/Jinja2>`_
+* `PyYAML <https://pypi.python.org/pypi/PyYAML>`_
 
 Development dependencies
 ------------------------
