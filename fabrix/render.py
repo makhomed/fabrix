@@ -28,6 +28,25 @@ def _render_template(template, context):
 
 
 def render_template(template_filename, *args, **kwargs):
+    """Rendef template from file.
+
+    If ``template_filename`` is relative it will be retrieved from directory ``templates`` alongside with ``env.real_fabfile``.
+
+    .. warning::
+        Using absolute ``template_filename`` supported but not recommended.
+
+    .. note::
+        If ``env.host_string`` not empty then conf dict used as source of default variables for template context.
+        If ``env.host_string`` is empty then local_conf dict used as source of default variables for template context.
+
+    Args:
+        template_filename: File name of template on local filesystem. Should be relative.
+        args: Dictionary names used as context variables source.
+        kwargs: context variables in form key1=value1, key2=value2, ...
+
+    Returns:
+        rendered template as string.
+    """
     templates_dir = os.path.join(os.path.dirname(env.real_fabfile), 'templates')
     if not os.path.isdir(templates_dir):
         fname = str(inspect.stack()[1][1])
@@ -45,6 +64,20 @@ def render_template(template_filename, *args, **kwargs):
 
 
 def render(template_string, *args, **kwargs):
+    """Rendef template from string.
+
+    .. note::
+        If ``env.host_string`` not empty then conf dict used as source of default variables for template context.
+        If ``env.host_string`` is empty then local_conf dict used as source of default variables for template context.
+
+    Args:
+        template_string: Jinja2 template as string.
+        args: Dictionary names used as context variables source.
+        kwargs: context variables in form key1=value1, key2=value2, ...
+
+    Returns:
+        rendered template as string.
+    """
     environment = Environment(loader=BaseLoader(), keep_trailing_newline=True)
     template = environment.from_string(template_string)
     context = _generate_context(*args, **kwargs)
