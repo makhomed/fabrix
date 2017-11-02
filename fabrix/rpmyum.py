@@ -42,6 +42,18 @@ def _is_changed(stdout, not_changed_re):
 
 
 def yum_install(*args):
+    """yum install package/packages.
+
+    .. note::
+        At least one package name must be specified.
+
+    Args:
+        args: String with package names with spaces or newlines as separators.
+            Or list of such strings. Or any recursive combination of such lists.
+
+    Returns:
+        True if some packages installed, False otherwise.
+    """
     packages = _parse_packages(0, False, *args)
     command = "yum -y install " + " ".join(packages)
     stdout = hide_run(command)
@@ -49,6 +61,18 @@ def yum_install(*args):
 
 
 def yum_remove(*args):
+    """yum remove package/packages.
+
+    .. note::
+        At least one package name must be specified.
+
+    Args:
+        args: String with package names with spaces or newlines as separators.
+            Or list of such strings. Or any recursive combination of such lists.
+
+    Returns:
+        True if some packages removed, False otherwise.
+    """
     packages = _parse_packages(0, False, *args)
     command = "yum -y remove " + " ".join(packages)
     stdout = hide_run(command)
@@ -56,6 +80,18 @@ def yum_remove(*args):
 
 
 def yum_update(*args):
+    """yum update package/packages.
+
+    .. note::
+        List of packages can be empty. In this case all packages will be updated.
+
+    Args:
+        args: String with package names with spaces or newlines as separators.
+            Or list of such strings. Or any recursive combination of such lists.
+
+    Returns:
+        True if some packages updated, False otherwise.
+    """
     if not args:
         packages = list()
     else:

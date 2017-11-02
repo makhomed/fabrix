@@ -9,6 +9,14 @@ from fabrix.ioutil import remove_file, remove_directory, create_directory, write
 
 
 def is_reboot_required():
+    """Is reboot required?
+
+    .. note::
+        This function uses internally ``/usr/bin/needs-restarting`` from ``yum-utils`` package.
+
+    Returns:
+        True if server reboot is required after ``yum_update()``, False otherwise.
+    """
     with quiet():
         if run('if [ ! -e /usr/bin/needs-restarting ] ; then echo notexists ; fi') == 'notexists':
             run('yum -y install yum-utils')
@@ -24,6 +32,15 @@ def is_reboot_required():
 
 
 def reboot_and_wait(wait=120, command='reboot'):
+    """Reboot the remote system.
+
+    Args:
+        wait: Time to wait remote system after reboot in seconds.
+        command: Command for rebooting remote system.
+
+    Returns:
+        None
+    """
     # Shorter timeout for a more granular cycle than the default.
     timeout = 3
     # Use 'wait' as max total wait time
@@ -52,6 +69,15 @@ def reboot_and_wait(wait=120, command='reboot'):
 
 
 def disable_selinux():
+    """Disable SELinux.
+
+    Edit ``/etc/selinux/config`` and write ``SELINUX=disabled`` to it.
+    Also call ``setenforce 0`` to switch SELinux into Permissive mode.
+
+    Returns:
+        True if ``/etc/selinux/config`` changed or if SELinux ``Enforcing`` mode switched into ``Permissive`` mode, False otherwise.
+
+    """
     changed1 = False
     changed2 = False
     with settings(hide('everything')):
@@ -63,46 +89,75 @@ def disable_selinux():
 
 
 def systemctl_start(name):
+    """systemctl start ``name``.
+    """
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl start ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_stop(name):
+    """systemctl stop ``name``.
+    """
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl stop ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_reload(name):
+    """systemctl reload ``name``.
+    """
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl reload ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_restart(name):
+    """systemctl restart ``name``.
+    """
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl restart ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_enable(name):
+    """systemctl enable ``name``.
+    """
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl enable ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_disable(name):
+    """systemctl disable ``name``.
+    """
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl disable ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_mask(name):
+    """systemctl mask ``name``.
+    """
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl mask ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_unmask(name):
+    """systemctl unmask ``name``.
+    """
     with settings(hide('everything')):
         run('systemctl daemon-reload ; systemctl unmask ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_edit(name, override):
+    """systemctl edit ``name``.
+
+    Works like command ``systemctl edit name``. Creates directory ``/etc/systemd/system/${name}.d``
+    and creates file ``override.conf`` inside it with contents from string override.
+
+    Args:
+        name: Name of systemd service to edit.
+        override: Which text place inside ``override.conf`` file.
+            Leading and trailing whitespace chars are stripped from override.
+
+    Returns:
+        True if file ``override.conf`` for service ``name`` changed, False otherwise.
+    """
     if override is None:
         override = ''
     if not isinstance(override, basestring):
@@ -129,26 +184,50 @@ def systemctl_edit(name, override):
 
 
 def systemctl_get_default():
+    """systemctl get-default.
+    Returns:
+        Output of command ``systemctl get-default``.
+    """
     with settings(hide('everything')):
         return run('systemctl daemon-reload ; systemctl get-default ; systemctl daemon-reload')
 
 
 def systemctl_set_default(name):
+    """systemctl set-default ``name``.
+
+    For example, ``systemctl_set_default('multi-user.target')``
+
+    """
     with settings(hide('everything')):
         return run('systemctl daemon-reload ; systemctl set-default ' + name + ' ; systemctl daemon-reload')
 
 
 def localectl_set_locale(locale):
+    """localectl set-locale ``name``.
+
+    For example, ``localectl_set_locale('LANG=en_US.UTF-8')``.
+
+    """
     with settings(hide('everything')):
         return run('localectl set-locale ' + locale)
 
 
 def timedatectl_set_timezone(timezone):
+    """timedatectl set-timezone ``timezone``.
+
+    For example, ``timedatectl_set_timezone('Europe/Kiev')``.
+
+    """
     with settings(hide('everything')):
         return run('timedatectl set-timezone ' + timezone)
 
 
 def get_virtualization_type():
+    """Get virtualization type.
+
+    Returns:
+        None if no vitrualization detected, or vitrualization type as string, for example, 'openvz' or 'kvm' or something else.
+    """
     with settings(hide('everything')):
         stdout = run('hostnamectl status')
     virtualization_type = None
