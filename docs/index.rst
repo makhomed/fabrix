@@ -2,8 +2,8 @@
     :description: Fabrix is Fabric extension for configuration management
     :keywords: configuration management
 
-Fabrix
-======
+Welcome to Fabrix!
+==================
 
 **Fabrix** is `Fabric <http://www.fabfile.org/>`_ extension for configuration management
 
@@ -18,6 +18,10 @@ Fabrix
 
 .. image:: https://badge.fury.io/py/Fabrix.svg
     :target: https://badge.fury.io/py/Fabrix
+
+
+
+
 
 .. toctree::
     :maxdepth: 2

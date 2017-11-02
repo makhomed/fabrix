@@ -4,19 +4,6 @@
 API Documentation
 =================
 
-.. toctree::
-    :maxdepth: 2
-    :hidden:
-
-    api-documentation/config
-    api-documentation/editor
-    api-documentation/ioutil
-    api-documentation/render
-    api-documentation/rpmyum
-    api-documentation/system
-
-----------------------------------------
-
 **Configuration**
   - :obj:`~fabrix.config.conf`
   - :obj:`~fabrix.config.local_conf`
@@ -90,4 +77,15 @@ API Documentation
   - :func:`~fabrix.system.timedatectl_set_timezone`
 
 ----------------------------------------
+
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+
+    api-documentation/config
+    api-documentation/editor
+    api-documentation/ioutil
+    api-documentation/render
+    api-documentation/rpmyum
+    api-documentation/system
 
