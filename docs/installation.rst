@@ -26,7 +26,7 @@ Python
 ------
 
 * Python 2.7 is required.
-* Python 3.x not supported, because `Fabric <http://www.fabfile.org/>`_ `requires Python 2.5-2.7 <http://www.fabfile.org/installing.html#python>`_
+* Python 3.x not supported, because `Fabric requires Python 2.5-2.7 <http://www.fabfile.org/installing.html#python>`_
 
 Dependencies
 ------------

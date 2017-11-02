@@ -1,5 +1,5 @@
-Config
-~~~~~~
+Configuration
+-------------
 
 .. automodule:: fabrix.config
     :members:
