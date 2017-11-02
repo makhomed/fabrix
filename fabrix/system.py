@@ -3,7 +3,6 @@ import time
 import inspect
 import os.path
 from fabric.state import connections
-from fabric.network import needs_host
 from fabric.api import run, settings, hide, quiet, env, abort
 from fabrix.editor import edit_file, replace_line, strip_text
 from fabrix.ioutil import remove_file, remove_directory, create_directory, write_file
@@ -24,7 +23,6 @@ def is_reboot_required():
     return reboot_required
 
 
-@needs_host
 def reboot_and_wait(wait=120, command='reboot'):
     # Shorter timeout for a more granular cycle than the default.
     timeout = 3

@@ -1,5 +1,3 @@
-"""Fabrix editor functions."""
-
 import re
 import inspect
 from fabric.api import abort

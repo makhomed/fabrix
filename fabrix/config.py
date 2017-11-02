@@ -1,5 +1,3 @@
-"""Fabrix configuration helper function and global objects."""
-
 import os.path
 import copy
 import yaml
