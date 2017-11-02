@@ -43,7 +43,7 @@ def hide_run(command):
         command: which command run.
 
     Returns:
-        result of :func:`fabric.operations.run`
+        Result of :func:`fabric.operations.run` execution.
 
     """
     with settings(hide('everything')):
