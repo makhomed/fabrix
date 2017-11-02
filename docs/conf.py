@@ -35,7 +35,10 @@ add_module_names = False
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.intersphinx', 'sphinx.ext.viewcode']
 
-intersphinx_mapping = {'python': ('https://docs.python.org/2/', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/2/', None),
+    'fabrix': ('http://docs.fabfile.org/en/latest/', None)
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

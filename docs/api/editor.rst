@@ -1,5 +1,5 @@
-Editor
-------
+Editor functions
+----------------
 
 .. automodule:: fabrix.editor
     :members:

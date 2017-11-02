@@ -440,7 +440,7 @@ def read_config(config_filename=None):
         'hosts:', hosts, 'roles:', roles, 'roles_hosts:', roles_hosts,
         'host_roles:', host_roles, 'host_vars:', host_vars, 'role_vars:',
         role_vars, 'defaults:', defaults, 'local_vars:', local_vars,
-        'conf:', conf, 'local_conf:', local_conf)
+        'conf:', dict(**conf), 'local_conf:', local_conf)
 
 
 read_config()

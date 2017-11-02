@@ -1,3 +1,5 @@
+""" Fabrix Input/Output functions."""
+
 import sys
 import os
 import os.path
@@ -13,6 +15,15 @@ from fabric.network import needs_host, key_filenames, normalize
 
 
 def debug(*args):
+    """Debug print all arguments.
+
+    If debug mode is enabled via``fab --show=debug`` or something else - print each argument to sys.stdout, else do nothing.
+
+    Args:
+        *args: list of arguments for debug print.
+
+    Returns: None
+    """
     if fabric.state.output.debug:
         for arg in args:
             if isinstance(arg, basestring):
@@ -26,6 +37,15 @@ def debug(*args):
 
 
 def hide_run(command):
+    """Run command with settings hide('everything').
+
+    Args:
+        command: which command run.
+
+    Returns:
+        result of :func:`fabric.operations.run`
+
+    """
     with settings(hide('everything')):
         return run(command)
 
