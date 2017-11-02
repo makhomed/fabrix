@@ -5,7 +5,7 @@
 Fabrix
 ======
 
-Fabrix is Fabric extension for configuration management
+**Fabrix** is `Fabric <http://www.fabfile.org/>`_ extension for configuration management
 
 .. image:: https://travis-ci.org/makhomed/fabrix.svg?branch=master
     :target: https://travis-ci.org/makhomed/fabrix
@@ -25,4 +25,4 @@ Fabrix is Fabric extension for configuration management
     installation
     documentation
     api
-    changes
+    changelog

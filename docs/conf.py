@@ -33,7 +33,9 @@ add_module_names = False
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.intersphinx', 'sphinx.ext.viewcode']
+
+intersphinx_mapping = {'python': ('https://docs.python.org/2/', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -101,7 +103,7 @@ html_theme_options = {
     'canonical_url': 'https://fabrix.readthedocs.io/en/latest/',
     'show_powered_by':  False,
     'show_related': False,
-    'sidebar_collapse': False,
+    'sidebar_collapse': True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
