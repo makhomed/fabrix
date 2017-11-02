@@ -24,10 +24,10 @@ def insert_line(line_to_insert, **kwargs):
         after: Anchor pattern, after which text should be inserted.
 
     Returns:
-        closure function, which acts as text editor, parameterized by :func:`insert_line` arguments.
+        closure function, which acts as text editor, parameterized by :func:`~insert_line` arguments.
 
     Raises:
-        :class:`exceptions.SystemExit`: When error occurred.
+        :class:`~exceptions.SystemExit`: When error occurred.
     """
     insert_type = None
     anchor_pattern = None
@@ -97,7 +97,7 @@ def prepend_line(line_to_prepend, insert_empty_line_after=False):
         insert_empty_line_after: If True add empty line after prepended line.
 
     Returns:
-        closure function, which acts as text editor, parameterized by :func:`prepend_line` arguments.
+        closure function, which acts as text editor, parameterized by :func:`~prepend_line` arguments.
     """
 
     def prepend_line_editor(text):
@@ -122,7 +122,7 @@ def append_line(line_to_append, insert_empty_line_before=False):
         insert_empty_line_before: If True add empty line before appended line.
 
     Returns:
-        closure function, which acts as text editor, parameterized by :func:`append_line` arguments.
+        closure function, which acts as text editor, parameterized by :func:`~append_line` arguments.
     """
 
     def append_line_editor(text):
@@ -152,7 +152,7 @@ def delete_line(pattern):
         pattern: Which lines whould be deleted.
 
     Returns:
-        closure function, which acts as text editor, parameterized by :func:`delete_line` arguments.
+        closure function, which acts as text editor, parameterized by :func:`~delete_line` arguments.
     """
     pattern = _full_line(pattern)
 
@@ -175,7 +175,7 @@ def replace_line(pattern, repl, flags=0):
     In any case pattern wil start with r'^' and end with r'$' characters.
 
     .. seealso::
-        :func:`substitute_line`
+        :func:`~substitute_line`
 
     Args:
         pattern: Which lines should be replaced.
@@ -187,7 +187,7 @@ def replace_line(pattern, repl, flags=0):
         flags: Any flags allowed if :func:`re.compile`.
 
     Returns:
-        closure function, which acts as text editor, parameterized by :func:`replace_line` arguments.
+        closure function, which acts as text editor, parameterized by :func:`~replace_line` arguments.
     """
     pattern = _full_line(pattern)
 
@@ -209,7 +209,7 @@ def substitute_line(pattern, repl, flags=0):
     Replaces part of lines in text, which match ``pattern`` with ``repl``.
 
     .. seealso::
-        :func:`replace_line`
+        :func:`~replace_line`
 
     Args:
         pattern: Regular Expression, which part of lines should be substituted.
@@ -221,7 +221,7 @@ def substitute_line(pattern, repl, flags=0):
         flags: Any flags allowed if :func:`re.compile`.
 
     Returns:
-        closure function, which acts as text editor, parameterized by :func:`substitute_line` arguments.
+        closure function, which acts as text editor, parameterized by :func:`~substitute_line` arguments.
     """
 
     def substitute_editor(text):
@@ -248,7 +248,7 @@ def strip_line(chars=None):
             rather, all combinations of its values are stripped:
 
     Returns:
-        closure function, which acts as text editor, parameterized by :func:`strip_line` arguments.
+        closure function, which acts as text editor, parameterized by :func:`~strip_line` arguments.
 
     """
 
@@ -287,17 +287,17 @@ def edit_ini_section(section_name_to_edit, *editors):
     """Edit ini section text editor.
 
     Apply all editors from list ``editors`` to section named ``section_name_to_edit``.
-    ``editors`` is any combination of **line** editors: :func:`insert_line`, :func:`delete_line`, :func:`replace_line` and so on.
+    ``editors`` is any combination of **line** editors: :func:`~insert_line`, :func:`~delete_line`, :func:`~replace_line` and so on.
 
     Args:
         section_name_to_edit: Name of section to edit, must be in form '[section_name]'.
         editors: List of editors to apply for selected ini section.
 
     Returns:
-        closure function, which acts as text editor, parameterized by :func:`edit_ini_section` arguments.
+        closure function, which acts as text editor, parameterized by :func:`~edit_ini_section` arguments.
 
     Raises:
-        :class:`exceptions.SystemExit`: When error occurred.
+        :class:`~exceptions.SystemExit`: When error occurred.
     """
     if section_name_to_edit is not None:
         if section_name_to_edit[0] != '[' or section_name_to_edit[-1] != ']':
@@ -352,10 +352,10 @@ def edit_local_file(local_filename, *editors):
     """Edit local file text editor.
 
     Apply all editors from list ``editors`` to text of **local** file ``local_filename``.
-    ``editors`` is any combination of editors: :func:`insert_line`, :func:`delete_line`, :func:`replace_line` and so on.
+    ``editors`` is any combination of editors: :func:`~insert_line`, :func:`~delete_line`, :func:`~replace_line` and so on.
 
     .. seealso::
-            :func:`edit_file`
+            :func:`~edit_file`
 
     Args:
         local_filename: Name of **local** file to edit, must be absolute.
@@ -365,7 +365,7 @@ def edit_local_file(local_filename, *editors):
         True if file is changed, else False.
 
     Raises:
-        :class:`exceptions.SystemExit`: When error occurred.
+        :class:`~exceptions.SystemExit`: When error occurred.
     """
     old_text = read_local_file(local_filename)
     changed, new_text = _apply_editors(old_text, *editors)
@@ -378,10 +378,10 @@ def edit_file(remote_filename, *editors):
     """Edit remote file text editor.
 
     Apply all editors from list ``editors`` to text of **remote** file ``remote_filename``.
-    ``editors`` is any combination of editors: :func:`insert_line`, :func:`delete_line`, :func:`replace_line` and so on.
+    ``editors`` is any combination of editors: :func:`~insert_line`, :func:`~delete_line`, :func:`~replace_line` and so on.
 
     .. seealso::
-            :func:`edit_local_file`
+            :func:`~edit_local_file`
 
     Args:
         remote_filename: Name of **remote** file to edit, must be absolute.
@@ -391,7 +391,7 @@ def edit_file(remote_filename, *editors):
         True if file is changed, else False.
 
     Raises:
-        :class:`exceptions.SystemExit`: When error occurred.
+        :class:`~exceptions.SystemExit`: When error occurred.
     """
     old_text = read_file(remote_filename)
     changed, new_text = _apply_editors(old_text, *editors)
@@ -404,7 +404,7 @@ def edit_text(text, *editors):
     """Edit text editor.
 
     Apply all editors from list ``editors`` to given text.
-    ``editors`` is any combination of editors: :func:`insert_line`, :func:`delete_line`, :func:`replace_line` and so on.
+    ``editors`` is any combination of editors: :func:`~insert_line`, :func:`~delete_line`, :func:`~replace_line` and so on.
 
     Args:
         text: Text to edit, must be string.
@@ -414,7 +414,7 @@ def edit_text(text, *editors):
         Text after applying all editors.
 
     Raises:
-        :class:`exceptions.SystemExit`: When error occurred.
+        :class:`~exceptions.SystemExit`: When error occurred.
     """
     changed, text = _apply_editors(text, *editors)
     return text
@@ -433,7 +433,7 @@ def strip_text(text):
         Text after strip. It is always string even if argument was None.
 
     Raises:
-        :class:`exceptions.SystemExit`: When error occurred.
+        :class:`~exceptions.SystemExit`: When error occurred.
     """
     if text is None:
         text = ''

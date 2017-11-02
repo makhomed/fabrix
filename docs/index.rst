@@ -21,8 +21,9 @@ Fabrix
 
 .. toctree::
     :maxdepth: 2
+    :hidden:
 
     installation
     documentation
-    api
+    api-documentation
     changelog

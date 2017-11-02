@@ -146,7 +146,7 @@ like ``conf['foo']`` and also via attribute-like syntax: ``conf.foo``.
 If host variable name is not correct Python identifier - only dict syntax is allowed.
 
 .. warning::
-    ``conf`` is dict-like object, which support almost all dict operations and functions.
+    :obj:`~fabrix.config.conf` is dict-like object, which support almost all dict operations and functions.
     But with one exception: ``**conf`` not work as expected, because Dictionary Unpacking operator ``**`` can't be overriden in Python.
 """
 
@@ -163,14 +163,14 @@ If local variable name is not correct Python identifier - only dict syntax is al
 def read_config(config_filename=None):
     """Read configuration from .yaml file.
 
-    If ``config_filename`` is None - :func:`read_config` will try to use
+    If ``config_filename`` is None - :func:`~read_config` will try to use
     ``config_filename`` constructed from ``env.real_fabfile`` by replacing ``.py`` file extension with ``.yaml`` one.
-    If such config file exists it will be loaded and parsed by :func:`read_config`.
+    If such config file exists it will be loaded and parsed by :func:`~read_config`.
 
     .. note::
-        :func:`read_config` with argument ``None`` is automatically executed during loading module ``fabrix.api``.
+        :func:`~read_config` with argument ``None`` is automatically executed during loading module ``fabrix.api``.
 
-    Nevertheless, :func:`read_config` can be called again from fabfile function to load specific configuration, for example,
+    Nevertheless, :func:`~read_config` can be called again from fabfile function to load specific configuration, for example,
     ``read_config('stage.yaml')`` or ``read_config('prod.yaml')`` - in this case files 'stage.yaml' and 'prod.yaml'
     will be looked for in the directory where ``env.real_fabfile`` is located.
 
@@ -217,16 +217,18 @@ def read_config(config_filename=None):
     Variable definition in ``host_vars`` has highest priority and override any variables defined in ``defaults`` and ``role_vars`` for this specific host.
 
     ``local_vars`` is variables intended to use as local configuration for host where fabfile functions is executed,
-    these local variables are acessible via global ``local_conf`` dictionary after importing ``local_conf`` from ``fabrix.api``.
+    these local variables are acessible via global :obj:`~fabrix.config.local_conf` dictionary
+    after importing :obj:`~fabrix.config.local_conf` from ``fabrix.api``.
 
-    ``defaults``/``role_vars``/``host_vars`` can be acessible via global ``conf`` dictionary after importing ``conf`` from ``fabrix.api``.
+    ``defaults``/``role_vars``/``host_vars`` can be acessible via global :obj:`~fabrix.config.conf` dictionary
+    after importing :obj:`~fabrix.config.conf` from ``fabrix.api``.
 
     Args:
         config_filename: full/relative configuration file name or None.
 
     Returns:
-        After successful execution, :func:`read_config` changes ``env.hosts`` list,
-        ``env.roledefs`` dictionary and set global variables ``conf`` and ``local_conf``.
+        After successful execution, :func:`~read_config` changes ``env.hosts`` list,
+        ``env.roledefs`` dictionary and set global variables :obj:`~fabrix.config.conf` and :obj:`~fabrix.config.local_conf`.
 
     Raises:
         :class:`exceptions.SystemExit`: When error occurred during parsing of configuration file.

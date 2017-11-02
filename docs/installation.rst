@@ -63,5 +63,5 @@ Source code checkouts
 
 To follow Fabrix development via Git instead of downloading official releases,
 you can clone the canonical repository straight from
-`the Fabrix repository on Github <https://github.com/makhomed/fabrix>`_.
+`the Fabrix repository on GitHub <https://github.com/makhomed/fabrix>`_.
 

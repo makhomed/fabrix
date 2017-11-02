@@ -41,7 +41,7 @@ def hide_run(command):
         command: which command run.
 
     Returns:
-        Result of :func:`fabric.operations.run` execution.
+        Result of :func:`~fabric.operations.run` execution.
 
     """
     with settings(hide('everything')):
@@ -53,7 +53,7 @@ def read_local_file(local_filename, abort_on_error=True):
 
     Args:
         local_filename: Local file name, must be absolute.
-        abort_on_error: :func:`fabric.utils.abort` if some errors encountered during reading file, for example, if file not exists.
+        abort_on_error: :func:`~fabric.utils.abort` if some errors encountered during reading file, for example, if file not exists.
 
     Returns:
         content of file or ``None`` if errors encountered and abort_on_error is False.
@@ -74,7 +74,7 @@ def read_file(remote_filename, abort_on_error=True):
 
     Args:
         remote_filename: Remote file name, must be absolute.
-        abort_on_error: :func:`fabric.utils.abort` if some errors encountered during reading file, for example, if file not exists.
+        abort_on_error: :func:`~fabric.utils.abort` if some errors encountered during reading file, for example, if file not exists.
 
     Returns:
         content of file or ``None`` if errors encountered and abort_on_error is False.
