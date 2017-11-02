@@ -227,7 +227,8 @@ def read_config(config_filename=None):
         config_filename: full/relative configuration file name or None.
 
     Returns:
-        After successful execution, :func:`read_config` changes ``env.hosts`` list, ``env.roledefs`` dictionary and set global variables ``conf`` and ``local_conf``.
+        After successful execution, :func:`read_config` changes ``env.hosts`` list,
+        ``env.roledefs`` dictionary and set global variables ``conf`` and ``local_conf``.
 
     Raises:
         :class:`exceptions.SystemExit`: When error occurred during parsing of configuration file.
