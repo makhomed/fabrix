@@ -181,9 +181,9 @@ def read_config(config_filename=None):
 
             * 10.10.10.10
             * example.com
-            * root@example.com
+            * root\@example.com
             * example.com:22
-            * root@example.com:22
+            * root\@example.com:22
 
         - ``roles:`` is dictionary with two possible keys, ``role`` and ``hosts``.
 
@@ -231,7 +231,7 @@ def read_config(config_filename=None):
         ``env.roledefs`` dictionary and set global variables :obj:`~fabrix.config.conf` and :obj:`~fabrix.config.local_conf`.
 
     Raises:
-        :class:`exceptions.SystemExit`: When error occurred during parsing of configuration file.
+        :class:`~exceptions.SystemExit`: When error occurred during parsing of configuration file.
     """
 
     argument_config_filename = config_filename

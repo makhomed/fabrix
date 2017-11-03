@@ -20,14 +20,15 @@ Welcome to Fabrix!
     :target: https://badge.fury.io/py/Fabrix
 
 
-
+See :ref:`reference:Reference`
 
 
 .. toctree::
     :maxdepth: 2
     :hidden:
 
+    Overview <self>
     installation
-    documentation
-    api-documentation
+    tutorial
+    reference
     changelog

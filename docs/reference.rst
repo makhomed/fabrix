@@ -1,8 +1,8 @@
 .. meta::
     :description: Fabrix API Documentation
 
-API Documentation
-=================
+Reference
+=========
 
 **Configuration**
   - :obj:`~fabrix.config.conf`
@@ -82,10 +82,10 @@ API Documentation
     :maxdepth: 2
     :hidden:
 
-    api-documentation/config
-    api-documentation/editor
-    api-documentation/ioutil
-    api-documentation/render
-    api-documentation/rpmyum
-    api-documentation/system
+    reference/config
+    reference/editor
+    reference/ioutil
+    reference/render
+    reference/rpmyum
+    reference/system
 
