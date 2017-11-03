@@ -1,5 +1,5 @@
 .. meta::
-    :description: Fabrix API Documentation
+    :description: Fabrix Reference
 
 Reference
 =========

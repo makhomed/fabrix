@@ -36,17 +36,14 @@ add_module_names = False
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
-    'sphinx.ext.autosectionlabel',
+    'sphinx.ext.intersphinx',
 ]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/2/', None),
     'fabrix': ('http://docs.fabfile.org/en/latest/', None)
 }
-
-autosectionlabel_prefix_document = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

@@ -20,9 +20,6 @@ Welcome to Fabrix!
     :target: https://badge.fury.io/py/Fabrix
 
 
-See :ref:`reference:Reference`
-
-
 .. toctree::
     :maxdepth: 2
     :hidden:
