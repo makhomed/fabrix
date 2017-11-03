@@ -1,3 +1,6 @@
+.. meta::
+    :description: Fabrix editor functions reference
+
 Editor functions
 ----------------
 

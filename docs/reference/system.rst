@@ -1,3 +1,6 @@
+.. meta::
+    :description: Fabrix system management reference
+
 System management
 -----------------
 

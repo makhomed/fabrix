@@ -1,3 +1,6 @@
+.. meta::
+    :description: Fabrix configuration reference
+
 Configuration
 -------------
 
