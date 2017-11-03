@@ -113,7 +113,6 @@ html_theme_options = {
     'logo_text_align': 'center',
     'description': '<center>configuration management</center>',
     'analytics_id': 'UA-8460579-2',
-    'canonical_url': 'https://fabrix.readthedocs.io/en/latest/',
     'show_powered_by':  False,
     'show_related': False,
     'sidebar_collapse': True,
