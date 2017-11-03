@@ -42,7 +42,7 @@ Development dependencies
 
 For development you need additional dependencies:
 
-* `git <http://git-scm.com/>`_
+* `git <https://git-scm.com/>`_
 * `pytest <https://pypi.python.org/pypi/pytest>`_
 * `pytest-cov <https://pypi.python.org/pypi/pytest-cov>`_
 * `coverage <https://pypi.python.org/pypi/coverage>`_
