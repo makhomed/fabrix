@@ -29,79 +29,15 @@ Installation
 Links
 -----
 
- * `Fabrix Documentation <https://fabrix.readthedocs.io/en/latest/>`_
- * `Fabrix GitHub Home Page <https://github.com/makhomed/fabrix>`_
- * `Fabrix Python Package Index <https://pypi.python.org/pypi/Fabrix>`_
+* `Fabrix Documentation <https://fabrix.readthedocs.io/en/latest/>`_
+* `Fabrix GitHub Home Page <https://github.com/makhomed/fabrix>`_
+* `Fabrix Python Package Index <https://pypi.python.org/pypi/Fabrix>`_
 
 Examples
 --------
 
-Configuration :file:`fabrile.yaml`:
-
-.. code-block:: yaml
-
-    roles:
-      - role: db
-        hosts:
-          - db1
-          - db2
-      - role: web
-        hosts:
-          - web1
-          - web2
-          - web3
-
-    role_vars:
-      - role: web
-        vars:
-          name: webserver
-
-    host_vars:
-      - host: web1
-        vars:
-          name: nginx
-
-    defaults:
-      name: generic
-
-Code :file:`fabfile.py`:
-
-.. code-block:: python
-
-    from fabric.api import env, run, roles, execute
-    from fabrix.api import conf
-
-    @roles('db')
-    def migrate():
-        print "Hello, %s!" % conf.name
-        pass
-
-    @roles('web')
-    def update():
-        print "Hello, %s!" % conf.name
-        pass
-
-    def deploy():
-        execute(migrate)
-        execute(update)
-
-After running :command:`fab deploy` we can see:
-
-.. code-block:: none
-
-    $ fab deploy
-    [db1] Executing task 'migrate'
-    Hello, generic!
-    [db2] Executing task 'migrate'
-    Hello, generic!
-    [web1] Executing task 'update'
-    Hello, nginx!
-    [web2] Executing task 'update'
-    Hello, webserver!
-    [web3] Executing task 'update'
-    Hello, webserver!
-
-Using Jinja2 templates:
+Using Jinja2 templates
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -110,7 +46,8 @@ Using Jinja2 templates:
     def hello():
         print render("Hello, {{ name }}!", name="World")
 
-Editing remote systemd unit files:
+Editing systemd unit files
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -124,7 +61,8 @@ Editing remote systemd unit files:
         if changed:
             systemctl_restart("mysqld.service")
 
-Editing remote file:
+Editing configuration files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -142,7 +80,8 @@ Editing remote file:
         if changed:
             run("grub2-mkconfig -o /boot/grub2/grub.cfg")
 
-Installing PHP 7.0 from remi repo:
+Installing PHP 7.0 from remi repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -180,6 +119,73 @@ Installing PHP 7.0 from remi repo:
                 php-soap
         """)
 
+Using external configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Configuration file ``fabrile.yaml``:
+
+.. code-block:: yaml
+
+    roles:
+      - role: db
+        hosts:
+          - db1
+          - db2
+      - role: web
+        hosts:
+          - web1
+          - web2
+          - web3
+
+    role_vars:
+      - role: web
+        vars:
+          name: webserver
+
+    host_vars:
+      - host: web1
+        vars:
+          name: nginx
+
+    defaults:
+      name: generic
+
+Code ``fabfile.py``:
+
+.. code-block:: python
+
+    from fabric.api import env, run, roles, execute
+    from fabrix.api import conf
+
+    @roles('db')
+    def migrate():
+        print "Hello, %s!" % conf.name
+        pass
+
+    @roles('web')
+    def update():
+        print "Hello, %s!" % conf.name
+        pass
+
+    def deploy():
+        execute(migrate)
+        execute(update)
+
+After running ``fab deploy`` we can see:
+
+.. code-block:: none
+
+    $ fab deploy
+    [db1] Executing task 'migrate'
+    Hello, generic!
+    [db2] Executing task 'migrate'
+    Hello, generic!
+    [web1] Executing task 'update'
+    Hello, nginx!
+    [web2] Executing task 'update'
+    Hello, webserver!
+    [web3] Executing task 'update'
+    Hello, webserver!
 
 .. toctree::
     :maxdepth: 2
