@@ -1,3 +1,6 @@
+
+.. image:: https://github.com/makhomed/fabrix/blob/master/docs/_static/icosahedron.png
+
 Fabrix
 ======
 
