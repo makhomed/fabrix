@@ -203,6 +203,25 @@ def remove_directory(remote_dirname):
         return changed
 
 
+def create_file(remote_filename):
+    """Create remote file.
+
+    .. note::
+        File created only if no directory exists with name ``remote_fileame``. Existing directory will not be deleted.
+
+    Args:
+        remote_filename: Remote file name, must be absolute.
+
+    Returns:
+        True if file created, False if file already exists.
+    """
+    with settings(hide('everything')):
+        if not os.path.isabs(remote_filename):
+            abort('remote file name must be absolute, "%s" given' % remote_filename)
+        changed = run('if [ ! -f ' + remote_filename + ' ] ; then touch -- ' + remote_filename + ' ; echo created ; fi') == 'created'
+        return changed
+
+
 def create_directory(remote_dirname):
     """Create remote directory.
 

@@ -7,7 +7,7 @@ from fabrix.ioutil import debug, read_local_file, write_local_file, _atomic_writ
 from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file, rsync
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context, chown, chmod
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
-from fabrix.ioutil import remove_file, remove_directory, create_directory, hide_run
+from fabrix.ioutil import remove_file, remove_directory, create_file, create_directory, hide_run
 from fabrix.ioutil import is_file_exists, is_directory_exists
 
 
@@ -424,6 +424,19 @@ def test_create_directory(monkeypatch):
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
     assert create_directory('/path/to/dire') is True
     assert create_directory('/path/to/none') is False
+
+
+def test_create_file(monkeypatch):
+    with abort('remote file name must be absolute, ".*" given'):
+        create_file('file')
+    run_state = {
+        r'if \[ ! -f /path/to/file \] ; then touch -- /path/to/file ; echo created ; fi': {'stdout': 'created', 'failed': False},
+        r'if \[ ! -f /path/to/none \] ; then touch -- /path/to/none ; echo created ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert create_file('/path/to/file') is True
+    assert create_file('/path/to/none') is False
 
 
 def test_is_file_exists(monkeypatch):
