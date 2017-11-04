@@ -32,7 +32,7 @@ def render_template(template_filename, *args, **kwargs):
 
     If ``template_filename`` is relative it will be retrieved from directory ``templates`` alongside with ``env.real_fabfile``.
 
-    .. warning::
+    .. note::
         Using absolute ``template_filename`` supported but not recommended.
 
     .. note::

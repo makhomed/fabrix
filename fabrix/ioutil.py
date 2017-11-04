@@ -187,7 +187,7 @@ def remove_file(remote_filename):
 def remove_directory(remote_dirname):
     """Remove remote directory.
 
-    .. warning::
+    .. note::
         Remote directory must be empty. Recursive deletion of non-empty directories is not supported.
 
     Args:
@@ -206,7 +206,7 @@ def remove_directory(remote_dirname):
 def create_directory(remote_dirname):
     """Create remote directory.
 
-    .. warning::
+    .. note::
         Directory created only if no file exists with name ``remote_dirname``. Existing file will not be deleted.
 
     Args:
@@ -336,7 +336,7 @@ def copy_file(local_filename, remote_filename):
 
     If ``local_filename`` is relative it will be retrieved from directory ``files`` alongside with ``env.real_fabfile``.
 
-    .. warning::
+    .. note::
         Using absolute ``local_filename`` supported but not recommended.
 
     Args:
@@ -364,7 +364,7 @@ def copy_file(local_filename, remote_filename):
 def rsync(local_path, remote_path, extra_rsync_options=""):
     """Rsync files/directories from local path to remote_path.
 
-    .. warning::
+    .. note::
             Using absolute ``local_path`` supported but not recommended.
 
     Args:
