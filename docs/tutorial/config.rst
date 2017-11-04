@@ -21,7 +21,7 @@ For example, consider simple ``fabfile.py``:
         print "Hello, %s!" % conf_name
         print
 
-After running command ``fab hello`` we will se such output:
+After running command :command:`fab hello` we will se such output:
 
 .. code-block:: none
 
@@ -75,7 +75,7 @@ And updated ``fabfile.py`` with only code, without any configuration:
         print "Hello, %s!" % conf.name
         print
 
-After runnig ``fab hello`` we will see the same output as above.
+After runnig :command:`fab hello` we will see the same output as above.
 
 During startup Fabrix library look for yaml configuration file
 with same name as fabile, but with extension ``'.yaml'``.
@@ -113,7 +113,7 @@ Code in ``fabfile.py`` not changed, and remain the same as for previous example:
         print "Hello, %s!" % conf.name
         print
 
-After running ``fab hello`` we can see such result:
+After running :command:`fab hello` we can see such result:
 
 .. code-block:: none
 
@@ -214,7 +214,7 @@ Configuration, ``fabrile.yaml``:
     defaults:
       name: generic
 
-After running ``fab deploy`` we can see:
+After running :command:`fab deploy` we can see:
 
 .. code-block:: none
 
@@ -265,10 +265,10 @@ It is easy. We can use function :func:`~fabrix.config.read_config`:
         execute(migrate)
         execute(update)
 
-If we execute command ``fab stage deploy`` task ``deploy``
+If we execute command :command:`fab stage deploy` task ``deploy``
 will be runned with configuration from ``stage.yaml``.
 
-If we execute command ``fab prod deploy`` task ``deploy``
+If we execute command :command:`fab prod deploy` task ``deploy``
 will be runned with configuration from ``prod.yaml``.
 
 Configuration file ``stage.yaml``:
@@ -286,7 +286,7 @@ Configuration file ``stage.yaml``:
     defaults:
       name: stage
 
-Result of execution ``fab stage deploy``:
+Result of execution :command:`fab stage deploy`:
 
 .. code-block:: none
 
@@ -314,7 +314,7 @@ Configuration file ``prod.yaml``:
     defaults:
       name: prod
 
-Result of execution ``fab prod deploy``:
+Result of execution :command:`fab prod deploy`:
 
 .. code-block:: none
 

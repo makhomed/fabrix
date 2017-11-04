@@ -7,7 +7,7 @@ Tutorial
 .. note::
 
     Because **Fabrix** is extension for `Fabric <http://www.fabfile.org/>`_,
-    you should be familiar with `Fabric <http://www.fabfile.org/>`_ and |nbsp| how it work.
+    you should be familiar with `Fabric <http://www.fabfile.org/>`_.
 
 .. toctree::
     :maxdepth: 2

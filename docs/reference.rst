@@ -34,6 +34,8 @@ Reference
   - :func:`~fabrix.ioutil.create_directory`
   - :func:`~fabrix.ioutil.debug`
   - :func:`~fabrix.ioutil.hide_run`
+  - :func:`~fabrix.ioutil.is_directory_exists`
+  - :func:`~fabrix.ioutil.is_file_exists`
   - :func:`~fabrix.ioutil.read_file`
   - :func:`~fabrix.ioutil.read_local_file`
   - :func:`~fabrix.ioutil.remove_directory`

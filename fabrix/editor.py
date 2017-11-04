@@ -184,7 +184,7 @@ def replace_line(pattern, repl, flags=0):
             and so forth. Unknown escapes such as \\j are left alone. Backreferences, such as \\6,
             are replaced with the substring matched by group 6 in the pattern.
             For details see :meth:`re.RegexObject.sub`.
-        flags: Any flags allowed if :func:`re.compile`.
+        flags: Any flags allowed in :func:`re.compile`.
 
     Returns:
         closure function, which acts as text editor, parameterized by :func:`~replace_line` arguments.
@@ -218,7 +218,7 @@ def substitute_line(pattern, repl, flags=0):
             and so forth. Unknown escapes such as \\j are left alone. Backreferences, such as \\6,
             are replaced with the substring matched by group 6 in the pattern.
             For details see :meth:`re.RegexObject.sub`.
-        flags: Any flags allowed if :func:`re.compile`.
+        flags: Any flags allowed in :func:`re.compile`.
 
     Returns:
         closure function, which acts as text editor, parameterized by :func:`~substitute_line` arguments.

@@ -132,6 +132,42 @@ def write_file(remote_filename, content):
         return True
 
 
+def is_file_exists(remote_filename):
+    """Is file exists?
+
+    Args:
+        remote_filename: Remote file name, must be absolute.
+
+    Returns:
+        True if file exists, False if file not exists.
+    """
+    with settings(hide('everything')):
+        if not os.path.isabs(remote_filename):
+            fname = str(inspect.stack()[1][1])
+            nline = str(inspect.stack()[1][2])
+            abort('remote filename must be absolute, "%s" given in file %s line %s' % (remote_filename, fname, nline))
+        exists = run('if [ -f ' + remote_filename + ' ] ; then echo exists ; fi') == 'exists'
+        return exists
+
+
+def is_directory_exists(remote_dirname):
+    """Is directory exists?
+
+    Args:
+        remote_dirname: Remote directory name, must be absolute.
+
+    Returns:
+        True if directory exists, False if directory not exists.
+    """
+    with settings(hide('everything')):
+        if not os.path.isabs(remote_dirname):
+            fname = str(inspect.stack()[1][1])
+            nline = str(inspect.stack()[1][2])
+            abort('remote dirname must be absolute, "%s" given in file %s line %s' % (remote_dirname, fname, nline))
+        exists = run('if [ -d ' + remote_dirname + ' ] ; then echo exists ; fi') == 'exists'
+        return exists
+
+
 def remove_file(remote_filename):
     """Remove remote file.
 

@@ -148,6 +148,8 @@ If host variable name is not correct Python identifier - only dict syntax is all
 .. warning::
     :obj:`~fabrix.config.conf` is dict-like object, which support almost all dict operations and functions.
     But with one exception: ``**conf`` not work as expected, because Dictionary Unpacking operator ``**`` can't be overriden in Python.
+
+``conf`` filled via ``defaults``, ``role_vars`` and ``host_vars`` directives in configuration file.
 """
 
 local_conf = _AttributeDict()
@@ -157,6 +159,8 @@ Access to local configuration possible via dict syntax,
 like ``local_conf['foo']`` and also via attribute-like syntax: ``local_conf.foo``.
 
 If local variable name is not correct Python identifier - only dict syntax is allowed.
+
+``local_conf`` filled via ``local_vars`` directive in configuration file.
 """
 
 
