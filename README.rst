@@ -1,9 +1,3 @@
-
-.. image:: https://github.com/makhomed/fabrix/blob/master/docs/_static/icosahedron.png
-    :target: https://github.com/makhomed/fabrix
-    :height: 175px
-    :width: 175px
-
 Fabrix
 ======
 
