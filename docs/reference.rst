@@ -1,6 +1,8 @@
 .. meta::
     :description: Fabrix Reference
 
+.. _reference:
+
 Reference
 =========
 
@@ -80,6 +82,13 @@ Reference
   - :func:`~fabrix.system.timedatectl_set_timezone`
 
 ----------------------------------------
+
+.. seealso::
+    * :ref:`Overview <overview>`
+    * :ref:`installation`
+    * :ref:`tutorial`
+    * Reference
+    * :ref:`changelog`
 
 .. toctree::
     :maxdepth: 2

@@ -2,6 +2,8 @@
 .. meta::
     :description: Fabrix installation
 
+.. _installation:
+
 Installation
 ============
 
@@ -64,4 +66,11 @@ Source code checkouts
 To follow Fabrix development via Git instead of downloading official releases,
 you can clone the canonical repository straight from
 `the Fabrix repository on GitHub <https://github.com/makhomed/fabrix>`_.
+
+.. seealso::
+    * :ref:`Overview <overview>`
+    * Installation
+    * :ref:`tutorial`
+    * :ref:`reference`
+    * :ref:`changelog`
 

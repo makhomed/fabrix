@@ -2,6 +2,8 @@
     :description: Fabrix is Fabric extension for configuration management
     :keywords: configuration management
 
+.. _overview:
+
 Welcome to Fabrix!
 ==================
 
@@ -196,3 +198,11 @@ After running ``fab deploy`` we can see:
     tutorial
     reference
     changelog
+
+.. seealso::
+    * Overview
+    * :ref:`installation`
+    * :ref:`tutorial`
+    * :ref:`reference`
+    * :ref:`changelog`
+

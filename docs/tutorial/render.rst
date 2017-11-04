@@ -1,6 +1,8 @@
 .. meta::
     :description: Fabrix template rendering tutorial
 
+.. _tutorial-render:
+
 Template rendering
 ------------------
 
@@ -69,4 +71,7 @@ For example:
         write_file("/path/to/example.conf",
             render_template("example.conf.j2", key="value")
         )
+
+.. seealso::
+    :ref:`Template rendering Reference <reference-render>`
 

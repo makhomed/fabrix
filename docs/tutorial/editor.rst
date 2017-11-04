@@ -1,6 +1,8 @@
 .. meta::
     :description: Fabrix editor functions tutorial
 
+.. _tutorial-editor:
+
 Editor functions
 ----------------
 
@@ -126,4 +128,7 @@ Code :file:`fabfile.py`:
 
     - :func:`~fabrix.editor.strip_line`
     - :func:`~fabrix.editor.strip_text`
+
+.. seealso::
+    :ref:`Editor functions Reference <reference-editor>`
 

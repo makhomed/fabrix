@@ -1,6 +1,8 @@
 .. meta::
     :description: Fabrix package management tutorial
 
+.. _tutorial-rpmyum:
+
 Package management
 ------------------
 
@@ -34,4 +36,7 @@ For example:
         all_packages = list(("crond", base_packages, php_packages))
 
         yum_install(all_packages, "net-tools mysql man")
+
+.. seealso::
+    :ref:`Package management Reference <reference-rpmyum>`
 

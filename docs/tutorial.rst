@@ -1,6 +1,8 @@
 .. meta::
     :description: Fabrix Tutorial
 
+.. _tutorial:
+
 Tutorial
 ========
 
@@ -8,6 +10,13 @@ Tutorial
 
     Because **Fabrix** is extension for `Fabric <http://www.fabfile.org/>`_,
     you should be familiar with `Fabric <http://www.fabfile.org/>`_.
+
+.. seealso::
+    * :ref:`Overview <overview>`
+    * :ref:`installation`
+    * Tutorial
+    * :ref:`reference`
+    * :ref:`changelog`
 
 .. toctree::
     :maxdepth: 2

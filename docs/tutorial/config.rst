@@ -1,6 +1,8 @@
 .. meta::
     :description: Fabrix configuration tutorial
 
+.. _tutorial-config:
+
 Configuration
 -------------
 
@@ -329,4 +331,7 @@ Result of execution :command:`fab prod deploy`:
     Hello, prod!
     [web3] Executing task 'update'
     Hello, prod!
+
+.. seealso::
+    :ref:`Configuration Reference <reference-config>`
 

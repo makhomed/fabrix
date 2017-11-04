@@ -1,6 +1,8 @@
 .. meta::
     :description: Fabrix system management tutorial
 
+.. _tutorial-system:
+
 System management
 -----------------
 
@@ -103,4 +105,7 @@ Function :func:`~fabrix.system.is_reboot_required` returns True
 if remote system requires reboot after yum update.
 
 Function :func:`~fabrix.system.reboot_and_wait` reboots remove system.
+
+.. seealso::
+    :ref:`System management Reference <reference-system>`
 
