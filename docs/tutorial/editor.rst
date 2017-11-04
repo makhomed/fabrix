@@ -39,10 +39,10 @@ Code :file:`fabfile.py`:
 
     def edit_grub():
         changed = edit_file("/etc/default/grub",
-            replace_line(r'GRUB_TIMEOUT=.*', r'GRUB_TIMEOUT=1'),
-            replace_line(r'(GRUB_CMDLINE_LINUX=.*)\brhgb\b(.*)', r'\1selinux=0\2'),
-            replace_line(r'(GRUB_CMDLINE_LINUX=.*)\bquiet\b(.*)', r'\1panic=1\2'),
-            substitute_line(r'\s+', r' '),
+            replace_line(r"GRUB_TIMEOUT=.*", r"GRUB_TIMEOUT=1"),
+            replace_line(r"(GRUB_CMDLINE_LINUX=.*)\brhgb\b(.*)", r"\1selinux=0\2"),
+            replace_line(r"(GRUB_CMDLINE_LINUX=.*)\bquiet\b(.*)", r"\1panic=1\2"),
+            substitute_line(r"\s+", r" "),
             strip_line(),
         )
         if changed:

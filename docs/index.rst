@@ -71,10 +71,10 @@ Editing configuration files
 
     def edit_grub():
         changed = edit_file("/etc/default/grub",
-            replace_line(r'GRUB_TIMEOUT=.*', r'GRUB_TIMEOUT=1'),
-            replace_line(r'(GRUB_CMDLINE_LINUX=.*)\brhgb\b(.*)', r'\1selinux=0\2'),
-            replace_line(r'(GRUB_CMDLINE_LINUX=.*)\bquiet\b(.*)', r'\1panic=1\2'),
-            substitute_line(r'\s+', r' '),
+            replace_line(r"GRUB_TIMEOUT=.*", r"GRUB_TIMEOUT=1"),
+            replace_line(r"(GRUB_CMDLINE_LINUX=.*)\brhgb\b(.*)", r"\1selinux=0\2"),
+            replace_line(r"(GRUB_CMDLINE_LINUX=.*)\bquiet\b(.*)", r"\1panic=1\2"),
+            substitute_line(r"\s+", r" "),
             strip_line(),
         )
         if changed:
@@ -157,12 +157,12 @@ Code ``fabfile.py``:
     from fabric.api import env, run, roles, execute
     from fabrix.api import conf
 
-    @roles('db')
+    @roles("db")
     def migrate():
         print "Hello, %s!" % conf.name
         pass
 
-    @roles('web')
+    @roles("web")
     def update():
         print "Hello, %s!" % conf.name
         pass

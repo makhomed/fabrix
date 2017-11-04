@@ -89,7 +89,7 @@ we can use for setting locale and timezone.
 
     def example():
         localectl_set_locale("LANG=en_US.UTF-8")
-        timedatectl_set_timezone('Europe/Kiev')
+        timedatectl_set_timezone("Europe/Kiev")
 
 
 Function :func:`~fabrix.system.disable_selinux`
@@ -97,7 +97,7 @@ can be used for disablong SELinux on remote machine.
 
 Function :func:`~fabrix.system.get_virtualization_type`
 returns None if no virtualization detected, or virtualization type
-as string, for example, ‘openvz’ or ‘kvm’ or something else.
+as string, for example, "openvz", "kvm" or something else.
 
 Function :func:`~fabrix.system.is_reboot_required` returns True
 if remote system requires reboot after yum update.

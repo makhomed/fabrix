@@ -13,9 +13,9 @@ For example, consider simple ``fabfile.py``:
 
     from fabric.api import env
 
-    env.hosts = ['example.com', 'example.net', 'example.org']
+    env.hosts = ["example.com", "example.net", "example.org"]
 
-    conf_name = 'World'
+    conf_name = "World"
 
     def hello():
         print "Hello, %s!" % conf_name
@@ -78,7 +78,7 @@ And updated ``fabfile.py`` with only code, without any configuration:
 After runnig :command:`fab hello` we will see the same output as above.
 
 During startup Fabrix library look for yaml configuration file
-with same name as fabile, but with extension ``'.yaml'``.
+with same name as fabile, but with extension ``.yaml``.
 If such configuration file exists it will be automatically
 loaded, parsed and this configuration will be used for running tasks.
 
@@ -172,12 +172,12 @@ Code, ``fabfile.py``:
     from fabric.api import env, run, roles, execute
     from fabrix.api import conf
 
-    @roles('db')
+    @roles("db")
     def migrate():
         print "Hello, %s!" % conf.name
         pass
 
-    @roles('web')
+    @roles("web")
     def update():
         print "Hello, %s!" % conf.name
         pass
@@ -245,21 +245,21 @@ It is easy. We can use function :func:`~fabrix.config.read_config`:
     from fabric.api import env, run, roles, execute
     from fabrix.api import conf, read_config
 
-    @roles('db')
+    @roles("db")
     def migrate():
         print "Hello, %s!" % conf.name
         pass
 
-    @roles('web')
+    @roles("web")
     def update():
         print "Hello, %s!" % conf.name
         pass
 
     def stage():
-        read_config('stage.yaml')
+        read_config("stage.yaml")
 
     def prod():
-        read_config('prod.yaml')
+        read_config("prod.yaml")
 
     def deploy():
         execute(migrate)
