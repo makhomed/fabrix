@@ -109,6 +109,7 @@ html_theme = 'alabaster'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
+    'logo': 'icosahedron.png',
     'logo_name': True,
     'logo_text_align': 'center',
     'description': '<center>configuration management</center>',
