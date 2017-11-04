@@ -25,7 +25,7 @@ For example:
 
     def example():
 
-        base_packages = set(("mc", "postfix", "vim", "git", "screen", "htop"))
+        base_packages = set(("mc", "postfix", "vim", "screen", "htop"))
 
         php_packages = """php-cli php-common php-fpm php-gd php-mbstring
                 php-mysql php-pdo php-pear php-pecl-imagick php-process
