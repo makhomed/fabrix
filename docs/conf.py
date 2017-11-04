@@ -99,7 +99,7 @@ todo_include_todos = False
 
 html_title = 'Fabrix documentation'
 
-html_show_copyright = False
+html_show_copyright = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -110,13 +110,19 @@ html_theme = 'alabaster'
 # documentation.
 html_theme_options = {
     'logo': 'icosahedron.png',
+    'touch_icon': 'icosahedron.png',
     'logo_name': True,
     'logo_text_align': 'center',
     'description': '<center>configuration management</center>',
     'analytics_id': 'UA-8460579-2',
-    'show_powered_by':  False,
+    'show_powered_by': True,
     'show_related': False,
     'sidebar_collapse': True,
+    'fixed_sidebar': True,
+    'github_user': 'makhomed',
+    'github_repo': 'fabrix',
+    'travis_button': True,
+    'codecov_button': True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
