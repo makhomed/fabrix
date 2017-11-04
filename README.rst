@@ -1,6 +1,8 @@
 
 .. image:: https://github.com/makhomed/fabrix/blob/master/docs/_static/icosahedron.png
-    :scale: 50 %
+    :target: https://github.com/makhomed/fabrix
+    :height: 175px
+    :width: 175px
 
 Fabrix
 ======
