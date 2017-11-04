@@ -25,14 +25,14 @@ Installation
 Links
 -----
 
- * `Fabrix Documentation <https://fabrix.readthedocs.io/en/latest/>`_
- * `Fabrix GitHub Home Page <https://github.com/makhomed/fabrix>`_
- * `Fabrix Python Package Index <https://pypi.python.org/pypi/Fabrix>`_
+* `Fabrix Documentation <https://fabrix.readthedocs.io/en/latest/>`_
+* `Fabrix GitHub Home Page <https://github.com/makhomed/fabrix>`_
+* `Fabrix Python Package Index <https://pypi.python.org/pypi/Fabrix>`_
 
 Examples
 --------
 
-Configuration :file:`fabrile.yaml`:
+Configuration ``fabrile.yaml``:
 
 .. code-block:: yaml
 
@@ -60,7 +60,7 @@ Configuration :file:`fabrile.yaml`:
     defaults:
       name: generic
 
-Code :file:`fabfile.py`:
+Code ``fabfile.py``:
 
 .. code-block:: python
 
@@ -81,7 +81,7 @@ Code :file:`fabfile.py`:
         execute(migrate)
         execute(update)
 
-After running :command:`fab deploy` we can see:
+After running ``fab deploy`` we can see:
 
 .. code-block:: none
 
@@ -175,3 +175,6 @@ Installing PHP 7.0 from remi repo:
                 php-mcrypt
                 php-soap
         """)
+
+More details and examples you can see in `Fabrix Documentation <https://fabrix.readthedocs.io/en/latest/>`_.
+
