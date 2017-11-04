@@ -2,7 +2,7 @@
 Version 0.2
 -----------
 
-Released: not released yet
+Released: 05 Nov 2017
 
 - fixed bug in detection of invalid yaml files in read_config
 - fixed bug in detection of duplicated sections in ini_section_editor
@@ -31,6 +31,7 @@ Released: not released yet
 - added new functions systemctl_get_default(), systemctl_set_default()
 - added new functions localectl_set_locale(), timedatectl_set_timezone()
 - added new functions get_virtualization_type(), strip_text(), render()
+- added sphinx documentation, development status changed to "beta"
 
 
 Version 0.1
