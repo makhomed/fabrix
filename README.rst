@@ -15,6 +15,8 @@ Fabrix
 .. image:: https://badge.fury.io/py/Fabrix.svg
     :target: https://badge.fury.io/py/Fabrix
 
+|
+
 `Fabric <http://www.fabfile.org/>`_ is tool for application deployment and systems administration tasks.
 But configuration management with Fabric is not easy, because Fabric
 does not provide any useful functions for configuration management.
