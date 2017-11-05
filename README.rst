@@ -183,5 +183,5 @@ After running ``fab deploy`` we can see:
     [web3] Executing task 'update'
     Hello, webserver!
 
-More details and examples you can see in `Fabrix Documentation <https://fabrix.readthedocs.io/en/latest/>`_.
+More details and examples you can see in `Fabrix Documentation <https://fabrix.readthedocs.io/>`_.
 
