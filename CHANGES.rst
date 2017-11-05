@@ -32,7 +32,7 @@ Released: 05 Nov 2017
 - added new functions systemctl_get_default(), systemctl_set_default()
 - added new functions localectl_set_locale(), timedatectl_set_timezone()
 - added new functions get_virtualization_type(), strip_text(), render()
-- added documentation https://fabrix.readthedocs.io/, status changed to "beta"
+- status changed to "beta", added documentation https://fabrix.readthedocs.io/
 
 
 Version 0.1
