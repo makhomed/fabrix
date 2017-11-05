@@ -124,7 +124,7 @@ Installing PHP 7.0 from remi repo
 Using external configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configuration file ``fabrile.yaml``:
+Configuration file ``fabfile.yaml``:
 
 .. code-block:: yaml
 

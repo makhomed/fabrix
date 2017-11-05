@@ -188,7 +188,7 @@ Code, ``fabfile.py``:
         execute(migrate)
         execute(update)
 
-Configuration, ``fabrile.yaml``:
+Configuration, ``fabfile.yaml``:
 
 .. code-block:: yaml
 
