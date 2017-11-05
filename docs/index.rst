@@ -16,7 +16,7 @@ Welcome to Fabrix!
     :target: https://codecov.io/gh/makhomed/fabrix
 
 .. image:: https://readthedocs.org/projects/fabrix/badge/
-    :target: https://fabrix.readthedocs.io/en/latest/
+    :target: https://fabrix.readthedocs.io/
 
 .. image:: https://badge.fury.io/py/Fabrix.svg
     :target: https://badge.fury.io/py/Fabrix
@@ -31,7 +31,7 @@ Installation
 Links
 -----
 
-* `Fabrix Documentation <https://fabrix.readthedocs.io/en/latest/>`_
+* `Fabrix Documentation <https://fabrix.readthedocs.io/>`_
 * `Fabrix GitHub Home Page <https://github.com/makhomed/fabrix>`_
 * `Fabrix Python Package Index <https://pypi.python.org/pypi/Fabrix>`_
 
