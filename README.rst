@@ -15,6 +15,28 @@ Fabrix
 .. image:: https://badge.fury.io/py/Fabrix.svg
     :target: https://badge.fury.io/py/Fabrix
 
+`Fabric <http://www.fabfile.org/>`_ is tool for application deployment and systems administration tasks.
+But configuration management with Fabric is not easy, because Fabric
+does not provide any useful functions for configuration management.
+
+Exists two well known attempts to make Fabric more comfortable for configiration management,
+`cuisine <https://github.com/sebastien/cuisine>`_ and `fabtools <https://github.com/fabtools/fabtools>`_
+based on ideas of Chef and Puppet.
+
+`Ansible <https://www.ansible.com/>`_ is well known tool for configuration management.
+But Ansible has own drawbacks. Ansible requires from users learning special yaml-based programming language,
+and it have many limitations and often users must write shell scripts and use these scripts with Ansible
+or even write own Ansible modules. Already exists `more then 1300 Ansible modules <http://docs.ansible.com/ansible/latest/list_of_all_modules.html>`_.
+You need to spent many time for learning Ansible programming language and huge list of Ansible modules.
+And after all you still need to write own shell scripts and Ansible modules,
+because potential of Ansible yaml-based programming language is very limited.
+
+**Fabrix** is my approach and my try to create useful and simple Fabric extension for configuration management.
+I try to integrate advantages of Fabric and Ansible without their drawbacks.
+**Fabrix** is simple but powerful extension for Fabric, which allows write easy to understand
+Ansible-like idempotent fabfiles on pure Python.
+
+
 Installation
 ------------
 
