@@ -178,7 +178,7 @@ def read_config(config_filename=None):
     ``read_config('stage.yaml')`` or ``read_config('prod.yaml')`` - in this case files 'stage.yaml' and 'prod.yaml'
     will be looked for in the directory where ``env.real_fabfile`` is located.
 
-    Configuration file has yaml format and can contains:
+    Configuration file has `yaml format <https://en.wikipedia.org/wiki/YAML#Syntax>`_ and can contains:
 
         - ``hosts:`` is list of hosts. Each host can be ip address or hostname.
           Also username and port can be mentioned. For example:

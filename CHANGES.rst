@@ -2,7 +2,7 @@
 Version 0.2
 -----------
 
-Released: 05 Nov 2017
+Released: 07 Nov 2017
 
 - fixed bug in detection of invalid yaml files in read_config
 - fixed bug in detection of duplicated sections in ini_section_editor
