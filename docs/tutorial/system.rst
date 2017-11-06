@@ -95,7 +95,7 @@ we can use for setting locale and timezone.
 
 
 Function :func:`~fabrix.system.disable_selinux`
-can be used for disablong SELinux on remote machine.
+can be used for disabling SELinux on remote machine.
 
 Function :func:`~fabrix.system.get_virtualization_type`
 returns None if no virtualization detected, or virtualization type
@@ -104,7 +104,7 @@ as string, for example, "openvz", "kvm" or something else.
 Function :func:`~fabrix.system.is_reboot_required` returns True
 if remote system requires reboot after yum update.
 
-Function :func:`~fabrix.system.reboot_and_wait` reboots remove system.
+Function :func:`~fabrix.system.reboot_and_wait` reboots remote system.
 
 .. seealso::
     :ref:`System management Reference <reference-system>`
