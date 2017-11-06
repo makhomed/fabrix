@@ -3,7 +3,7 @@ import time
 import inspect
 import os.path
 from fabric.state import connections
-from fabric.api import run, settings, hide, quiet, env, abort
+from fabric.api import run, hide, quiet, env, settings, abort
 from fabrix.editor import edit_file, replace_line, strip_text
 from fabrix.ioutil import remove_file, remove_directory, create_directory, write_file
 
@@ -82,7 +82,7 @@ def disable_selinux():
     changed2 = False
     with settings(hide('everything')):
         if run('if [ -e /etc/selinux/config ] ; then echo exists ; fi') == 'exists':
-            changed1 = edit_file('/etc/selinux/config', replace_line('\s*SELINUX\s*=\s*.*', 'SELINUX=disabled'))
+            changed1 = edit_file('/etc/selinux/config', replace_line(r'\s*SELINUX\s*=\s*.*', 'SELINUX=disabled'))
         if run('if [ -e /usr/sbin/setenforce ] && [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
             changed2 = run('STATUS=$(getenforce) ; if [ "$STATUS" == "Enforcing" ] ; then setenforce 0 ; echo perm ; fi') == 'perm'
     return changed1 or changed2
@@ -173,7 +173,7 @@ def systemctl_edit(name, override):
     override_dir = '/etc/systemd/system/' + name + '.d'
     override_conf = os.path.join(override_dir, 'override.conf')
     override = strip_text(override)
-    if override:
+    if override:  # pylint: disable=no-else-return
         changed1 = create_directory(override_dir)
         changed2 = write_file(override_conf, override)
         return changed1 or changed2

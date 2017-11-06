@@ -1,22 +1,24 @@
 #!/usr/bin/env python
 
+import codecs
+import os.path
 from setuptools import setup, find_packages
-from codecs import open
-from os import path
 
 
-lines = list()
-here = path.abspath(path.dirname(__file__))
-with open(path.join(here, 'README.rst'), encoding='utf-8') as readme_rst:
-    lines = [line.rstrip('\n') for line in readme_rst]
-lines=lines[4:]
-long_description = "\n".join(lines)
+def long_description():
+    project_root = os.path.abspath(os.path.dirname(__file__))
+    readme_filename = os.path.join(project_root, 'README.rst')
+    with codecs.open(readme_filename, encoding='UTF-8') as readme_file:
+        lines = [line.rstrip('\n') for line in readme_file]
+    lines = lines[4:]
+    return "\n".join(lines)
+
 
 setup(
     name='Fabrix',
     version='0.2',
     description='Fabrix is Fabric extension for configuration management',
-    long_description=long_description,
+    long_description=long_description(),
     long_description_content_type='text/x-rst',
     keywords=['configuration management'],
     author='Gena Makhomed',

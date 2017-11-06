@@ -106,7 +106,7 @@ def write_local_file(local_filename, content):
         False if old contend == new content and file not changed at all.
     """
     old_content = read_local_file(local_filename, abort_on_error=False)
-    if content == old_content:
+    if content == old_content:  # pylint: disable=no-else-return
         return False
     else:
         _atomic_write_local_file(local_filename, content)
@@ -125,7 +125,7 @@ def write_file(remote_filename, content):
         False if old contend == new content and file not changed at all.
     """
     old_content = read_file(remote_filename, abort_on_error=False)
-    if content == old_content:
+    if content == old_content:  # pylint: disable=no-else-return
         return False
     else:
         _atomic_write_file(remote_filename, content)
@@ -380,7 +380,7 @@ def copy_file(local_filename, remote_filename):
     return changed
 
 
-def rsync(local_path, remote_path, extra_rsync_options=""):
+def rsync(local_path, remote_path, extra_rsync_options=""):  # pylint: disable=too-many-locals
     """Rsync files/directories from local path to remote_path.
 
     .. note::

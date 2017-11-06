@@ -13,7 +13,7 @@ class _ConfAttributeDict(dict):
     # ---------------------------------------------------------------
 
     def __getitem__(self, key):
-        if env.host_string is None:
+        if env.host_string is None:  # pylint: disable=no-else-return
             return None
         else:
             return self.__super__getitem__(env.host_string).__getitem__(key)
@@ -50,7 +50,7 @@ class _ConfAttributeDict(dict):
         return self.__super__getitem__(env.host_string).__cmp__(other)
 
     def __len__(self):
-        if env.host_string is None:
+        if env.host_string is None:  # pylint: disable=no-else-return
             return 0
         else:
             return self.__super__getitem__(env.host_string).__len__()
@@ -137,7 +137,7 @@ class _AttributeDict(dict):
         return self.__delitem__(key)
 
 
-conf = _ConfAttributeDict()
+conf = _ConfAttributeDict()  # pylint: disable=invalid-name
 """conf is dict-like object with host configuration variables.
 
 Access to host configuration possible via dict syntax,
@@ -152,7 +152,7 @@ If host variable name is not correct Python identifier - only dict syntax is all
 ``conf`` filled via ``defaults``, ``role_vars`` and ``host_vars`` directives in configuration file.
 """
 
-local_conf = _AttributeDict()
+local_conf = _AttributeDict()  # pylint: disable=invalid-name
 """local_conf is dict object with local configuration variables.
 
 Access to local configuration possible via dict syntax,
@@ -164,8 +164,8 @@ If local variable name is not correct Python identifier - only dict syntax is al
 """
 
 
-def read_config(config_filename=None):
-    """Read configuration from .yaml file.
+def read_config(config_filename=None):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
+    r"""Read configuration from .yaml file.
 
     If ``config_filename`` is None - :func:`~read_config` will try to use
     ``config_filename`` constructed from ``env.real_fabfile`` by replacing ``.py`` file extension with ``.yaml`` one.
@@ -244,7 +244,7 @@ def read_config(config_filename=None):
     if argument_config_filename is None:
         dirname = os.path.dirname(env.real_fabfile)
         basename = os.path.basename(env.real_fabfile)
-        name, ext = os.path.splitext(basename)
+        name, dummy_ext = os.path.splitext(basename)
         config_filename = os.path.join(dirname, name + '.yaml')
     elif not os.path.isabs(argument_config_filename):
         dirname = os.path.dirname(env.real_fabfile)

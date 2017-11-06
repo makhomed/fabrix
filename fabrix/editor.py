@@ -306,7 +306,7 @@ def edit_ini_section(section_name_to_edit, *editors):
             abort('edit_ini_section: section name must be in form [section_name] in file %s line %s' % (fname, nline))
         section_name_to_edit = section_name_to_edit[1:-1]
 
-    def ini_section_editor(text):
+    def ini_section_editor(text):  # pylint: disable=too-many-locals
         pattern = r'^\s*\[(.*)\]\s*$'
         regex = re.compile(pattern)
         current_section_name = None
@@ -416,7 +416,7 @@ def edit_text(text, *editors):
     Raises:
         :class:`~exceptions.SystemExit`: When error occurred.
     """
-    changed, text = _apply_editors(text, *editors)
+    dummy_changed, text = _apply_editors(text, *editors)
     return text
 
 
