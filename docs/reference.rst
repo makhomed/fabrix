@@ -73,6 +73,7 @@ Reference
   - :func:`~fabrix.system.systemctl_enable`
   - :func:`~fabrix.system.systemctl_get_default`
   - :func:`~fabrix.system.systemctl_mask`
+  - :func:`~fabrix.system.systemctl_preset`
   - :func:`~fabrix.system.systemctl_reload`
   - :func:`~fabrix.system.systemctl_restart`
   - :func:`~fabrix.system.systemctl_set_default`

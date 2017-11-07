@@ -7,7 +7,7 @@ from fabrix.system import systemctl_start, systemctl_stop, systemctl_reload, sys
 from fabrix.system import systemctl_enable, systemctl_disable, systemctl_mask, systemctl_unmask
 from fabrix.system import systemctl_edit, systemctl_get_default, systemctl_set_default
 from fabrix.system import localectl_set_locale, timedatectl_set_timezone
-from fabrix.system import get_virtualization_type
+from fabrix.system import get_virtualization_type, systemctl_preset
 
 
 def test_is_reboot_required(monkeypatch):
@@ -137,6 +137,16 @@ def test_systemctl_unmask(monkeypatch):
     mock_run = mock_run_factory(run_state)
     monkeypatch.setattr(fabrix.system, 'run', mock_run)
     assert systemctl_unmask(name) is None
+
+
+def test_systemctl_preset(monkeypatch):
+    name = 'name'
+    run_state = {
+        r'systemctl daemon-reload ; systemctl preset ' + name + ' ; systemctl daemon-reload': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.system, 'run', mock_run)
+    assert systemctl_preset(name) is None
 
 
 def test_systemctl_edit(monkeypatch):

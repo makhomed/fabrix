@@ -22,6 +22,10 @@ Also services can be masked and unmasked with functions
 :func:`~fabrix.system.systemctl_mask`
 and :func:`~fabrix.system.systemctl_unmask`.
 
+Also function :func:`~fabrix.system.systemctl_preset`
+can be used to reset the enable/disable status
+of one or more unit files to the defaults configured in the preset policy files.
+
 Service unit files can be edited with function
 :func:`~fabrix.system.systemctl_edit`.
 

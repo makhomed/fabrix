@@ -144,6 +144,13 @@ def systemctl_unmask(name):
         run('systemctl daemon-reload ; systemctl unmask ' + name + ' ; systemctl daemon-reload')
 
 
+def systemctl_preset(name):
+    """systemctl preset ``name``.
+    """
+    with settings(hide('everything')):
+        run('systemctl daemon-reload ; systemctl preset ' + name + ' ; systemctl daemon-reload')
+
+
 def systemctl_edit(name, override):
     """systemctl edit ``name``.
 

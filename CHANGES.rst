@@ -1,4 +1,12 @@
 
+Version 0.3
+-----------
+
+Not released yet
+
+- added new function systemctl_preset()
+
+
 Version 0.2
 -----------
 

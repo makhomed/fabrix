@@ -7,7 +7,7 @@ from fabrix.ioutil import is_file_exists, is_directory_exists
 from fabrix.system import systemctl_enable, systemctl_disable, systemctl_mask, systemctl_unmask
 from fabrix.system import systemctl_start, systemctl_stop, systemctl_reload, systemctl_restart
 from fabrix.system import systemctl_edit, is_reboot_required, reboot_and_wait, disable_selinux
-from fabrix.system import systemctl_get_default, systemctl_set_default
+from fabrix.system import systemctl_get_default, systemctl_set_default, systemctl_preset
 from fabrix.system import localectl_set_locale, timedatectl_set_timezone
 from fabrix.system import get_virtualization_type
 from fabrix.rpmyum import yum_install, yum_remove, yum_update
