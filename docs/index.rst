@@ -199,7 +199,7 @@ Code ``fabfile.py``:
 
 After running ``fab deploy`` we can see:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ fab deploy
     [db1] Executing task 'migrate'

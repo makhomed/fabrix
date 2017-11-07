@@ -16,7 +16,7 @@ def long_description():
 
 setup(
     name='Fabrix',
-    version='0.2',
+    version='0.2.3',
     description='Fabrix is Fabric extension for configuration management',
     long_description=long_description(),
     long_description_content_type='text/x-rst',

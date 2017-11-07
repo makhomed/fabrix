@@ -29,7 +29,7 @@ For example, ``fabfile.py``:
 
 After executing command :command:`fab hello` we can see:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ fab hello
     Hello, World!
@@ -53,7 +53,7 @@ And ``fabfile.py``:
 
 After executing command :command:`fab hello` we can see:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ fab hello
     Hello, World!

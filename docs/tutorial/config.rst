@@ -25,7 +25,7 @@ For example, consider simple ``fabfile.py``:
 
 After running command :command:`fab hello` we will se such output:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ fab hello
     [example.com] Executing task 'hello'
@@ -117,7 +117,7 @@ Code in ``fabfile.py`` not changed, and remain the same as for previous example:
 
 After running :command:`fab hello` we can see such result:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ fab hello
     [example.com] Executing task 'hello'
@@ -218,7 +218,7 @@ Configuration, ``fabfile.yaml``:
 
 After running :command:`fab deploy` we can see:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ fab deploy
     [db1] Executing task 'migrate'
@@ -290,7 +290,7 @@ Configuration file ``stage.yaml``:
 
 Result of execution :command:`fab stage deploy`:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ fab stage deploy
     [stage-db] Executing task 'migrate'
@@ -318,7 +318,7 @@ Configuration file ``prod.yaml``:
 
 Result of execution :command:`fab prod deploy`:
 
-.. code-block:: none
+.. code-block:: bash
 
     $ fab prod deploy
     [db1] Executing task 'migrate'

@@ -41,7 +41,7 @@ This example creates on remote machine file
 :file:`/etc/systemd/system/mysqld.service.d/override.conf`
 with contents:
 
-.. code-block:: none
+.. code-block:: bash
 
     [Service]
     LimitNOFILE = 262144
