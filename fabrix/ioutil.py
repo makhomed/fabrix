@@ -12,6 +12,12 @@ from fabric.api import env, abort, local, run, get, put, quiet, settings, hide
 from fabric.network import key_filenames, normalize
 
 
+def name(description):
+    """Print one line description about running action
+    """
+    print "[%s] * %s" % (env.host_string, description)
+
+
 def debug(*args):
     """Debug print all arguments.
 

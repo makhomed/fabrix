@@ -4,7 +4,7 @@ Version 0.3
 
 Not released yet
 
-- added new function systemctl_preset()
+- added new functions systemctl_preset(), name()
 
 
 Version 0.2

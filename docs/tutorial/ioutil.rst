@@ -30,6 +30,37 @@ We can copy files from local host to remote host with function
 Or even recursively copy files and directories from local host
 to remote host with function :func:`~fabrix.ioutil.rsync`.
 
+With function :func:`~fabrix.ioutil.name` you can print pretty one-line description
+about running action. For example, ``fabfile.py``:
+
+.. code-block:: python
+
+    from fabrix.api import name, systemctl_stop, yum_remove, remove_file
+    from fabrix.api import yum_install, systemctl_enable, systemctl_start
+
+    def install_server():
+        name("install iptables")
+        systemctl_stop("firewalld")
+        yum_remove("firewalld")
+        remove_file("/var/log/firewalld")
+        yum_install("iptables-services")
+        systemctl_enable("iptables")
+        systemctl_start("iptables")
+
+        name("install acpid")
+        yum_install("acpid")
+        systemctl_enable("acpid")
+        systemctl_start("acpid")
+
+Running this fabfile on host ``example.com`` will produce output:
+
+.. code-block:: bash
+
+    $ fab install_server
+    [example.com] Executing task 'install_server'
+    [example.com] * install iptables
+    [example.com] * install acpid
+
 Also Fabrix provides two helper functions :func:`~fabrix.ioutil.debug`
 to print debug messages if debug mode is enabled and :func:`~fabrix.ioutil.hide_run`
 for run commands on remote host with settings hide("everything").
