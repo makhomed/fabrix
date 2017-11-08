@@ -52,12 +52,14 @@ def read_local_file(local_filename, abort_on_error=True):
     """Read local file.
 
     Args:
-        local_filename: Local file name, must be absolute.
+        local_filename: Local file name, if relative it will be retrieved from directory ``files`` alongside with ``env.real_fabfile``.
         abort_on_error: :func:`~fabric.utils.abort` if some errors encountered during reading file, for example, if file not exists.
 
     Returns:
         content of file or ``None`` if errors encountered and abort_on_error is False.
     """
+    files_dir = os.path.join(os.path.dirname(env.real_fabfile), 'files')
+    local_filename = os.path.join(files_dir, local_filename)
     try:
         with open(local_filename) as local_file:
             content = local_file.read()
@@ -98,13 +100,15 @@ def write_local_file(local_filename, content):
     """Write local file.
 
     Args:
-        local_filename: Local file name, must be absolute.
+        local_filename: Local file name, if relative it will be relative to directory ``files`` alongside with ``env.real_fabfile``.
         content: text which should be written in file, must be string.
 
     Returns:
         True if content differs from old file content and file changed,
         False if old contend == new content and file not changed at all.
     """
+    files_dir = os.path.join(os.path.dirname(env.real_fabfile), 'files')
+    local_filename = os.path.join(files_dir, local_filename)
     old_content = read_local_file(local_filename, abort_on_error=False)
     if content == old_content:  # pylint: disable=no-else-return
         return False

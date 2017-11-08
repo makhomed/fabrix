@@ -45,7 +45,9 @@ def test_hide_run(monkeypatch):
     assert hide_run('command') == 'stdout'
 
 
-def test_read_local_file(tmpdir):
+def test_read_local_file(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     temp_file = tmpdir.join("file.txt")
     temp_file.write("text")
     assert read_local_file(str(temp_file)) == "text"
@@ -55,7 +57,9 @@ def test_read_local_file(tmpdir):
     assert read_local_file(str(non_existent_file), False) is None
 
 
-def test_write_local_file(tmpdir):
+def test_write_local_file(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     temp_file = tmpdir.join("file.txt")
     assert write_local_file(str(temp_file), "text") is True
     assert write_local_file(str(temp_file), "text") is False
@@ -83,6 +87,8 @@ def test__atomic_write_local_file(tmpdir):
 
 
 def test__copy_local_file_acl(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     old_file = tmpdir.join("old-file")
     old_file.write("old")
     old_filename = str(old_file)

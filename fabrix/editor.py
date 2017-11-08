@@ -358,7 +358,7 @@ def edit_local_file(local_filename, *editors):
             :func:`~edit_file`
 
     Args:
-        local_filename: Name of **local** file to edit, must be absolute.
+        local_filename: Name of **local** file to edit, if relative it will be retrieved from directory ``files`` alongside with ``env.real_fabfile``.
         editors: List of editors to apply for text of file ``local_filename``.
 
     Returns:

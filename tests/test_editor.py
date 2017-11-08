@@ -1,4 +1,5 @@
 from conftest import abort
+from fabric.api import env
 from fabrix.editor import edit_text, edit_ini_section, edit_local_file, edit_file
 from fabrix.editor import _apply_editors, append_line, prepend_line, strip_line
 from fabrix.editor import substitute_line, replace_line, delete_line, insert_line
@@ -121,7 +122,9 @@ def test_edit_ini_section():
     assert edit_text("# php\n[remi-php70]\nenabled=0\n", edit_ini_section(None, substitute_line("php", "PHP"))) == "# PHP\n[remi-php70]\nenabled=0\n"
 
 
-def test_edit_local_file(tmpdir):
+def test_edit_local_file(tmpdir, monkeypatch):
+    fabfile = tmpdir.join("fabfile.py")
+    monkeypatch.setitem(env, "real_fabfile", str(fabfile))
     temp_file = tmpdir.join("test.txt")
     temp_file.write("some example text")
     changed = edit_local_file(str(temp_file), substitute_line("example", "sample"))
