@@ -4,7 +4,7 @@ import fabrix.ioutil
 from conftest import abort, mock_get_factory, mock_put_factory, mock_run_factory
 from conftest import mock_local_factory, mock_os_path_exists_factory
 from fabric.api import env, settings
-from fabrix.ioutil import name, debug_print, read_local_file, write_local_file, _atomic_write_local_file
+from fabrix.ioutil import name, warn, debug_print, read_local_file, write_local_file, _atomic_write_local_file
 from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file, rsync
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context, chown, chmod
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
@@ -14,6 +14,10 @@ from fabrix.ioutil import is_file_exists, is_directory_exists, is_file_not_exist
 
 def test_name():
     name("test")
+
+
+def test_warn():
+    warn("test")
 
 
 def test_debug_print(monkeypatch, capsys):

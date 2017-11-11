@@ -9,6 +9,7 @@ import inspect
 import numbers
 import fabric.state
 import fabric.api
+from fabric.colors import red
 from fabric.api import env, abort, local, get, put, settings
 from fabric.network import key_filenames, normalize
 
@@ -17,6 +18,12 @@ def name(description):
     """Print one line description about running action
     """
     print "[%s] * %s" % (env.host_string, description)
+
+
+def warn(message):
+    """Print one line warning message
+    """
+    print red( "[%s] * WARNING: %s" % (env.host_string,  message))
 
 
 def run(*args, **kwargs):
@@ -85,18 +92,19 @@ def read_file(remote_filename, abort_on_error=True):
     Returns:
         content of file or ``None`` if errors encountered and abort_on_error is False.
     """
-    file_like_object = StringIO.StringIO()
-    with settings(warn_only=True):
-        if get(local_path=file_like_object, remote_path=remote_filename).failed:
+    with settings(fabric.api.hide('running', 'stdout', 'stderr')):
+        file_like_object = StringIO.StringIO()
+        with settings(warn_only=True):
+            if get(local_path=file_like_object, remote_path=remote_filename).failed:
+                file_like_object.close()
+                if abort_on_error:
+                    abort('downloading file ' + remote_filename + ' from host %s failed' % env.host_string)
+                else:
+                    return None
+            file_like_object.seek(0)
+            content = file_like_object.read()
             file_like_object.close()
-            if abort_on_error:
-                abort('downloading file ' + remote_filename + ' from host %s failed' % env.host_string)
-            else:
-                return None
-        file_like_object.seek(0)
-        content = file_like_object.read()
-        file_like_object.close()
-    return content
+        return content
 
 
 def write_local_file(local_filename, content):
@@ -327,28 +335,29 @@ def _copy_local_file_selinux_context(old_filename, new_filename):
 
 
 def _atomic_write_file(remote_filename, content):
-    old_filename = remote_filename
-    if not os.path.isabs(old_filename):
-        abort('remote filename must be absolute, "%s" given' % old_filename)
-    exists = run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists'
-    if exists:
-        if run('if [ ! -f ' + old_filename + ' ] ; then echo isnotfile ; fi') == 'isnotfile':
-            abort('remote filename must be regular file, "%s" given' % old_filename)
-        nlink = int(run('stat --format "%h" -- ' + old_filename))
-        if nlink > 1:
-            abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
-    new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
-    file_like_object = StringIO.StringIO()
-    file_like_object.write(content)
-    if put(local_path=file_like_object, remote_path=new_filename).failed:
-        abort('uploading file ' + new_filename + ' to host %s failed' % env.host_string)
-    file_like_object.close()
-    if exists:
-        _copy_file_owner_and_mode(old_filename, new_filename)
-        _copy_file_acl(old_filename, new_filename)
-        _copy_file_xattr(old_filename, new_filename)
-        _copy_file_selinux_context(old_filename, new_filename)
-    run('mv -f -- ' + new_filename + ' ' + old_filename)
+    with settings(fabric.api.hide('running', 'stdout', 'stderr')):
+        old_filename = remote_filename
+        if not os.path.isabs(old_filename):
+            abort('remote filename must be absolute, "%s" given' % old_filename)
+        exists = run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists'
+        if exists:
+            if run('if [ ! -f ' + old_filename + ' ] ; then echo isnotfile ; fi') == 'isnotfile':
+                abort('remote filename must be regular file, "%s" given' % old_filename)
+            nlink = int(run('stat --format "%h" -- ' + old_filename))
+            if nlink > 1:
+                abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
+        new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
+        file_like_object = StringIO.StringIO()
+        file_like_object.write(content)
+        if put(local_path=file_like_object, remote_path=new_filename).failed:
+            abort('uploading file ' + new_filename + ' to host %s failed' % env.host_string)
+        file_like_object.close()
+        if exists:
+            _copy_file_owner_and_mode(old_filename, new_filename)
+            _copy_file_acl(old_filename, new_filename)
+            _copy_file_xattr(old_filename, new_filename)
+            _copy_file_selinux_context(old_filename, new_filename)
+        run('mv -f -- ' + new_filename + ' ' + old_filename)
 
 
 def _copy_file_owner_and_mode(old_filename, new_filename):

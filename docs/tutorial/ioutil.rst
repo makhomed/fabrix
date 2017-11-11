@@ -64,6 +64,8 @@ Running this fabfile on host ``example.com`` will produce output:
     [example.com] * install iptables
     [example.com] * install acpid
 
+With function :func:`~fabrix.ioutil.warn` you can print one line warnings.
+
 Function :func:`~fabrix.ioutil.run` designed to use with function :func:`~fabrix.ioutil.name`.
 Function :func:`~fabrix.ioutil.run` run commands on remote host with settings hide('running', 'stdout', 'stderr').
 

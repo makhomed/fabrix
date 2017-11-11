@@ -47,6 +47,7 @@ Reference
   - :func:`~fabrix.ioutil.remove_file`
   - :func:`~fabrix.ioutil.rsync`
   - :func:`~fabrix.ioutil.run`
+  - :func:`~fabrix.ioutil.warn`
   - :func:`~fabrix.ioutil.write_file`
   - :func:`~fabrix.ioutil.write_local_file`
 
