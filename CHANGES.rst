@@ -5,6 +5,7 @@ Version 0.3
 Not released yet
 
 - added new functions systemctl_preset(), name()
+- function hide_run() renamed to run()
 
 
 Version 0.2

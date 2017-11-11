@@ -62,8 +62,8 @@ Running this fabfile on host ``example.com`` will produce output:
     [example.com] * install acpid
 
 Also Fabrix provides two helper functions :func:`~fabrix.ioutil.debug`
-to print debug messages if debug mode is enabled and :func:`~fabrix.ioutil.hide_run`
-for run commands on remote host with settings hide("everything").
+to print debug messages if debug mode is enabled and :func:`~fabrix.ioutil.run`
+for run commands on remote host with settings  hide('running', 'stdout', 'stderr').
 
 .. seealso::
     :ref:`Input/Output functions Reference <reference-ioutil>`

@@ -3,9 +3,9 @@ import time
 import inspect
 import os.path
 from fabric.state import connections
-from fabric.api import run, hide, quiet, env, settings, abort
+from fabric.api import env, abort, settings
 from fabrix.editor import edit_file, replace_line, strip_text
-from fabrix.ioutil import remove_file, remove_directory, create_directory, write_file
+from fabrix.ioutil import run, remove_file, remove_directory, create_directory, write_file
 
 
 def is_reboot_required():
@@ -17,10 +17,9 @@ def is_reboot_required():
     Returns:
         True if server reboot is required after ``yum_update()``, False otherwise.
     """
-    with quiet():
-        if run('if [ ! -e /usr/bin/needs-restarting ] ; then echo notexists ; fi') == 'notexists':
-            run('yum -y install yum-utils')
-        stdout = run('/usr/bin/needs-restarting -r')
+    if run('if [ ! -e /usr/bin/needs-restarting ] ; then echo notexists ; fi') == 'notexists':
+        run('yum -y install yum-utils')
+    stdout = run('/usr/bin/needs-restarting -r')
     reboot_required_regexp = re.compile(r'^Reboot is required to ensure that your system benefits from these updates\.$')
     reboot_required = False
     for line in stdout.split('\n'):
@@ -48,17 +47,10 @@ def reboot_and_wait(wait=120, command='reboot'):
     # Don't bleed settings, since this is supposed to be self-contained.
     # User adaptations will probably want to drop the "with settings()" and
     # just have globally set timeout/attempts values.
-    with settings(
-        hide('running'),
-        timeout=timeout,
-        connection_attempts=attempts
-    ):
-        print 'Rebooting %s...' % env.host_string
-        with quiet():
-            run(command)
+    with settings(timeout=timeout, connection_attempts=attempts):
+        run(command)
         # Try to make sure we don't slip in before pre-reboot lockdown
         time.sleep(5)
-        print 'Waiting for %s...' % env.host_string
         # This is actually an internal-ish API call, but users can simply drop
         # it in real fabfile use -- the next run/sudo/put/get/etc call will
         # automatically trigger a reconnect.
@@ -78,77 +70,69 @@ def disable_selinux():
         True if ``/etc/selinux/config`` changed or if SELinux ``Enforcing`` mode switched into ``Permissive`` mode, False otherwise.
 
     """
-    changed1 = False
-    changed2 = False
-    with settings(hide('everything')):
-        if run('if [ -e /etc/selinux/config ] ; then echo exists ; fi') == 'exists':
-            changed1 = edit_file('/etc/selinux/config', replace_line(r'\s*SELINUX\s*=\s*.*', 'SELINUX=disabled'))
-        if run('if [ -e /usr/sbin/setenforce ] && [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
-            changed2 = run('STATUS=$(getenforce) ; if [ "$STATUS" == "Enforcing" ] ; then setenforce 0 ; echo perm ; fi') == 'perm'
+    if run('if [ -e /etc/selinux/config ] ; then echo exists ; fi') == 'exists':
+        changed1 = edit_file('/etc/selinux/config', replace_line(r'\s*SELINUX\s*=\s*.*', 'SELINUX=disabled'))
+    else:
+        changed1 = False
+    if run('if [ -e /usr/sbin/setenforce ] && [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
+        changed2 = run('STATUS=$(getenforce) ; if [ "$STATUS" == "Enforcing" ] ; then setenforce 0 ; echo perm ; fi') == 'perm'
+    else:
+        changed2 = False
     return changed1 or changed2
 
 
 def systemctl_start(name):
     """systemctl start ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl start ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl start ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_stop(name):
     """systemctl stop ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl stop ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl stop ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_reload(name):
     """systemctl reload ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl reload ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl reload ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_restart(name):
     """systemctl restart ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl restart ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl restart ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_enable(name):
     """systemctl enable ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl enable ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl enable ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_disable(name):
     """systemctl disable ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl disable ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl disable ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_mask(name):
     """systemctl mask ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl mask ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl mask ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_unmask(name):
     """systemctl unmask ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl unmask ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl unmask ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_preset(name):
     """systemctl preset ``name``.
     """
-    with settings(hide('everything')):
-        run('systemctl daemon-reload ; systemctl preset ' + name + ' ; systemctl daemon-reload')
+    run('systemctl daemon-reload ; systemctl preset ' + name + ' ; systemctl daemon-reload')
 
 
 def systemctl_edit(name, override):
@@ -180,14 +164,13 @@ def systemctl_edit(name, override):
     override_dir = '/etc/systemd/system/' + name + '.d'
     override_conf = os.path.join(override_dir, 'override.conf')
     override = strip_text(override)
-    if override:  # pylint: disable=no-else-return
+    if override:
         changed1 = create_directory(override_dir)
         changed2 = write_file(override_conf, override)
-        return changed1 or changed2
     else:
         changed1 = remove_file(override_conf)
         changed2 = remove_directory(override_dir)
-        return changed1 or changed2
+    return changed1 or changed2
 
 
 def systemctl_get_default():
@@ -196,8 +179,7 @@ def systemctl_get_default():
     Returns:
         Output of command ``systemctl get-default``.
     """
-    with settings(hide('everything')):
-        return run('systemctl daemon-reload ; systemctl get-default ; systemctl daemon-reload')
+    return run('systemctl daemon-reload ; systemctl get-default ; systemctl daemon-reload')
 
 
 def systemctl_set_default(name):
@@ -206,8 +188,7 @@ def systemctl_set_default(name):
     For example, ``systemctl_set_default('multi-user.target')``
 
     """
-    with settings(hide('everything')):
-        return run('systemctl daemon-reload ; systemctl set-default ' + name + ' ; systemctl daemon-reload')
+    return run('systemctl daemon-reload ; systemctl set-default ' + name + ' ; systemctl daemon-reload')
 
 
 def localectl_set_locale(locale):
@@ -216,8 +197,7 @@ def localectl_set_locale(locale):
     For example, ``localectl_set_locale('LANG=en_US.UTF-8')``.
 
     """
-    with settings(hide('everything')):
-        return run('localectl set-locale ' + locale)
+    return run('localectl set-locale ' + locale)
 
 
 def timedatectl_set_timezone(timezone):
@@ -226,8 +206,7 @@ def timedatectl_set_timezone(timezone):
     For example, ``timedatectl_set_timezone('Europe/Kiev')``.
 
     """
-    with settings(hide('everything')):
-        return run('timedatectl set-timezone ' + timezone)
+    return run('timedatectl set-timezone ' + timezone)
 
 
 def get_virtualization_type():
@@ -236,8 +215,7 @@ def get_virtualization_type():
     Returns:
         None if no vitrualization detected, or vitrualization type as string, for example, 'openvz' or 'kvm' or something else.
     """
-    with settings(hide('everything')):
-        stdout = run('hostnamectl status')
+    stdout = run('hostnamectl status')
     virtualization_type = None
     virtualization_line_regexp = re.compile(r'^\s*Virtualization:\s(?P<virtualization_type>\w+)\s*$')
     for line in stdout.split('\n'):

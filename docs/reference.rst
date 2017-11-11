@@ -36,7 +36,6 @@ Reference
   - :func:`~fabrix.ioutil.create_directory`
   - :func:`~fabrix.ioutil.create_file`
   - :func:`~fabrix.ioutil.debug`
-  - :func:`~fabrix.ioutil.hide_run`
   - :func:`~fabrix.ioutil.is_directory_exists`
   - :func:`~fabrix.ioutil.is_file_exists`
   - :func:`~fabrix.ioutil.name`
@@ -45,6 +44,7 @@ Reference
   - :func:`~fabrix.ioutil.remove_directory`
   - :func:`~fabrix.ioutil.remove_file`
   - :func:`~fabrix.ioutil.rsync`
+  - :func:`~fabrix.ioutil.run`
   - :func:`~fabrix.ioutil.write_file`
   - :func:`~fabrix.ioutil.write_local_file`
 

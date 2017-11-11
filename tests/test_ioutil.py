@@ -1,4 +1,5 @@
 import os.path
+import fabric.api
 import fabrix.ioutil
 from conftest import abort, mock_get_factory, mock_put_factory, mock_run_factory
 from conftest import mock_local_factory, mock_os_path_exists_factory
@@ -7,7 +8,7 @@ from fabrix.ioutil import name, debug, read_local_file, write_local_file, _atomi
 from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file, rsync
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context, chown, chmod
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
-from fabrix.ioutil import remove_file, remove_directory, create_file, create_directory, hide_run
+from fabrix.ioutil import remove_file, remove_directory, create_file, create_directory, run
 from fabrix.ioutil import is_file_exists, is_directory_exists
 
 
@@ -40,13 +41,13 @@ def test_debug(monkeypatch, capsys):
     assert err == ""
 
 
-def test_hide_run(monkeypatch):
+def test_run(monkeypatch):
     run_state = {
         r'command': {'stdout': 'stdout', 'failed': False},
     }
     mock_run = mock_run_factory(run_state)
-    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
-    assert hide_run('command') == 'stdout'
+    monkeypatch.setattr(fabric.api, 'run', mock_run)
+    assert run('command') == 'stdout'
 
 
 def test_read_local_file(tmpdir, monkeypatch):

@@ -2,7 +2,7 @@ import re
 import inspect
 import collections
 from fabric.api import abort
-from fabrix.ioutil import hide_run
+from fabrix.ioutil import run
 
 
 def _parse_packages(recursion_level, allow_empty_list_of_packages, *args):
@@ -56,7 +56,7 @@ def yum_install(*args):
     """
     packages = _parse_packages(0, False, *args)
     command = "yum -y install " + " ".join(packages)
-    stdout = hide_run(command)
+    stdout = run(command)
     return _is_changed(stdout, r'^Nothing to do$')
 
 
@@ -75,7 +75,7 @@ def yum_remove(*args):
     """
     packages = _parse_packages(0, False, *args)
     command = "yum -y remove " + " ".join(packages)
-    stdout = hide_run(command)
+    stdout = run(command)
     return _is_changed(stdout, r'^No Packages marked for removal$')
 
 
@@ -97,5 +97,5 @@ def yum_update(*args):
     else:
         packages = _parse_packages(0, True, *args)
     command = "yum -y update " + " ".join(packages)
-    stdout = hide_run(command)
+    stdout = run(command)
     return _is_changed(stdout, r'^No packages marked for update$')

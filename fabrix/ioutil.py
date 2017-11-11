@@ -8,7 +8,8 @@ import pprint
 import inspect
 import numbers
 import fabric.state
-from fabric.api import env, abort, local, run, get, put, quiet, settings, hide
+import fabric.api
+from fabric.api import env, abort, local, get, put, settings
 from fabric.network import key_filenames, normalize
 
 
@@ -16,6 +17,17 @@ def name(description):
     """Print one line description about running action
     """
     print "[%s] * %s" % (env.host_string, description)
+
+
+def run(*args, **kwargs):
+    """Run command with settings hide('running', 'stdout', 'stderr')
+
+    Returns:
+        Result of :func:`~fabric.operations.run` execution.
+
+    """
+    with settings(fabric.api.hide('running', 'stdout', 'stderr')):
+        return fabric.api.run(*args, **kwargs)
 
 
 def debug(*args):
@@ -38,20 +50,6 @@ def debug(*args):
             else:
                 pprint.PrettyPrinter(indent=4).pprint(arg)
             print '-' * 78
-
-
-def hide_run(command):
-    """Run command with settings hide('everything').
-
-    Args:
-        command: which command run.
-
-    Returns:
-        Result of :func:`~fabric.operations.run` execution.
-
-    """
-    with settings(hide('everything')):
-        return run(command)
 
 
 def read_local_file(local_filename, abort_on_error=True):
@@ -88,17 +86,16 @@ def read_file(remote_filename, abort_on_error=True):
         content of file or ``None`` if errors encountered and abort_on_error is False.
     """
     file_like_object = StringIO.StringIO()
-    with quiet():
-        with settings(warn_only=True):
-            if get(local_path=file_like_object, remote_path=remote_filename).failed:
-                file_like_object.close()
-                if abort_on_error:
-                    abort('downloading file ' + remote_filename + ' from host %s failed' % env.host_string)
-                else:
-                    return None
-            file_like_object.seek(0)
-            content = file_like_object.read()
+    with settings(warn_only=True):
+        if get(local_path=file_like_object, remote_path=remote_filename).failed:
             file_like_object.close()
+            if abort_on_error:
+                abort('downloading file ' + remote_filename + ' from host %s failed' % env.host_string)
+            else:
+                return None
+        file_like_object.seek(0)
+        content = file_like_object.read()
+        file_like_object.close()
     return content
 
 
@@ -151,13 +148,12 @@ def is_file_exists(remote_filename):
     Returns:
         True if file exists, False if file not exists.
     """
-    with settings(hide('everything')):
-        if not os.path.isabs(remote_filename):
-            fname = str(inspect.stack()[1][1])
-            nline = str(inspect.stack()[1][2])
-            abort('remote filename must be absolute, "%s" given in file %s line %s' % (remote_filename, fname, nline))
-        exists = run('if [ -f ' + remote_filename + ' ] ; then echo exists ; fi') == 'exists'
-        return exists
+    if not os.path.isabs(remote_filename):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('remote filename must be absolute, "%s" given in file %s line %s' % (remote_filename, fname, nline))
+    exists = run('if [ -f ' + remote_filename + ' ] ; then echo exists ; fi') == 'exists'
+    return exists
 
 
 def is_directory_exists(remote_dirname):
@@ -169,13 +165,12 @@ def is_directory_exists(remote_dirname):
     Returns:
         True if directory exists, False if directory not exists.
     """
-    with settings(hide('everything')):
-        if not os.path.isabs(remote_dirname):
-            fname = str(inspect.stack()[1][1])
-            nline = str(inspect.stack()[1][2])
-            abort('remote dirname must be absolute, "%s" given in file %s line %s' % (remote_dirname, fname, nline))
-        exists = run('if [ -d ' + remote_dirname + ' ] ; then echo exists ; fi') == 'exists'
-        return exists
+    if not os.path.isabs(remote_dirname):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('remote dirname must be absolute, "%s" given in file %s line %s' % (remote_dirname, fname, nline))
+    exists = run('if [ -d ' + remote_dirname + ' ] ; then echo exists ; fi') == 'exists'
+    return exists
 
 
 def remove_file(remote_filename):
@@ -187,11 +182,10 @@ def remove_file(remote_filename):
     Returns:
         True if file removed, False if file not exists.
     """
-    with settings(hide('everything')):
-        if not os.path.isabs(remote_filename):
-            abort('remote filename must be absolute, "%s" given' % remote_filename)
-        changed = run('if [ -f ' + remote_filename + ' ] ; then rm -f -- ' + remote_filename + ' ; echo removed ; fi') == 'removed'
-        return changed
+    if not os.path.isabs(remote_filename):
+        abort('remote filename must be absolute, "%s" given' % remote_filename)
+    changed = run('if [ -f ' + remote_filename + ' ] ; then rm -f -- ' + remote_filename + ' ; echo removed ; fi') == 'removed'
+    return changed
 
 
 def remove_directory(remote_dirname):
@@ -206,11 +200,10 @@ def remove_directory(remote_dirname):
     Returns:
         True if directory removed, False if directory already not exists.
     """
-    with settings(hide('everything')):
-        if not os.path.isabs(remote_dirname):
-            abort('remote directory name must be absolute, "%s" given' % remote_dirname)
-        changed = run('if [ -d ' + remote_dirname + ' ] ; then rmdir -- ' + remote_dirname + ' ; echo removed ; fi') == 'removed'
-        return changed
+    if not os.path.isabs(remote_dirname):
+        abort('remote directory name must be absolute, "%s" given' % remote_dirname)
+    changed = run('if [ -d ' + remote_dirname + ' ] ; then rmdir -- ' + remote_dirname + ' ; echo removed ; fi') == 'removed'
+    return changed
 
 
 def create_file(remote_filename):
@@ -225,11 +218,10 @@ def create_file(remote_filename):
     Returns:
         True if file created, False if file already exists.
     """
-    with settings(hide('everything')):
-        if not os.path.isabs(remote_filename):
-            abort('remote file name must be absolute, "%s" given' % remote_filename)
-        changed = run('if [ ! -f ' + remote_filename + ' ] ; then touch -- ' + remote_filename + ' ; echo created ; fi') == 'created'
-        return changed
+    if not os.path.isabs(remote_filename):
+        abort('remote file name must be absolute, "%s" given' % remote_filename)
+    changed = run('if [ ! -f ' + remote_filename + ' ] ; then touch -- ' + remote_filename + ' ; echo created ; fi') == 'created'
+    return changed
 
 
 def create_directory(remote_dirname):
@@ -244,37 +236,35 @@ def create_directory(remote_dirname):
     Returns:
         True if directory created, False if directory already exists.
     """
-    with settings(hide('everything')):
-        if not os.path.isabs(remote_dirname):
-            abort('remote directory name must be absolute, "%s" given' % remote_dirname)
-        changed = run('if [ ! -d ' + remote_dirname + ' ] ; then mkdir -- ' + remote_dirname + ' ; echo created ; fi') == 'created'
-        return changed
+    if not os.path.isabs(remote_dirname):
+        abort('remote directory name must be absolute, "%s" given' % remote_dirname)
+    changed = run('if [ ! -d ' + remote_dirname + ' ] ; then mkdir -- ' + remote_dirname + ' ; echo created ; fi') == 'created'
+    return changed
 
 
 def _atomic_write_local_file(local_filename, content):
     old_filename = local_filename
-    with settings(hide('everything')):
-        if not os.path.isabs(old_filename):
-            abort('local filename must be absolute, "%s" given' % old_filename)
-        exists = os.path.exists(old_filename)
-        if exists:
-            # !!!WARNING!!! os.path.isfile(path) - Return True if path is an existing regular file.
-            # This follows symbolic links, so both islink() and isfile() can be true for the same path.
-            if not os.path.isfile(old_filename) or os.path.islink(old_filename):
-                abort('local filename must be regular file, "%s" given' % old_filename)
-            nlink = os.stat(old_filename).st_nlink
-            if nlink > 1:
-                abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
-        new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
-        new_file = open(new_filename, 'w')
-        new_file.write(content)
-        new_file.close()
-        if exists:
-            _copy_local_file_owner_and_mode(old_filename, new_filename)
-            _copy_local_file_acl(old_filename, new_filename)
-            _copy_local_file_xattr(old_filename, new_filename)
-            _copy_local_file_selinux_context(old_filename, new_filename)
-        os.rename(new_filename, old_filename)
+    if not os.path.isabs(old_filename):
+        abort('local filename must be absolute, "%s" given' % old_filename)
+    exists = os.path.exists(old_filename)
+    if exists:
+        # !!!WARNING!!! os.path.isfile(path) - Return True if path is an existing regular file.
+        # This follows symbolic links, so both islink() and isfile() can be true for the same path.
+        if not os.path.isfile(old_filename) or os.path.islink(old_filename):
+            abort('local filename must be regular file, "%s" given' % old_filename)
+        nlink = os.stat(old_filename).st_nlink
+        if nlink > 1:
+            abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
+    new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
+    new_file = open(new_filename, 'w')
+    new_file.write(content)
+    new_file.close()
+    if exists:
+        _copy_local_file_owner_and_mode(old_filename, new_filename)
+        _copy_local_file_acl(old_filename, new_filename)
+        _copy_local_file_xattr(old_filename, new_filename)
+        _copy_local_file_selinux_context(old_filename, new_filename)
+    os.rename(new_filename, old_filename)
 
 
 def _copy_local_file_owner_and_mode(old_filename, new_filename):
@@ -284,80 +274,72 @@ def _copy_local_file_owner_and_mode(old_filename, new_filename):
 
 
 def _copy_local_file_acl(old_filename, new_filename):
-    with settings(hide('everything')):
-        with settings(warn_only=True):
-            if os.path.exists('/usr/bin/getfacl') and os.path.exists('/usr/bin/setfacl'):
-                local('getfacl --absolute-names -- ' + old_filename + ' | setfacl --set-file=- -- ' + new_filename)
+    with settings(warn_only=True):
+        if os.path.exists('/usr/bin/getfacl') and os.path.exists('/usr/bin/setfacl'):
+            local('getfacl --absolute-names -- ' + old_filename + ' | setfacl --set-file=- -- ' + new_filename)
 
 
 def _copy_local_file_xattr(old_filename, new_filename):
-    with settings(hide('everything')):
-        with settings(warn_only=True):
-            local('cp --attributes-only --preserve=xattr -- ' + old_filename + ' ' + new_filename)
+    with settings(warn_only=True):
+        local('cp --attributes-only --preserve=xattr -- ' + old_filename + ' ' + new_filename)
 
 
 def _copy_local_file_selinux_context(old_filename, new_filename):
-    with settings(hide('everything')):
-        with settings(warn_only=True):
-            if os.path.exists('/usr/sbin/getenforce'):
-                if local('getenforce', capture=True) != 'Disabled':
-                    if os.path.exists('/usr/bin/chcon'):
-                        local('chcon --reference=' + old_filename + ' -- ' + new_filename)
+    with settings(warn_only=True):
+        if os.path.exists('/usr/sbin/getenforce'):
+            if local('getenforce', capture=True) != 'Disabled':
+                if os.path.exists('/usr/bin/chcon'):
+                    local('chcon --reference=' + old_filename + ' -- ' + new_filename)
 
 
 def _atomic_write_file(remote_filename, content):
     old_filename = remote_filename
-    with quiet():
-        if not os.path.isabs(old_filename):
-            abort('remote filename must be absolute, "%s" given' % old_filename)
-        exists = run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists'
-        if exists:
-            if run('if [ ! -f ' + old_filename + ' ] ; then echo isnotfile ; fi') == 'isnotfile':
-                abort('remote filename must be regular file, "%s" given' % old_filename)
-            nlink = int(run('stat --format "%h" -- ' + old_filename))
-            if nlink > 1:
-                abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
-        new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
-        file_like_object = StringIO.StringIO()
-        file_like_object.write(content)
-        if put(local_path=file_like_object, remote_path=new_filename).failed:
-            abort('uploading file ' + new_filename + ' to host %s failed' % env.host_string)
-        file_like_object.close()
-        if exists:
-            _copy_file_owner_and_mode(old_filename, new_filename)
-            _copy_file_acl(old_filename, new_filename)
-            _copy_file_xattr(old_filename, new_filename)
-            _copy_file_selinux_context(old_filename, new_filename)
-        run('mv -f -- ' + new_filename + ' ' + old_filename)
+    if not os.path.isabs(old_filename):
+        abort('remote filename must be absolute, "%s" given' % old_filename)
+    exists = run('if [ -e ' + old_filename + ' ] ; then echo exists ; fi') == 'exists'
+    if exists:
+        if run('if [ ! -f ' + old_filename + ' ] ; then echo isnotfile ; fi') == 'isnotfile':
+            abort('remote filename must be regular file, "%s" given' % old_filename)
+        nlink = int(run('stat --format "%h" -- ' + old_filename))
+        if nlink > 1:
+            abort('file "%s" has %d hardlinks, it can\'t be atomically written' % (old_filename, nlink))
+    new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
+    file_like_object = StringIO.StringIO()
+    file_like_object.write(content)
+    if put(local_path=file_like_object, remote_path=new_filename).failed:
+        abort('uploading file ' + new_filename + ' to host %s failed' % env.host_string)
+    file_like_object.close()
+    if exists:
+        _copy_file_owner_and_mode(old_filename, new_filename)
+        _copy_file_acl(old_filename, new_filename)
+        _copy_file_xattr(old_filename, new_filename)
+        _copy_file_selinux_context(old_filename, new_filename)
+    run('mv -f -- ' + new_filename + ' ' + old_filename)
 
 
 def _copy_file_owner_and_mode(old_filename, new_filename):
-    with settings(hide('everything')):
-        with settings(warn_only=True):
-            run('chown --reference=' + old_filename + ' -- ' + new_filename)
-            run('chmod --reference=' + old_filename + ' -- ' + new_filename)
+    with settings(warn_only=True):
+        run('chown --reference=' + old_filename + ' -- ' + new_filename)
+        run('chmod --reference=' + old_filename + ' -- ' + new_filename)
 
 
 def _copy_file_acl(old_filename, new_filename):
-    with settings(hide('everything')):
-        with settings(warn_only=True):
-            if run('if [ -e /usr/bin/getfacl ] && [ -e /usr/bin/setfacl ] ; then echo exists ; fi') == 'exists':
-                run('getfacl --absolute-names -- ' + old_filename + ' | setfacl --set-file=- -- ' + new_filename)
+    with settings(warn_only=True):
+        if run('if [ -e /usr/bin/getfacl ] && [ -e /usr/bin/setfacl ] ; then echo exists ; fi') == 'exists':
+            run('getfacl --absolute-names -- ' + old_filename + ' | setfacl --set-file=- -- ' + new_filename)
 
 
 def _copy_file_xattr(old_filename, new_filename):
-    with settings(hide('everything')):
-        with settings(warn_only=True):
-            run('cp --attributes-only --preserve=xattr -- ' + old_filename + ' ' + new_filename)
+    with settings(warn_only=True):
+        run('cp --attributes-only --preserve=xattr -- ' + old_filename + ' ' + new_filename)
 
 
 def _copy_file_selinux_context(old_filename, new_filename):
-    with settings(hide('everything')):
-        with settings(warn_only=True):
-            if run('if [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
-                if run('getenforce') != 'Disabled':
-                    if run('if [ -e /usr/bin/chcon ] ; then echo exists ; fi') == 'exists':
-                        run('chcon --reference=' + old_filename + ' -- ' + new_filename)
+    with settings(warn_only=True):
+        if run('if [ -e /usr/sbin/getenforce ] ; then echo exists ; fi') == 'exists':
+            if run('getenforce') != 'Disabled':
+                if run('if [ -e /usr/bin/chcon ] ; then echo exists ; fi') == 'exists':
+                    run('chcon --reference=' + old_filename + ' -- ' + new_filename)
 
 
 def copy_file(local_filename, remote_filename):
@@ -439,7 +421,7 @@ def rsync(local_path, remote_path, extra_rsync_options=""):  # pylint: disable=t
         remote_prefix = "%s@%s" % (user, host)
     # execute command
     command = "rsync %s %s %s:%s" % (rsync_options, local_abs_path, remote_prefix, remote_path)
-    with settings(hide('everything')):
+    with settings(fabric.api.hide('running', 'stdout', 'stderr')):
         stdout = local(command, capture=True)
     zero_transfer_regexp = re.compile(r'^Total transferred file size: 0 bytes$')
     changed = True
@@ -466,10 +448,9 @@ def chown(remote_filename, owner, group):
         fname = str(inspect.stack()[1][1])
         nline = str(inspect.stack()[1][2])
         abort('chown: remote path \'%s\' must be absolute in file %s line %s' % (remote_filename, fname, nline))
-    with settings(hide('everything')):
-        stdout = run('chown --changes ' + owner.strip() + ':' + group.strip() + ' -- ' + remote_filename)
-        changed = stdout != ""
-        return changed
+    stdout = run('chown --changes ' + owner.strip() + ':' + group.strip() + ' -- ' + remote_filename)
+    changed = stdout != ""
+    return changed
 
 
 def chmod(remote_filename, mode):
@@ -492,7 +473,6 @@ def chmod(remote_filename, mode):
         abort('chmod: remote path \'%s\' must be absolute in file %s line %s' % (remote_filename, fname, nline))
     if isinstance(mode, numbers.Number):
         mode = oct(mode)
-    with settings(hide('everything')):
-        stdout = run('chmod --changes ' + mode + ' -- ' + remote_filename)
-        changed = stdout != ""
-        return changed
+    stdout = run('chmod --changes ' + mode + ' -- ' + remote_filename)
+    changed = stdout != ""
+    return changed
