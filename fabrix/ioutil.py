@@ -23,7 +23,7 @@ def name(description):
 def warn(message):
     """Print one line warning message
     """
-    print red("[%s] * WARNING: %s" % (env.host_string,  message))
+    print red("[%s] * WARNING: %s" % (env.host_string, message))
 
 
 def run(*args, **kwargs):
