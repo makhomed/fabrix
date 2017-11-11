@@ -61,9 +61,11 @@ Running this fabfile on host ``example.com`` will produce output:
     [example.com] * install iptables
     [example.com] * install acpid
 
-Also Fabrix provides two helper functions :func:`~fabrix.ioutil.debug`
-to print debug messages if debug mode is enabled and :func:`~fabrix.ioutil.run`
-for run commands on remote host with settings  hide('running', 'stdout', 'stderr').
+Function :func:`~fabrix.ioutil.run` designed to use with function :func:`~fabrix.ioutil.name`.
+Function :func:`~fabrix.ioutil.run` run commands on remote host with settings hide('running', 'stdout', 'stderr').
+
+Also Fabrix provides helper function :func:`~fabrix.ioutil.debug_print`
+to print debug messages if debug mode is enabled.
 
 .. seealso::
     :ref:`Input/Output functions Reference <reference-ioutil>`

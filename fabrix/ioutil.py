@@ -30,10 +30,10 @@ def run(*args, **kwargs):
         return fabric.api.run(*args, **kwargs)
 
 
-def debug(*args):
+def debug_print(*args):
     """Debug print all arguments.
 
-    If debug mode is enabled via``fab --show=debug`` or something else - print each argument to sys.stdout, else do nothing.
+    If debug mode is enabled via ``fab --show=debug`` or something else - print each argument to sys.stdout, else do nothing.
 
     Args:
         *args: list of arguments for debug print.

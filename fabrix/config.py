@@ -3,7 +3,7 @@ import copy
 import yaml
 import yaml.parser
 from fabric.api import env, abort
-from fabrix.ioutil import read_local_file, debug
+from fabrix.ioutil import read_local_file, debug_print
 
 
 class _ConfAttributeDict(dict):
@@ -257,7 +257,7 @@ def read_config(config_filename=None):  # pylint: disable=too-many-locals,too-ma
         else:
             abort('read_config: config \'%s\' not exists' % config_filename)
     else:
-        debug('fabrix: using config \'%s\'' % config_filename)
+        debug_print('fabrix: using config \'%s\'' % config_filename)
     try:
         with open(config_filename) as config_file:
             config = yaml.load(config_file)
@@ -265,7 +265,7 @@ def read_config(config_filename=None):  # pylint: disable=too-many-locals,too-ma
         abort('read_config: error parsing config \'%s\':\n\n%s' % (config_filename, ex))
     config_text = read_local_file(config_filename)
     config_yaml = yaml.dump(config)
-    debug('config_text:', config_text, 'config_yaml:', config_yaml, 'config:', config)
+    debug_print('config_text:', config_text, 'config_yaml:', config_yaml, 'config:', config)
     if 'hosts' in config and 'roles' in config:
         abort('read_config: hosts and roles can\'t be simultaneously defined in config')
     if 'hosts' not in config and 'roles' not in config:
@@ -440,7 +440,7 @@ def read_config(config_filename=None):  # pylint: disable=too-many-locals,too-ma
                 for key, value in host_vars[host].items():
                     host_variables[key] = copy.deepcopy(value)
             conf.__super__setitem__(host, host_variables)
-    debug(
+    debug_print(
         'hosts:', hosts, 'roles:', roles, 'roles_hosts:', roles_hosts,
         'host_roles:', host_roles, 'host_vars:', host_vars, 'role_vars:',
         role_vars, 'defaults:', defaults, 'local_vars:', local_vars,

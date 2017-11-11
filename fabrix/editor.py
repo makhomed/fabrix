@@ -1,7 +1,7 @@
 import re
 import inspect
 from fabric.api import abort
-from fabrix.ioutil import read_local_file, read_file, _atomic_write_local_file, _atomic_write_file, debug
+from fabrix.ioutil import read_local_file, read_file, _atomic_write_local_file, _atomic_write_file
 
 
 def _full_line(pattern):
@@ -279,7 +279,6 @@ def _apply_editors(old_text, *editors):
         abort('editors is not idempotent in file %s line %s' % (fname, nline))
     new_text = text_after_second_pass
     changed = new_text != old_text
-    debug('_apply_editors():', 'old_text:', old_text, 'new_next:', new_text, 'changed:', changed)
     return changed, new_text
 
 

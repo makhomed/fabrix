@@ -4,7 +4,7 @@ import fabrix.ioutil
 from conftest import abort, mock_get_factory, mock_put_factory, mock_run_factory
 from conftest import mock_local_factory, mock_os_path_exists_factory
 from fabric.api import env, settings
-from fabrix.ioutil import name, debug, read_local_file, write_local_file, _atomic_write_local_file
+from fabrix.ioutil import name, debug_print, read_local_file, write_local_file, _atomic_write_local_file
 from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file, rsync
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context, chown, chmod
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
@@ -16,26 +16,26 @@ def test_name():
     name("test")
 
 
-def test_debug(monkeypatch, capsys):
+def test_debug_print(monkeypatch, capsys):
     delimiter = '-' * 78 + '\n'
     import fabric.state
     monkeypatch.setitem(fabric.state.output, 'debug', False)
-    debug("test")
+    debug_print("test")
     out, err = capsys.readouterr()
     assert out == ""
     assert err == ""
     monkeypatch.setitem(fabric.state.output, 'debug', True)
-    debug("test")
+    debug_print("test")
     out, err = capsys.readouterr()
     assert out == "test\n" + delimiter
     assert err == ""
     monkeypatch.setitem(fabric.state.output, 'debug', True)
-    debug("test\n")
+    debug_print("test\n")
     out, err = capsys.readouterr()
     assert out == "test\n" + delimiter
     assert err == ""
     monkeypatch.setitem(fabric.state.output, 'debug', True)
-    debug(["foo", "bar"])
+    debug_print(["foo", "bar"])
     out, err = capsys.readouterr()
     assert out == "['foo', 'bar']\n" + delimiter
     assert err == ""
