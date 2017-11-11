@@ -213,7 +213,7 @@ def get_virtualization_type():
     """Get virtualization type.
 
     Returns:
-        None if no vitrualization detected, or vitrualization type as string, for example, 'openvz' or 'kvm' or something else.
+        None if no vitrualization detected, or vitrualization type as string, for example, "openvz" or "kvm" or something else.
     """
     stdout = run('hostnamectl status')
     virtualization_type = None
