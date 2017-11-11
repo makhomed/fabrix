@@ -37,7 +37,9 @@ Reference
   - :func:`~fabrix.ioutil.create_file`
   - :func:`~fabrix.ioutil.debug_print`
   - :func:`~fabrix.ioutil.is_directory_exists`
+  - :func:`~fabrix.ioutil.is_directory_not_exists`
   - :func:`~fabrix.ioutil.is_file_exists`
+  - :func:`~fabrix.ioutil.is_file_not_exists`
   - :func:`~fabrix.ioutil.name`
   - :func:`~fabrix.ioutil.read_file`
   - :func:`~fabrix.ioutil.read_local_file`

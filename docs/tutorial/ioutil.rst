@@ -9,6 +9,9 @@ Input/Output functions
 We able to check :func:`~fabrix.ioutil.is_file_exists`
 and :func:`~fabrix.ioutil.is_directory_exists`.
 
+Also we can do reverse check :func:`~fabrix.ioutil.is_file_not_exists`
+and :func:`~fabrix.ioutil.is_directory_not_exists`.
+
 Also Fabrix provide functions :func:`~fabrix.ioutil.remove_file`
 and :func:`~fabrix.ioutil.remove_directory` for deleting files and empty directories.
 

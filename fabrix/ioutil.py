@@ -156,6 +156,23 @@ def is_file_exists(remote_filename):
     return exists
 
 
+def is_file_not_exists(remote_filename):
+    """Is file not exists?
+
+    Args:
+        remote_filename: Remote file name, must be absolute.
+
+    Returns:
+        True if file not exists, False if file exists.
+    """
+    if not os.path.isabs(remote_filename):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('remote filename must be absolute, "%s" given in file %s line %s' % (remote_filename, fname, nline))
+    exists = run('if [ ! -f ' + remote_filename + ' ] ; then echo notexists ; fi') == 'notexists'
+    return exists
+
+
 def is_directory_exists(remote_dirname):
     """Is directory exists?
 
@@ -170,6 +187,23 @@ def is_directory_exists(remote_dirname):
         nline = str(inspect.stack()[1][2])
         abort('remote dirname must be absolute, "%s" given in file %s line %s' % (remote_dirname, fname, nline))
     exists = run('if [ -d ' + remote_dirname + ' ] ; then echo exists ; fi') == 'exists'
+    return exists
+
+
+def is_directory_not_exists(remote_dirname):
+    """Is directory not exists?
+
+    Args:
+        remote_dirname: Remote directory name, must be absolute.
+
+    Returns:
+        True if directory not exists, False if directory exists.
+    """
+    if not os.path.isabs(remote_dirname):
+        fname = str(inspect.stack()[1][1])
+        nline = str(inspect.stack()[1][2])
+        abort('remote dirname must be absolute, "%s" given in file %s line %s' % (remote_dirname, fname, nline))
+    exists = run('if [ ! -d ' + remote_dirname + ' ] ; then echo notexists ; fi') == 'notexists'
     return exists
 
 

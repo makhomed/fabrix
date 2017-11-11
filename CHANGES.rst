@@ -4,6 +4,7 @@ Version 0.3
 
 Not released yet
 
+- added new functions is_file_not_exists() and if_directory_not_exists()
 - added new functions systemctl_preset(), name()
 - function debug() renamed to debug_print()
 - function hide_run() renamed to run()

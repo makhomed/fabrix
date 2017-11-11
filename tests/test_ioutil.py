@@ -9,7 +9,7 @@ from fabrix.ioutil import read_file, write_file, _atomic_write_file, copy_file, 
 from fabrix.ioutil import _copy_local_file_acl, _copy_local_file_selinux_context, chown, chmod
 from fabrix.ioutil import _copy_file_owner_and_mode, _copy_file_acl, _copy_file_selinux_context
 from fabrix.ioutil import remove_file, remove_directory, create_file, create_directory, run
-from fabrix.ioutil import is_file_exists, is_directory_exists
+from fabrix.ioutil import is_file_exists, is_directory_exists, is_file_not_exists, is_directory_not_exists
 
 
 def test_name():
@@ -463,6 +463,19 @@ def test_is_file_exists(monkeypatch):
     assert is_file_exists('/path/to/none') is False
 
 
+def test_is_file_not_exists(monkeypatch):
+    with abort('remote filename must be absolute, .*'):
+        is_file_not_exists("file")
+    run_state = {
+        r'if \[ ! -f /path/to/none \] ; then echo notexists ; fi': {'stdout': 'notexists', 'failed': False},
+        r'if \[ ! -f /path/to/file \] ; then echo notexists ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert is_file_not_exists('/path/to/none') is True
+    assert is_file_not_exists('/path/to/file') is False
+
+
 def test_is_directory_exists(monkeypatch):
     with abort('remote dirname must be absolute, .*'):
         is_directory_exists("dir")
@@ -474,3 +487,16 @@ def test_is_directory_exists(monkeypatch):
     monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
     assert is_directory_exists('/path/to/dire') is True
     assert is_directory_exists('/path/to/none') is False
+
+
+def test_is_directory_not_exists(monkeypatch):
+    with abort('remote dirname must be absolute, .*'):
+        is_directory_not_exists("dir")
+    run_state = {
+        r'if \[ ! -d /path/to/none \] ; then echo notexists ; fi': {'stdout': 'notexists', 'failed': False},
+        r'if \[ ! -d /path/to/dire \] ; then echo notexists ; fi': {'stdout': '', 'failed': False},
+    }
+    mock_run = mock_run_factory(run_state)
+    monkeypatch.setattr(fabrix.ioutil, 'run', mock_run)
+    assert is_directory_not_exists('/path/to/none') is True
+    assert is_directory_not_exists('/path/to/dire') is False
