@@ -173,7 +173,7 @@ def create_partitions():
 @task
 def server_remove_partitions():
     if not is_live_cd():
-        abort("This server not in LiveCD mode, cant create partitions")
+        abort("This server not in LiveCD mode, can't remove partitions")
 
     if is_disks_has_no_partitions():
         abort("Server disks already have NO partitions, nothing to do")
