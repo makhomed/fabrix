@@ -75,15 +75,15 @@ Code :file:`fabfile.py`:
 
 .. code-block:: python
 
-    from fabrix.api import is_file_exists, yum_install
+    from fabrix.api import is_file_not_exists, yum_install
     from fabrix.api import edit_file, edit_ini_section, replace_line
 
     def install_php():
 
-        if not is_file_exists("/etc/yum.repos.d/epel.repo"):
+        if is_file_not_exists("/etc/yum.repos.d/epel.repo"):
             yum_install("https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
 
-        if not is_file_exists("/etc/yum.repos.d/remi-php70.repo"):
+        if is_file_not_exists("/etc/yum.repos.d/remi-php70.repo"):
             yum_install("https://rpms.remirepo.net/enterprise/remi-release-7.rpm")
 
         edit_file("/etc/yum.repos.d/remi-php70.repo",
