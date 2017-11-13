@@ -1,0 +1,65 @@
+set nocompatible
+
+syntax on
+filetype on
+filetype plugin on
+filetype indent off
+
+imap <F2> <esc>:w<cr>a
+nmap <F2> :w<cr>
+
+imap <C-s> <esc>:w<cr>a
+nmap <C-s> :w<cr>
+
+vmap <tab> >gv
+vmap <s-tab> <gv
+
+nmap <tab> I<tab><esc>
+nmap <s-tab> ^i<bs><esc>
+
+map  <silent> <F7>    <Esc>:cp<CR>
+map  <silent> <F8>    <Esc>:cn<CR>
+
+:nnoremap <F5> "=strftime("%a %b %d %Y")<CR>P
+:inoremap <F5> <C-R>=strftime("%a %b %d %Y")<CR>
+
+
+autocmd FileType perl set makeprg=perl\ -c\ %\ $*
+autocmd FileType perl set errorformat=%f:%l:%m
+autocmd FileType perl set autowrite
+autocmd FileType make set noexpandtab
+
+autocmd FileType python set tabstop=4
+autocmd FileType python set shiftwidth=4
+autocmd FileType python set smarttab
+autocmd FileType python set expandtab
+autocmd FileType python set softtabstop=4
+autocmd FileType python set autoindent
+
+autocmd FileType yaml set tabstop=2
+autocmd FileType yaml set shiftwidth=2
+autocmd FileType yaml set smarttab
+autocmd FileType yaml set expandtab
+autocmd FileType yaml set softtabstop=2
+autocmd FileType yaml set autoindent
+
+autocmd BufRead *.py set smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class
+autocmd BufWritePre *.py normal m`:%s/\s\+$//e ``
+
+highlight clear
+highlight Comment ctermfg=darkgrey ctermbg=black
+highlight pythonComment ctermfg=darkgrey ctermbg=black
+
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+"set paste
+"set number
+set ruler
+set backspace=indent,eol,start
+
+:highlight ExtraWhitespace ctermbg=red guibg=red
+" Show trailing whitespace and spaces before a tab:
+:match ExtraWhitespace /\s\+$\| \+\ze\t/
+

@@ -1,0 +1,41 @@
+
+roles:
+  - role: hardware-node
+    hosts:
+      - 10.10.10.10 # example-kvm-hardware-node
+  - role: virtual-machine
+    hosts:
+      - 10.11.11.11 # example-vm-router
+  - role: virtual-machine-with-docker
+    hosts:
+      - 10.12.12.12 # example-vm-office
+
+role_vars:
+  - role: hardware-node
+    vars:
+      sshd_alternate_port: 22122
+  - role: virtual-machine-with-docker
+    vars:
+      remove_selinux_policy: False # required by docker
+
+host_vars:
+  - host: 10.10.10.10 # example-kvm-hardware-node
+    vars:
+      hostname: example-kvm-hardware-node.example.com
+  - host: 10.11.11.11 # example-vm-router
+    vars:
+      hostname: example-vm-router.example.com
+      sshd_alternate_port: 22122
+  - host: 10.12.12.12 # example-vm-office
+    vars:
+      hostname: example-vm-office.example.com
+      sshd_alternate_port: 22122
+
+defaults:
+  timezone: Europe/Kiev
+  locale: LANG=en_US.UTF-8
+  postfix_mail_root_alias: root@example.com
+  sshd_authorized_keys: sshd_authorized_keys
+  sshd_disable_password_authentication: True
+  remove_selinux_policy: True
+
