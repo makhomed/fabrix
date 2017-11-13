@@ -197,7 +197,7 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
         yum_install("epel-release")
         yum_install("htop")
 
-    name("make chronyd listed only on ipv4 socket")
+    name("make chronyd listen only on ipv4 socket")
     changed = edit_file("/etc/sysconfig/chronyd",
         replace_line('OPTIONS=""', 'OPTIONS="-4"')
     )

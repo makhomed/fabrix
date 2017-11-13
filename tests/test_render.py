@@ -7,7 +7,7 @@ def test_render_template(tmpdir, monkeypatch):
     fabfile_dir = tmpdir
     templates_dir = fabfile_dir.mkdir("templates")
     template_file = templates_dir.join("hello.txt.j2")
-    template_file.write("Hello, {{ name}}!\n")
+    template_file.write("Hello, {{ name }}!\n")
     monkeypatch.setitem(env, "real_fabfile", str(fabfile_dir.join("fabfile.py")))
     assert render_template("hello.txt.j2", name="World") == "Hello, World!\n"
 
@@ -44,7 +44,7 @@ def test_render_template_with_variables_from_conf(tmpdir, monkeypatch):
     read_config()
     templates_dir = tmpdir.mkdir("templates")
     template_file = templates_dir.join("hello.txt.j2")
-    template_file.write("Hello, {{ name}}!\n")
+    template_file.write("Hello, {{ name }}!\n")
     monkeypatch.setitem(env, "host_string", '11.11.11.11')
     assert render_template("hello.txt.j2") == "Hello, Test Server!\n"
     assert render_template("hello.txt.j2", name="New Server") == "Hello, New Server!\n"
@@ -67,7 +67,7 @@ def test_render_template_with_variables_from_local_conf(tmpdir, monkeypatch):
     read_config()
     templates_dir = tmpdir.mkdir("templates")
     template_file = templates_dir.join("hello.txt.j2")
-    template_file.write("Hello, {{ name}}!\n")
+    template_file.write("Hello, {{ name }}!\n")
     assert env.host_string is None
     assert render_template("hello.txt.j2") == "Hello, localhost!\n"
     assert render_template("hello.txt.j2", name="localdomain") == "Hello, localdomain!\n"
