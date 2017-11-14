@@ -463,7 +463,6 @@ def install_vms_with_docker():
 
 
 @task(default=True)
-@parallel
 def install_all():
     execute(install_hardware_nodes)
     execute(install_vms)
