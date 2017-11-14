@@ -96,7 +96,7 @@ __date__ = "2017-11-14"
 def tune_sshd_service():
     name("tune sshd service")
     changed1 = edit_file("/etc/ssh/sshd_config",
-        replace_line("#UseDNS yes", "UseDNS no"),
+        replace_line("#UseDNS .*", "UseDNS no"),
         replace_line("X11Forwarding yes", "X11Forwarding no"),
         replace_line("#Port 22", "Port 22"),
         replace_line("#AddressFamily any", "AddressFamily inet"),
@@ -140,8 +140,17 @@ def tune_sshd_service():
 
 
 def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
-    virtualization_type = get_virtualization_type()
     name("tune base system")
+
+    hostname = conf.get("hostname")
+    if hostname:
+        name("set hostname to %s" % hostname)
+        run("hostnamectl set-hostname %s" % hostname)
+    else:
+        warn("hostname not defined")
+
+    virtualization_type = get_virtualization_type()
+    name("disable selinux")
     disable_selinux()
     if virtualization_type == "kvm":
         name("kvm detected, remove microcode_ctl package")
@@ -227,13 +236,6 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
     remove_file("/root/anaconda-ks.cfg")
     remove_directory("/var/log/rhsm")
     run("rm -rf /var/log/anaconda")
-
-    hostname = conf.get("hostname")
-    if hostname:
-        name("set hostname to %s" % hostname)
-        run("hostnamectl set-hostname %s" % hostname)
-    else:
-        warn("hostname not defined")
 
     postfix_mail_root_alias = conf.get("postfix_mail_root_alias")
     if postfix_mail_root_alias:
