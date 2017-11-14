@@ -27,13 +27,13 @@ def warn(message):
 
 
 def run(*args, **kwargs):
-    """Run command with settings hide('running', 'stdout', 'stderr')
+    """Run command with settings hide('everything')
 
     Returns:
         Result of :func:`~fabric.operations.run` execution.
 
     """
-    with settings(fabric.api.hide('running', 'stdout', 'stderr')):
+    with settings(fabric.api.hide('everything')):
         return fabric.api.run(*args, **kwargs)
 
 
@@ -92,7 +92,7 @@ def read_file(remote_filename, abort_on_error=True):
     Returns:
         content of file or ``None`` if errors encountered and abort_on_error is False.
     """
-    with settings(fabric.api.hide('running', 'stdout', 'stderr')):
+    with settings(fabric.api.hide('everything')):
         file_like_object = StringIO.StringIO()
         with settings(warn_only=True):
             if get(local_path=file_like_object, remote_path=remote_filename).failed:
@@ -335,7 +335,7 @@ def _copy_local_file_selinux_context(old_filename, new_filename):
 
 
 def _atomic_write_file(remote_filename, content):
-    with settings(fabric.api.hide('running', 'stdout', 'stderr')):
+    with settings(fabric.api.hide('everything')):
         old_filename = remote_filename
         if not os.path.isabs(old_filename):
             abort('remote filename must be absolute, "%s" given' % old_filename)
@@ -349,8 +349,9 @@ def _atomic_write_file(remote_filename, content):
         new_filename = old_filename + '.tmp.' + uuid.uuid4().hex + '.tmp'
         file_like_object = StringIO.StringIO()
         file_like_object.write(content)
-        if put(local_path=file_like_object, remote_path=new_filename).failed:
-            abort('uploading file ' + new_filename + ' to host %s failed' % env.host_string)
+        with settings(warn_only=True):
+            if put(local_path=file_like_object, remote_path=new_filename).failed:
+                abort('uploading file ' + new_filename + ' to host %s failed' % env.host_string)
         file_like_object.close()
         if exists:
             _copy_file_owner_and_mode(old_filename, new_filename)
@@ -464,7 +465,7 @@ def rsync(local_path, remote_path, extra_rsync_options=""):  # pylint: disable=t
         remote_prefix = "%s@%s" % (user, host)
     # execute command
     command = "rsync %s %s %s:%s" % (rsync_options, local_abs_path, remote_prefix, remote_path)
-    with settings(fabric.api.hide('running', 'stdout', 'stderr')):
+    with settings(fabric.api.hide('everything')):
         stdout = local(command, capture=True)
     zero_transfer_regexp = re.compile(r'^Total transferred file size: 0 bytes$')
     changed = True

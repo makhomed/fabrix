@@ -75,7 +75,7 @@ network settings and iptables settings should be tuned manually.
 """
 
 
-from fabric.api import parallel, task, execute, roles, abort
+from fabric.api import task, execute, roles, abort
 from fabrix.api import run, yum_install, yum_update, yum_remove, is_reboot_required, reboot_and_wait, disable_selinux
 from fabrix.api import copy_file, edit_file, replace_line, substitute_line, strip_line, is_file_not_exists
 from fabrix.api import edit_ini_section, systemctl_stop, systemctl_enable, systemctl_start, systemctl_restart
@@ -83,14 +83,14 @@ from fabrix.api import append_line, chmod, insert_line, systemctl_preset, remove
 from fabrix.api import read_local_file, create_directory, create_file, write_file, strip_text
 from fabrix.api import systemctl_disable, get_virtualization_type, localectl_set_locale
 from fabrix.api import timedatectl_set_timezone, systemctl_set_default, is_file_exists
-from fabrix.api import remove_directory, remove_file
+from fabrix.api import remove_directory
 
 
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.1"
-__date__ = "2017-11-13"
+__version__ = "0.0.2"
+__date__ = "2017-11-14"
 
 
 def tune_sshd_service():
@@ -149,8 +149,8 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
         name("kvm detected, install qemu-guest-agent")
         yum_install("qemu-guest-agent")
     name("yum update")
-    changed = yum_update()
-    if changed and is_reboot_required():
+    yum_update()
+    if is_reboot_required():
         name("reboot")
         reboot_and_wait()
     locale = conf.get("locale")
