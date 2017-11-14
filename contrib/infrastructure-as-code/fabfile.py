@@ -83,7 +83,7 @@ from fabrix.api import append_line, chmod, insert_line, systemctl_preset, remove
 from fabrix.api import read_local_file, create_directory, create_file, write_file, strip_text
 from fabrix.api import systemctl_disable, get_virtualization_type, localectl_set_locale
 from fabrix.api import timedatectl_set_timezone, systemctl_set_default, is_file_exists
-from fabrix.api import remove_directory
+from fabrix.api import remove_directory, remove_file
 
 
 __author__ = "Gena Makhomed"
@@ -168,7 +168,7 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
     name("set multi-user.target as default target")
     systemctl_set_default("multi-user.target")
     name("install base packages")
-    yum_install("mc vim screen net-tools mailx wget traceroute mtr chrony rsync")
+    yum_install("mc vim screen net-tools mailx wget traceroute mtr chrony rsync iotop")
     name("tune mc")
     copy_file("mc.ini", "/usr/share/mc/mc.ini")
     name("tune vim")
@@ -223,7 +223,10 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
     systemctl_disable("rpcbind.socket rpcbind.service")
     name("remove useless packages")
     yum_remove("btrfs-progs teamd wpa_supplicant")
+    name("remove useless files and directories")
+    remove_file("/root/anaconda-ks.cfg")
     remove_directory("/var/log/rhsm")
+    run("rm -rf /var/log/anaconda")
 
     hostname = conf.get("hostname")
     if hostname:
@@ -436,7 +439,6 @@ def install_docker():
 
 
 @task
-@parallel
 @roles("hardware-node")
 def install_hardware_nodes():
     tune_sshd_service()
@@ -446,7 +448,6 @@ def install_hardware_nodes():
 
 
 @task
-@parallel
 @roles("virtual-machine")
 def install_vms():
     tune_sshd_service()
@@ -454,7 +455,6 @@ def install_vms():
 
 
 @task
-@parallel
 @roles("virtual-machine-with-docker")
 def install_vms_with_docker():
     tune_sshd_service()

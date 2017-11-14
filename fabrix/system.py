@@ -19,7 +19,8 @@ def is_reboot_required():
     """
     if run('if [ ! -e /usr/bin/needs-restarting ] ; then echo notexists ; fi') == 'notexists':
         run('yum -y install yum-utils')
-    stdout = run('/usr/bin/needs-restarting -r')
+    with settings(warn_only=True):
+        stdout = run('/usr/bin/needs-restarting -r')
     reboot_required_regexp = re.compile(r'^Reboot is required to ensure that your system benefits from these updates\.$')
     reboot_required = False
     for line in stdout.split('\n'):
