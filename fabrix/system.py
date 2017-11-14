@@ -48,7 +48,7 @@ def reboot_and_wait(wait=120, command='reboot'):
     # Don't bleed settings, since this is supposed to be self-contained.
     # User adaptations will probably want to drop the "with settings()" and
     # just have globally set timeout/attempts values.
-    with settings(timeout=timeout, connection_attempts=attempts):
+    with settings(timeout=timeout, connection_attempts=attempts, warn_only=True):
         run(command)
         # Try to make sure we don't slip in before pre-reboot lockdown
         time.sleep(5)
