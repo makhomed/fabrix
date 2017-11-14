@@ -77,6 +77,7 @@ def test_replace_line():
     assert edit_text("some text", replace_line(".*text$", "xxx")) == "xxx"
     assert edit_text("some text", replace_line("^some text$", "xxx")) == "xxx"
     assert edit_text("some text", replace_line("so(.*) (.*)xt", r'\1zzz\2')) == "mezzzte"
+    assert edit_text("line1\n#UseDNS yes\nline2", replace_line("#?UseDNS yes", "UseDNS no")) == "line1\nUseDNS no\nline2"
 
 
 def test_delete_line():

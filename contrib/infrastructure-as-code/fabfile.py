@@ -96,10 +96,10 @@ __date__ = "2017-11-14"
 def tune_sshd_service():
     name("tune sshd service")
     changed1 = edit_file("/etc/ssh/sshd_config",
-        replace_line("#?UseDNS yes", "UseDNS no"),
+        replace_line("#UseDNS yes", "UseDNS no"),
         replace_line("X11Forwarding yes", "X11Forwarding no"),
         replace_line("#Port 22", "Port 22"),
-        replace_line("#AddressFamily any", "AddressFamily inet")
+        replace_line("#AddressFamily any", "AddressFamily inet"),
     )
     sshd_alternate_port = conf.get('sshd_alternate_port')
     if sshd_alternate_port:
