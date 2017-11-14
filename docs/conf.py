@@ -118,7 +118,7 @@ html_theme_options = {
     'show_powered_by': True,
     'show_related': False,
     'sidebar_collapse': True,
-    'fixed_sidebar': True,
+    'fixed_sidebar': False,
     'github_user': 'makhomed',
     'github_repo': 'fabrix',
     'travis_button': True,
