@@ -51,6 +51,8 @@ Reference
   - :func:`~fabrix.ioutil.write_file`
   - :func:`~fabrix.ioutil.write_local_file`
 
+----------------------------------------
+
 **User/Group management**
   - :func:`~fabrix.passwd.add_user_ssh_authorized_keys`
   - :func:`~fabrix.passwd.add_user_to_group`
