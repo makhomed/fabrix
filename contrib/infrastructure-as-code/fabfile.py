@@ -67,6 +67,28 @@ remove_selinux_policy
 
 - should be false if docker used
 
+users
+-----
+
+add users and set ssh authorized_keys for user,
+also add users to additional groups.
+
+For example:
+
+  users:
+    - name: user1
+      keys: sshd_authorized_keys_example_user1
+      additional_groups:
+        - docker
+    - name: user2
+      keys: sshd_authorized_keys_example_user2
+      additional_groups:
+        - docker
+    - name: user3
+      keys: sshd_authorized_keys_example_user3
+      additional_groups:
+        - docker
+
 P.S.
 
 after installation of hardware node and virtual machines
@@ -80,17 +102,16 @@ from fabrix.api import run, yum_install, yum_update, yum_remove, is_reboot_requi
 from fabrix.api import copy_file, edit_file, replace_line, substitute_line, strip_line, is_file_not_exists
 from fabrix.api import edit_ini_section, systemctl_stop, systemctl_enable, systemctl_start, systemctl_restart
 from fabrix.api import append_line, chmod, insert_line, systemctl_preset, remove_file, conf, name, warn
-from fabrix.api import read_local_file, create_directory, create_file, write_file, strip_text
-from fabrix.api import systemctl_disable, get_virtualization_type, localectl_set_locale
-from fabrix.api import timedatectl_set_timezone, systemctl_set_default, is_file_exists
-from fabrix.api import remove_directory
+from fabrix.api import create_directory, write_file, strip_text, systemctl_disable, get_virtualization_type
+from fabrix.api import localectl_set_locale, timedatectl_set_timezone, systemctl_set_default, is_file_exists
+from fabrix.api import remove_directory, create_user, add_user_ssh_authorized_keys, add_user_to_group
 
 
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.2"
-__date__ = "2017-11-14"
+__version__ = "0.0.3"
+__date__ = "2017-11-15"
 
 
 def tune_sshd_service():
@@ -113,30 +134,30 @@ def tune_sshd_service():
     sshd_authorized_keys = conf.get('sshd_authorized_keys')
     if sshd_authorized_keys:
         name("append public keys to /root/.ssh/authorized_keys")
-        create_directory("/root/.ssh")
-        chmod("/root/.ssh", 0700)
-        create_file("/root/.ssh/authorized_keys")
-        chmod("/root/.ssh/authorized_keys", 0600)
-        keys = read_local_file(sshd_authorized_keys)
-        for key in keys.split("\n"):
-            key = key.strip()
-            if key == "":
-                continue
-            edit_file("/root/.ssh/authorized_keys",
-                append_line(key, insert_empty_line_before=True)
-            )
+        add_user_ssh_authorized_keys("root", sshd_authorized_keys)
     if conf.get("sshd_disable_password_authentication"):
         name("ssh disable password authentication")
         if not conf.get('sshd_authorized_keys'):
             abort("sshd_authorized_keys must be set first")
         changed3 = edit_file("/etc/ssh/sshd_config",
-                replace_line("PasswordAuthentication yes", "PasswordAuthentication no")
+            replace_line("PasswordAuthentication yes", "PasswordAuthentication no")
         )
     else:
         changed3 = False
     if changed1 or changed2 or changed3:
         name("restart sshd service")
         systemctl_restart("sshd")
+
+    users = conf.get("users")
+    if users:
+        for user in users:
+            name("create user %s and set ssh authorized_keys" % user["name"])
+            create_user(user["name"])
+            add_user_ssh_authorized_keys(user["name"], user["keys"])
+            additional_groups = user.get("additional_groups")
+            if additional_groups:
+                for additional_group in additional_groups:
+                    add_user_to_group(user["name"], additional_group)
 
 
 def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements

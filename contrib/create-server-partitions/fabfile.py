@@ -30,8 +30,8 @@ from fabric.api import task, abort, prompt, settings
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.2"
-__date__ = "2017-11-14"
+__version__ = "0.0.3"
+__date__ = "2017-11-15"
 
 
 def run(*args, **kwargs):

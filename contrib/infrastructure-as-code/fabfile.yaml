@@ -30,6 +30,19 @@ host_vars:
     vars:
       hostname: example-vm-office.example.com
       sshd_alternate_port: 22122
+      users:
+        - name: user1
+          keys: sshd_authorized_keys_example_user1
+          additional_groups:
+            - docker
+        - name: user2
+          keys: sshd_authorized_keys_example_user2
+          additional_groups:
+            - docker
+        - name: user3
+          keys: sshd_authorized_keys_example_user3
+          additional_groups:
+            - docker
 
 defaults:
   timezone: Europe/Kiev

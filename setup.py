@@ -16,7 +16,7 @@ def long_description():
 
 setup(
     name='Fabrix',
-    version='0.2.3',
+    version='0.3',
     description='Fabrix is Fabric extension for configuration management',
     long_description=long_description(),
     long_description_content_type='text/x-rst',
@@ -26,7 +26,7 @@ setup(
     url='https://github.com/makhomed/fabrix',
     license='GPLv3',
     platforms=['Linux'],
-    packages=find_packages(),
+    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     include_package_data=True,
     install_requires=['Fabric>=1.12,<2.0', 'PyYAML>=3.10', 'Jinja2>=2.7.2'],
     classifiers=[

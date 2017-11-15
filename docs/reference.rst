@@ -51,6 +51,22 @@ Reference
   - :func:`~fabrix.ioutil.write_file`
   - :func:`~fabrix.ioutil.write_local_file`
 
+**User/Group management**
+  - :func:`~fabrix.passwd.add_user_ssh_authorized_keys`
+  - :func:`~fabrix.passwd.add_user_to_group`
+  - :func:`~fabrix.passwd.create_group`
+  - :func:`~fabrix.passwd.create_user`
+  - :func:`~fabrix.passwd.delete_user_from_group`
+  - :func:`~fabrix.passwd.get_user_home_directory`
+  - :func:`~fabrix.passwd.is_group_exists`
+  - :func:`~fabrix.passwd.is_group_not_exists`
+  - :func:`~fabrix.passwd.is_user_exists`
+  - :func:`~fabrix.passwd.is_user_in_group`
+  - :func:`~fabrix.passwd.is_user_not_exists`
+  - :func:`~fabrix.passwd.is_user_not_in_group`
+  - :func:`~fabrix.passwd.remove_group`
+  - :func:`~fabrix.passwd.remove_user`
+
 ----------------------------------------
 
 **Template rendering**
@@ -102,6 +118,7 @@ Reference
     reference/config
     reference/editor
     reference/ioutil
+    reference/passwd
     reference/render
     reference/rpmyum
     reference/system

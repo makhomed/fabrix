@@ -17,6 +17,7 @@ Tutorial
     tutorial/config
     tutorial/editor
     tutorial/ioutil
+    tutorial/passwd
     tutorial/render
     tutorial/rpmyum
     tutorial/system

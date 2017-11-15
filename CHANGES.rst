@@ -2,12 +2,19 @@
 Version 0.3
 -----------
 
-Not released yet
+Released: 15 Nov 2017
 
 - added new functions is_file_not_exists() and if_directory_not_exists()
 - added new functions systemctl_preset(), name(), warn()
 - function debug() renamed to debug_print()
 - function hide_run() renamed to run()
+- add new functions is_user_exists(), is_user_not_exists()
+- add new functions create_user(), remove_user()
+- add new functions is_group_exists(), is_group_not_exists()
+- add new functions create_group(), remove_group()
+- add new functions is_user_in_group(), is_user_not_in_group()
+- add new functions add_user_to_group(), delete_user_from_group()
+- add new functions get_user_home_directory(), add_user_ssh_authorized_keys()
 
 
 Version 0.2
