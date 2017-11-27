@@ -215,7 +215,9 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
         replace_line(r"GRUB_TIMEOUT=.*", r"GRUB_TIMEOUT=1"),
         replace_line(r"(GRUB_CMDLINE_LINUX=.*)\brhgb\b(.*)", r"\1selinux=0\2"),
         replace_line(r"(GRUB_CMDLINE_LINUX=.*)\bquiet\b(.*)", r"\1panic=1\2"),
+        replace_line(r"(GRUB_CMDLINE_LINUX=.*)\bcrashkernel=auto\b(.*)", r"\1\2"),
         substitute_line(r"\s+", r" "),
+        substitute_line(r'=" ', r'="'),
         strip_line(),
     )
     if changed:
@@ -247,7 +249,7 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
     name("disable useless services")
     systemctl_disable("rpcbind.socket rpcbind.service")
     name("remove useless packages")
-    yum_remove("btrfs-progs teamd wpa_supplicant")
+    yum_remove("btrfs-progs teamd wpa_supplicant acpid kexec-tools")
     name("remove useless files and directories")
     remove_file("/root/anaconda-ks.cfg")
     remove_directory("/var/log/rhsm")
