@@ -243,11 +243,6 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
         yum_install("iptables-services")
         systemctl_enable("iptables")
         systemctl_start("iptables")
-    if is_file_not_exists("/usr/sbin/acpid"):
-        name("install acpid")
-        yum_install("acpid")
-        systemctl_enable("acpid")
-        systemctl_start("acpid")
 
     name("disable useless services")
     systemctl_disable("rpcbind.socket rpcbind.service")
