@@ -105,6 +105,7 @@ from fabrix.api import append_line, chmod, insert_line, systemctl_preset, remove
 from fabrix.api import create_directory, write_file, strip_text, systemctl_disable, get_virtualization_type
 from fabrix.api import localectl_set_locale, timedatectl_set_timezone, systemctl_set_default, is_file_exists
 from fabrix.api import remove_directory, create_user, add_user_ssh_authorized_keys, add_user_to_group
+from fabrix.api import create_file
 
 
 __author__ = "Gena Makhomed"
