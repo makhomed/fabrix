@@ -111,7 +111,7 @@ from fabrix.api import create_file
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 __date__ = "2017-12-13"
 
 
@@ -366,7 +366,7 @@ def hardware_node_install_zfs():
         run("/etc/rc.d/rc.local")
     name("disable lvm scan zvols")
     edit_file("/etc/lvm/lvm.conf",
-        insert_line("\t" + r'global_filter = ["r|/dev/zd.*|", "a|.*|"]', after=r'\s*# global_filter = \[ "a\|\.\*/\|" \]')
+        insert_line("\t" + r'global_filter = [ "r|/dev/zd.*|" ]', after=r'\s*# global_filter = \[ "a\|\.\*/\|" \]')
     )
 
 
