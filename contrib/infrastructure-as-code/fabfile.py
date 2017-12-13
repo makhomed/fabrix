@@ -352,6 +352,8 @@ def hardware_node_install_zfs():
     run("/sbin/modprobe zfs")
     name("apply workaround for bug https://github.com/zfsonlinux/zfs/issues/6838")
     systemctl_preset("zfs-import-cache.service zfs-import-scan.service zfs-mount.service zfs-share.service zfs-zed.service zfs.target")
+    name("apply workaround for bug https://github.com/zfsonlinux/zfs/issues/6953")
+    systemctl_enable("zfs-import.target")
     if run("zpool list") == "no pools available":
         sda_part, sdb_part = get_zfs_partitions_id()
         name("create zpool on %s and %s" % (sda_part, sdb_part))
