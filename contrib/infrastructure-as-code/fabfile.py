@@ -110,8 +110,8 @@ from fabrix.api import remove_directory, create_user, add_user_ssh_authorized_ke
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.3"
-__date__ = "2017-11-15"
+__version__ = "0.0.4"
+__date__ = "2017-12-13"
 
 
 def tune_sshd_service():
@@ -224,10 +224,23 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
         name("grub2-mkconfig -o /boot/grub2/grub.cfg")
         run("grub2-mkconfig -o /boot/grub2/grub.cfg")
 
+    if is_file_not_exists("/etc/yum.repos.d/epel.repo"):
+        name("enable epel repo")
+        yum_install("epel-release")
+
     if is_file_not_exists("/usr/bin/htop"):
         name("install htop")
-        yum_install("epel-release")
         yum_install("htop")
+
+    if is_file_not_exists("/usr/lib64/libjemalloc.so.1"):
+        name("install jemalloc")
+        yum_install("jemalloc")
+
+    name("enable jemalloc")
+    create_file("/etc/ld.so.preload")
+    edit_file("/etc/ld.so.preload",
+        append_line("/usr/lib64/libjemalloc.so.1")
+    )
 
     name("make chronyd listen only on ipv4 socket")
     changed = edit_file("/etc/sysconfig/chronyd",
