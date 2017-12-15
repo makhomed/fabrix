@@ -111,8 +111,8 @@ from fabrix.api import create_file
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.5"
-__date__ = "2017-12-13"
+__version__ = "0.0.6"
+__date__ = "2017-12-15"
 
 
 def tune_sshd_service():
@@ -358,10 +358,10 @@ def hardware_node_install_zfs():
         sda_part, sdb_part = get_zfs_partitions_id()
         name("create zpool on %s and %s" % (sda_part, sdb_part))
         run("zpool create -o ashift=12 -O compression=lz4 -O atime=off -O xattr=sa -O acltype=posixacl tank mirror %s %s" % (sda_part, sdb_part))
-    name("set disk scheduler to noop")
+    name("set disk scheduler to deadline")
     changed = edit_file("/etc/rc.d/rc.local",
-        append_line("echo noop > /sys/block/sda/queue/scheduler", insert_empty_line_before=True),
-        append_line("echo noop > /sys/block/sdb/queue/scheduler"),
+        append_line("echo deadline > /sys/block/sda/queue/scheduler", insert_empty_line_before=True),
+        append_line("echo deadline > /sys/block/sdb/queue/scheduler"),
     )
     chmod("/etc/rc.d/rc.local", "+x")
     if changed:
