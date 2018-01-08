@@ -31,7 +31,7 @@ def is_reboot_required():
     return reboot_required
 
 
-def reboot_and_wait(wait=120, command='reboot'):
+def reboot_and_wait(wait=600, command='reboot'):
     """Reboot the remote system.
 
     Args:
@@ -42,7 +42,7 @@ def reboot_and_wait(wait=120, command='reboot'):
         None
     """
     # Shorter timeout for a more granular cycle than the default.
-    timeout = 3
+    timeout = 10
     # Use 'wait' as max total wait time
     attempts = int(round(float(wait) / float(timeout)))
     # Don't bleed settings, since this is supposed to be self-contained.
@@ -51,7 +51,7 @@ def reboot_and_wait(wait=120, command='reboot'):
     with settings(timeout=timeout, connection_attempts=attempts, warn_only=True):
         run(command)
         # Try to make sure we don't slip in before pre-reboot lockdown
-        time.sleep(5)
+        time.sleep(10)
         # This is actually an internal-ish API call, but users can simply drop
         # it in real fabfile use -- the next run/sudo/put/get/etc call will
         # automatically trigger a reconnect.
