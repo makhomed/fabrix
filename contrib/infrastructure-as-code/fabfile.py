@@ -111,8 +111,8 @@ from fabrix.api import create_file
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.6"
-__date__ = "2017-12-15"
+__version__ = "0.0.7"
+__date__ = "2018-01-17"
 
 
 def tune_sshd_service():
@@ -179,6 +179,12 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
         yum_remove("microcode_ctl")
         name("kvm detected, install qemu-guest-agent")
         yum_install("qemu-guest-agent")
+        # https://kb.vmware.com/s/article/1009465
+        name("kvm detected, set scsi timeout to 180 seconds")
+        write_file("/etc/udev/rules.d/99-qemu-scsi-udev.rules", strip_text("""
+            # https://kb.vmware.com/s/article/1009465
+            ACTION=="add", SUBSYSTEM=="scsi", ATTR{vendor}=="QEMU", ATTR{model}=="QEMU HARDDISK", RUN+="/bin/sh -c 'echo 180 >/sys$DEVPATH/timeout'"
+        """))
     name("yum update")
     yum_update()
     if is_reboot_required():
@@ -499,9 +505,9 @@ def install_vms_with_docker():
     tune_base_system()
     install_docker()
 
-
 @task(default=True)
 def install_all():
     execute(install_hardware_nodes)
     execute(install_vms)
     execute(install_vms_with_docker)
+
