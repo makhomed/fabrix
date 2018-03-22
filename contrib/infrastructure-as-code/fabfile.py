@@ -50,7 +50,7 @@ locale
 postfix_mail_root_alias
 -----------------------
 
-- root alias will be used in e/tc/aliases file
+- root alias will be used in /etc/aliases file
 
 sshd_authorized_keys
 --------------------
