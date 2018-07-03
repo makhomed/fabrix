@@ -344,7 +344,7 @@ def hardware_node_install_zfs():
     # https://github.com/zfsonlinux/zfs/wiki/RHEL-and-CentOS#kabi-tracking-kmod
     name("enable zfs-kmod repo")
     if is_file_not_exists("/etc/yum.repos.d/zfs.repo"):
-        yum_install("http://download.zfsonlinux.org/epel/zfs-release.el7_4.noarch.rpm")
+        yum_install("http://download.zfsonlinux.org/epel/zfs-release.el7_5.noarch.rpm")
     edit_file("/etc/yum.repos.d/zfs.repo",
         edit_ini_section("[zfs]",
             replace_line("enabled=1", "enabled=0")
