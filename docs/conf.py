@@ -42,7 +42,7 @@ extensions = [
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/2/', None),
-    'fabrix': ('http://docs.fabfile.org/en/latest/', None)
+    'fabric': ('http://docs.fabfile.org/en/1.14/', None)
 }
 
 # Add any paths that contain templates here, relative to this directory.
