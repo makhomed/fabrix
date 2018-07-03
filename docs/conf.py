@@ -64,7 +64,7 @@ rst_epilog = """
 
 # General information about the project.
 project = u'Fabrix'
-copyright = u'2017, Gena Makhomed'
+copyright = u'2018, Gena Makhomed'
 author = u'Gena Makhomed'
 
 # The version info for the project you're documenting, acts as replacement for
