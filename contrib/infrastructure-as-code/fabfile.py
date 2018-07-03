@@ -279,7 +279,8 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
     if postfix_mail_root_alias:
         name("postfix set root alias %s" % postfix_mail_root_alias)
         changed = edit_file("/etc/aliases",
-            replace_line(r"#root:\s+marc", "root:\t\t%s" % postfix_mail_root_alias)
+            replace_line(r"#root:\s+marc", "root:\t\t%s" % postfix_mail_root_alias),
+            replace_line(r"root:\s+.*", "root:\t\t%s" % postfix_mail_root_alias)
         )
         if changed:
             run("newaliases")
