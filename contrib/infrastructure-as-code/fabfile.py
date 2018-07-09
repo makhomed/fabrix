@@ -209,7 +209,7 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
     name("tune mc")
     copy_file("mc.ini", "/usr/share/mc/mc.ini")
     name("tune vim")
-    copy_file("vimrc", "/etc/vimrc")
+    copy_file("vimrc", "/root/.vimrc")
     copy_file("vim-default-editor.sh", "/etc/profile.d/vim-default-editor.sh")
     if conf.get('remove_selinux_policy'):
         name("remove selinux-policy")
