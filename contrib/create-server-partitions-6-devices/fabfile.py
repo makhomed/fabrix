@@ -34,8 +34,8 @@ from fabric.api import task, abort, prompt, settings
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.4"
-__date__ = "2018-07-03"
+__version__ = "1.0.0"
+__date__ = "2018-07-09"
 
 
 def run(*args, **kwargs):
@@ -142,6 +142,7 @@ def is_disks_has_no_partitions():
     devices = set()
     for device in out.split("\n"):
         devices.add(device.strip())
+    devices -= set(['loop0'])
     return devices == set(['sda', 'sdb', 'sdc', 'sdd', 'sde', 'sdf'])
 
 
