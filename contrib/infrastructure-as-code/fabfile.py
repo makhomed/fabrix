@@ -411,7 +411,7 @@ def hardware_node_install_kvm():
         User=root
         PrivateTmp=true
         ProtectSystem=full
-        Environment=FD_SESS=xfce X11VNC_CREATE_GEOM=1270x920x24 X11VNC_CREATE_STARTING_DISPLAY_NUMBER=77
+        Environment=FD_SESS=xfce X11VNC_CREATE_GEOM=1280x926x24 X11VNC_CREATE_STARTING_DISPLAY_NUMBER=77
         ExecStart=/usr/bin/x11vnc -noipv6 -rfbportv6 5977 -no6 -q -localhost -rfbport 5977 -nopw -create -ping 60 -gone 'killall Xvfb'
         Restart=always
 
