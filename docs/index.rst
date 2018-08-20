@@ -7,7 +7,7 @@
 Welcome to Fabrix!
 ==================
 
-**Fabrix** is `Fabric <http://www.fabfile.org/>`_ extension for configuration management.
+**Fabrix** is `Fabric <http://docs.fabfile.org/en/1.14/>`_ extension for configuration management.
 
 .. image:: https://travis-ci.org/makhomed/fabrix.svg?branch=master
     :target: https://travis-ci.org/makhomed/fabrix
@@ -23,7 +23,7 @@ Welcome to Fabrix!
 
 |
 
-`Fabric <http://www.fabfile.org/>`_ is tool for application deployment and systems administration tasks.
+`Fabric <http://docs.fabfile.org/en/1.14/>`_ is tool for application deployment and systems administration tasks.
 But configuration management with Fabric is not easy, because Fabric
 does not provide any useful functions for configuration management.
 

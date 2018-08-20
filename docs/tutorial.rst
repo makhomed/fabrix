@@ -8,8 +8,8 @@ Tutorial
 
 .. note::
 
-    Because **Fabrix** is extension for `Fabric <http://www.fabfile.org/>`_,
-    you should be familiar with `Fabric <http://www.fabfile.org/>`_.
+    Because **Fabrix** is extension for `Fabric <http://docs.fabfile.org/en/1.14/>`_,
+    you should be familiar with `Fabric <http://docs.fabfile.org/en/1.14/>`_.
 
 .. toctree::
     :maxdepth: 2
