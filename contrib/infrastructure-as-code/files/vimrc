@@ -1,3 +1,4 @@
+
 set nocompatible
 
 syntax on
@@ -8,21 +9,11 @@ filetype indent off
 imap <F2> <esc>:w<cr>a
 nmap <F2> :w<cr>
 
-imap <C-s> <esc>:w<cr>a
-nmap <C-s> :w<cr>
-
 vmap <tab> >gv
 vmap <s-tab> <gv
 
 nmap <tab> I<tab><esc>
 nmap <s-tab> ^i<bs><esc>
-
-map  <silent> <F7>    <Esc>:cp<CR>
-map  <silent> <F8>    <Esc>:cn<CR>
-
-:nnoremap <F5> "=strftime("%a %b %d %Y")<CR>P
-:inoremap <F5> <C-R>=strftime("%a %b %d %Y")<CR>
-
 
 autocmd FileType perl set makeprg=perl\ -c\ %\ $*
 autocmd FileType perl set errorformat=%f:%l:%m
