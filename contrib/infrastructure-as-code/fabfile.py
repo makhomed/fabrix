@@ -111,8 +111,8 @@ from fabrix.api import create_file
 __author__ = "Gena Makhomed"
 __contact__ = "https://github.com/makhomed/fabrix"
 __license__ = "GPLv3"
-__version__ = "0.0.7"
-__date__ = "2018-01-17"
+__version__ = "0.0.8"
+__date__ = "2018-12-08"
 
 
 def tune_sshd_service():
@@ -209,7 +209,8 @@ def tune_base_system():  # pylint: disable=too-many-branches,too-many-statements
     name("tune mc")
     copy_file("mc.ini", "/usr/share/mc/mc.ini")
     name("tune vim")
-    copy_file("vimrc", "/root/.vimrc")
+    if is_file_not_exists("/root/.vimrc"):
+        copy_file("vimrc", "/root/.vimrc")
     copy_file("vim-default-editor.sh", "/etc/profile.d/vim-default-editor.sh")
     if conf.get('remove_selinux_policy'):
         name("remove selinux-policy")
@@ -345,7 +346,7 @@ def hardware_node_install_zfs():
     # https://github.com/zfsonlinux/zfs/wiki/RHEL-and-CentOS#kabi-tracking-kmod
     name("enable zfs-kmod repo")
     if is_file_not_exists("/etc/yum.repos.d/zfs.repo"):
-        yum_install("http://download.zfsonlinux.org/epel/zfs-release.el7_5.noarch.rpm")
+        yum_install("http://download.zfsonlinux.org/epel/zfs-release.el7_6.noarch.rpm")
     edit_file("/etc/yum.repos.d/zfs.repo",
         edit_ini_section("[zfs]",
             replace_line("enabled=1", "enabled=0")
