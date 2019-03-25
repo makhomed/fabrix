@@ -34,7 +34,7 @@ class AbortContext(object):
             if self.regexp:
                 import re
                 if not re.match(self.regexp, str(value.message), re.DOTALL):
-                    pytest.fail("Pattern '{0!s}' not found in '{1!s}'".format(self.regexp, value.message))
+                    pytest.fail("Pattern '%s' not found in '%s'" % (self.regexp, value.message))
         return suppress_exception
 
 
