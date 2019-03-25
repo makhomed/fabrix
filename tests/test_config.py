@@ -1111,7 +1111,7 @@ def test_dict_methods(tmpdir, monkeypatch):
     assert conf.var6 == 'value6'
     assert conf.var7 == 'value7'
     assert conf.get('var8') is None
-    assert conf.get('var8', 'provided-default') is 'provided-default'
+    assert conf.get('var8', 'provided-default') == 'provided-default'
     assert conf.get('var5') == 'value5'
     assert conf.setdefault('var7') == 'value7'
     assert conf.var7 == 'value7'

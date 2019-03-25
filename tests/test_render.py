@@ -102,4 +102,4 @@ def test_render():
 
             """, name="World") == "Hello, World!\n"
     with abort("render: 'zzz' is undefined in file .* line .*"):
-            render("Hello, {{ zzz.name }}!\n")
+        render("Hello, {{ zzz.name }}!\n")
