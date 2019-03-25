@@ -104,19 +104,19 @@ def test_insert_line():
 
 
 def test_edit_ini_section():
-    with abort('edit_ini_section: section name must be in form \[section_name\]'):
+    with abort(r'edit_ini_section: section name must be in form \[section_name\]'):
         edit_text("text", edit_ini_section("section", append_line("append")))
-    with abort('edit_ini_section: section name must be in form \[section_name\]'):
+    with abort(r'edit_ini_section: section name must be in form \[section_name\]'):
         edit_text("text", edit_ini_section("[section", append_line("append")))
-    with abort('edit_ini_section: section name must be in form \[section_name\]'):
+    with abort(r'edit_ini_section: section name must be in form \[section_name\]'):
         edit_text("text", edit_ini_section("section]", append_line("append")))
-    with abort('edit_ini_section: section \'\[%s\]\' not found' % "section"):
+    with abort(r'edit_ini_section: section \'\[%s\]\' not found' % "section"):
         edit_text("text", edit_ini_section("[section]", append_line("append")))
-    with abort('edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
+    with abort(r'edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
         edit_text("# php\n[section]\nt=1\n[section]\nx=2\n", edit_ini_section("[section]", append_line("z=3")))
-    with abort('edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
+    with abort(r'edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
         edit_text("# php\n[section]\nt=1\n[x]\na=b\n[section]\nx=2\n", edit_ini_section("[section]", append_line("z=3")))
-    with abort('edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
+    with abort(r'edit_ini_section: bad ini file, section \'\[%s\]\' duplicated' % "section"):
         edit_text("[section]\n[section]\n", edit_ini_section("[section]", append_line("append")))
     assert edit_text("[remi-php70]\nenabled=0\n", edit_ini_section("[remi-php70]", replace_line("enabled=0", "enabled=1"))) == "[remi-php70]\nenabled=1\n"
     assert edit_text("[remi]\nenabled=0\n[x]\n", edit_ini_section("[remi]", replace_line("enabled=0", "enabled=1"))) == "[remi]\nenabled=1\n[x]\n"
