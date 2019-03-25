@@ -334,7 +334,7 @@ def read_config(config_filename=None):  # pylint: disable=too-many-locals,too-ma
             roles[role] = entry['hosts']
             del entry['hosts']
             if entry:
-                abort('read_config: unexpected roles entry: %s' % yaml.dump(entry))
+                abort('read_config: unexpected roles entry:\n\n%s' % yaml.dump(entry))
         del config['roles']
     host_vars = dict()
     if 'host_vars' in config:
@@ -364,7 +364,7 @@ def read_config(config_filename=None):  # pylint: disable=too-many-locals,too-ma
             host_vars[host] = entry['vars']
             del entry['vars']
             if entry:
-                abort('read_config: unexpected host_vars entry: %s' % yaml.dump(entry))
+                abort('read_config: unexpected host_vars entry:\n\n%s' % yaml.dump(entry))
         del config['host_vars']
     role_vars = dict()
     if 'role_vars' in config:
@@ -394,7 +394,7 @@ def read_config(config_filename=None):  # pylint: disable=too-many-locals,too-ma
             role_vars[role] = entry['vars']
             del entry['vars']
             if entry:
-                abort('read_config: unexpected role_vars entry: %s' % yaml.dump(entry))
+                abort('read_config: unexpected role_vars entry:\n\n%s' % yaml.dump(entry))
         del config['role_vars']
     defaults = dict()
     if 'defaults' in config:
