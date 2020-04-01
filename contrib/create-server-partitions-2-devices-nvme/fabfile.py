@@ -146,7 +146,7 @@ def create_partitions():
     parted = Parted('nvme0n1', 'nvme1n1')
     parted.mkpart('for bios_grub', 2014, mdraid=False, lvm=False)
     parted.mkpart('for  /dev/md0', 01 * 1024 * 1024 * 1024 / 512, mdraid=True, lvm=False)
-    parted.mkpart('for  /dev/md1', 32 * 1024 * 1024 * 1024 / 512, mdraid=True, lvm=True)
+    parted.mkpart('for  /dev/md1', (32 * 1024 * 1024 * 1024 + 1024 * 1024) / 512, mdraid=True, lvm=True)
     parted.mkpart('for zfs zpool', -1, mdraid=False, lvm=False)
     parted.run()
 
